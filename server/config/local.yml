@@ -1,0 +1,51 @@
+server:
+  rootPath: /metis/*
+  applicationConnectors:
+    - type: http
+      port: 6852
+  adminConnectors:
+    - type: http
+      port: 8002
+  requestLog:
+    appenders:
+      - type: file
+        currentLogFilename: /var/log/bhavani/bifrost/access.log
+        threshold: ALL
+        archive: true
+        archivedLogFilenamePattern: /var/log/bhavani/bifrost/access.%i.log.gz
+        maxFileSize: 50MB
+        archivedFileCount: 3
+        timeZone: IST
+
+logging:
+  level: INFO
+  appenders:
+    - type: console
+      threshold: ALL
+      timeZone: IST
+      target: stdout
+    - type : file
+      currentLogFilename: /var/log/bhavani/bifrost/error.log
+      threshold: ERROR
+      archive: false
+      timeZone: IST
+      maxFileSize: 50MB
+
+#swagger:
+#  resourcePackage: org.bhavani.constructions.resources
+#  title: bifrost
+#  description: A service for managing business
+
+database:
+  driverClass: com.mysql.cj.jdbc.Driver
+  user: root
+  password: ""
+  url: jdbc:mysql://localhost/bifrost_dev?autoReconnect=true&useSSL=false
+  maxSize: 200
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.hbm2ddl.auto: update
+
+template: Hello, %s!
+defaultName: Stranger
