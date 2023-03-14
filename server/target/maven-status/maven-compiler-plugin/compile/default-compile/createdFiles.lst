@@ -1,9 +1,0 @@
-org/bhavani/constructions/config/ServerConfiguration.class
-org/bhavani/constructions/core/Template.class
-org/bhavani/constructions/config/ObjectMapperProvider.class
-org/bhavani/constructions/inject/ServerModule.class
-org/bhavani/constructions/health/StatusCheck.class
-org/bhavani/constructions/config/GuiceInjectorProvider.class
-org/bhavani/constructions/health/RotationManager.class
-org/bhavani/constructions/health/TemplateHealthCheck.class
-org/bhavani/constructions/Server.class

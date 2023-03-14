@@ -1,5 +1,5 @@
 server:
-  rootPath: /metis/*
+  rootPath: /bifrost/*
   applicationConnectors:
     - type: http
       port: 6852
@@ -46,6 +46,3 @@ database:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.MySQLDialect
     hibernate.hbm2ddl.auto: update
-
-template: Hello, %s!
-defaultName: Stranger

@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface UserService {
     UserEntity getUser(String userName);
 
-    void createNewUser(String userName, Long mobileNumber, Boolean isAdmin);
+    void createNewUser(String userName, String mobileNumber, Boolean isAdmin);
 }

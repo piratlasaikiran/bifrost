@@ -31,7 +31,7 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createNewUser(String userName, Long mobileNumber, Boolean isAdmin) {
+    public void createNewUser(String userName, String mobileNumber, Boolean isAdmin) {
         if(String.valueOf(mobileNumber).length() != MOBILE_NUMBER_LENGTH)
             throw new IllegalArgumentException(INVALID_MOBILE_NUMBER);
         UserEntity newUser = createUserEntity(userName, mobileNumber, isAdmin);

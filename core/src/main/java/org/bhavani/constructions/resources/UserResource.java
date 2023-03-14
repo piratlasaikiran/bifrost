@@ -12,11 +12,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
 @Singleton
 @Api(value = "users")
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -25,10 +27,10 @@ public class UserResource {
     private final UserService userService;
 
     @GET
-    @Path("/users/{userName}/get-user")
+    @Path("/{userName}")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response getUser(@Nonnull String userName){
+    public Response getUser(@Nonnull @PathParam("userName") String userName){
         try{
             UserEntity userEntity = userService.getUser(userName);
             return Response.ok(userEntity).build();

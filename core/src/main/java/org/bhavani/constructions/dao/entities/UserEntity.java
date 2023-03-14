@@ -21,7 +21,7 @@ public class UserEntity {
     private String name;
 
     @Column(name = "mobile_num")
-    private Long mobileNumber;
+    private String mobileNumber;
 
     @Column(name = "admin")
     private boolean admin;
