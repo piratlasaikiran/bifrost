@@ -1,9 +1,20 @@
 --liquibase formatted sql
 
 --changeset saikiran.pv:1
-CREATE TABLE users(
-    name varchar(50) not null,
-    mobile_num varchar(20) not null,
-    admin boolean default false not null,
-    PRIMARY KEY (name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+create table supervisors(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
+	name varchar(150) not null,
+	personal_mobile_num bigint(10) not null,
+	bank_ac varchar(150) not null,
+	salary integer,
+	admin tinyint(1) not null default 0,
+	company_mob_num bigint(10) default null,
+	atm_card bigint(30) default null,
+	vehicle_num varchar(25) default null,
+	ot_pay integer not null default 0,
+	created_by varchar(255) DEFAULT NULL,
+	updated_by varchar(255) DEFAULT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+)ENGINE=InnoDB default CHARSET=utf8;
