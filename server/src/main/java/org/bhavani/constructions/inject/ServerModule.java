@@ -5,10 +5,10 @@ import com.google.inject.Singleton;
 import io.dropwizard.hibernate.HibernateBundle;
 import lombok.RequiredArgsConstructor;
 import org.bhavani.constructions.config.ServerConfiguration;
-import org.bhavani.constructions.dao.api.UserEntityDao;
-import org.bhavani.constructions.dao.impl.UserEntityDaoImpl;
-import org.bhavani.constructions.serviceImpls.DefaultUserService;
-import org.bhavani.constructions.services.UserService;
+import org.bhavani.constructions.dao.api.SupervisorEntityDao;
+import org.bhavani.constructions.dao.impl.SupervisorEntityDaoImpl;
+import org.bhavani.constructions.serviceImpls.DefaultSupervisorService;
+import org.bhavani.constructions.services.SupervisorService;
 import org.hibernate.SessionFactory;
 import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 
@@ -19,8 +19,8 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
 
     @Override
     protected void configure() {
-        bind(UserService.class).to(DefaultUserService.class).in(Singleton.class);
-        bind(UserEntityDao.class).to(UserEntityDaoImpl.class).in(Singleton.class);
+        bind(SupervisorService.class).to(DefaultSupervisorService.class).in(Singleton.class);
+        bind(SupervisorEntityDao.class).to(SupervisorEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides

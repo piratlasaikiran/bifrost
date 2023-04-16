@@ -2,12 +2,12 @@ package org.bhavani.constructions.dao.entities.subentities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -16,9 +16,14 @@ import java.time.LocalDateTime;
  * This class is used in reflective access. So, don't change path.
  */
 @MappedSuperclass
-@Data
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @TypeDef(name = "json", typeClass = JsonStringType.class)
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity {
 
     @Column(name = "created_by")
     private String createdBy;
