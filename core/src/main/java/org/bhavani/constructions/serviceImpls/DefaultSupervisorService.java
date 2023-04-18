@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import static org.bhavani.constructions.constants.ErrorConstants.USER_EXISTS;
 import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
-import static org.bhavani.constructions.helpers.EntityBuilder.createUserEntity;
+import static org.bhavani.constructions.helpers.EntityBuilder.createEmployeeEntity;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -32,7 +32,7 @@ public class DefaultSupervisorService implements SupervisorService {
 
     @Override
     public SupervisorEntity createEmployee(CreateSupervisorRequestDTO createSupervisorRequestDTO, String userId) {
-        SupervisorEntity supervisorEntity = createUserEntity(createSupervisorRequestDTO, userId);
+        SupervisorEntity supervisorEntity = createEmployeeEntity(createSupervisorRequestDTO, userId);
         supervisorEntityDao.getEmployee(createSupervisorRequestDTO.getName()).ifPresent(existingSupervisor -> {
             log.error("{} already present. User different name.", existingSupervisor.getName());
             throw new IllegalArgumentException(USER_EXISTS);
