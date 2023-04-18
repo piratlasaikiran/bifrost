@@ -1,16 +1,15 @@
 package org.bhavani.constructions.dao.api;
 
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
-import org.bhavani.constructions.dao.entities.subentities.Employee;
 
 import java.util.Optional;
 
 public interface SupervisorEntityDao {
-    Optional<SupervisorEntity> getEmployee(String userName);
+    Optional<SupervisorEntity> getSupervisor(String supervisorName);
 
-    void saveEmployee(SupervisorEntity supervisor);
+    void saveSupervisor(SupervisorEntity supervisor);
 
-    void updateEmployee(SupervisorEntity supervisor);
+    void updateSupervisor(SupervisorEntity supervisor);
 
-    void deleteEmployee(SupervisorEntity supervisor);
+    void deleteSupervisor(SupervisorEntity supervisor);
 }

@@ -2,6 +2,7 @@ package org.bhavani.constructions;
 
 import io.dropwizard.Application;
 import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.ScanningHibernateBundle;
 import io.dropwizard.hibernate.SessionFactoryFactory;
@@ -9,7 +10,9 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.bhavani.constructions.config.ServerConfiguration;
 import org.bhavani.constructions.inject.ServerModule;
+import org.bhavani.constructions.resources.DriverResource;
 import org.bhavani.constructions.resources.SupervisorResource;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 
@@ -29,6 +32,9 @@ public class Server extends Application<ServerConfiguration> {
     @Override
     public void run(ServerConfiguration serverConfiguration, Environment environment) throws Exception {
         environment.jersey().register(SupervisorResource.class);
+        environment.jersey().register(DriverResource.class);
+
+        environment.jersey().register(MultiPartFeature.class);
     }
 
     @Override
@@ -50,6 +56,6 @@ public class Server extends Application<ServerConfiguration> {
 
         bootstrap.addBundle(hibernateBundle);
         bootstrap.addBundle(guiceBundle);
-
+        bootstrap.addBundle(new MultiPartBundle());
     }
 }

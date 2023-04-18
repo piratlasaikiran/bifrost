@@ -30,4 +30,8 @@ public class Employee extends BaseEntity{
     @Column(name = "admin")
     private boolean admin;
 
+    @Lob
+    @Column(name = "aadhar")
+    private byte[] aadhar;
+
 }
