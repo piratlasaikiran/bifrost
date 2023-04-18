@@ -10,7 +10,5 @@ public interface DriverEntityDao {
 
     void saveEmployee(DriverEntity driver);
 
-    void updateEmployee(DriverEntity driver);
-
     void deleteEmployee(DriverEntity driver);
 }

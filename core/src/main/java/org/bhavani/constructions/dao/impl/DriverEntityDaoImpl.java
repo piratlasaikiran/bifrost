@@ -30,18 +30,13 @@ public class DriverEntityDaoImpl extends AbstractDAO<DriverEntity> implements Dr
     }
 
     @Override
-    public void saveEmployee(DriverEntity driver) {
-        log.info("Saving driver: {}", driver.getName());
-        persist(driver);
+    public void saveEmployee(DriverEntity driverEntity) {
+        log.info("Saving driver: {}", driverEntity.getName());
+        persist(driverEntity);
     }
 
     @Override
-    public void updateEmployee(DriverEntity driver) {
-
-    }
-
-    @Override
-    public void deleteEmployee(DriverEntity driver) {
-
+    public void deleteEmployee(DriverEntity driverEntity) {
+        currentSession().delete(driverEntity);
     }
 }

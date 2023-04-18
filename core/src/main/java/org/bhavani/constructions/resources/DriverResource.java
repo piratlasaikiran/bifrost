@@ -35,13 +35,27 @@ public class DriverResource {
     @Path("/create-new-employee")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    public Response saveDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
+    public Response createDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
                                    @FormDataParam("license") InputStream license,
                                    @FormDataParam("license") FormDataContentDisposition licenseContent,
                                    @FormDataParam("aadhar") InputStream aadhar,
                                    @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                    @NotNull @HeaderParam(X_USER_ID) String userId){
-        DriverEntity driver = driverService.createEmployee(createDriverRequestDTO, license, aadhar, userId);
+        DriverEntity driver = driverService.createDriver(createDriverRequestDTO, license, aadhar, userId);
+        return Response.ok(driverService.createDriverResponse(driver)).build();
+    }
+
+    @PUT
+    @Path("/update-employee")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @UnitOfWork
+    public Response updateDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
+                               @FormDataParam("license") InputStream license,
+                               @FormDataParam("license") FormDataContentDisposition licenseContent,
+                               @FormDataParam("aadhar") InputStream aadhar,
+                               @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
+                               @NotNull @HeaderParam(X_USER_ID) String userId){
+        DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, aadhar, userId);
         return Response.ok(driverService.createDriverResponse(driver)).build();
     }
 
@@ -50,10 +64,17 @@ public class DriverResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getDriver(@Nonnull @PathParam("employeeName") String employeeName){
-        return Response.ok(DriverEntity.builder()
-                        .name(employeeName)
-                        .build())
-                .build();
+        DriverEntity driverEntity = driverService.getDriver(employeeName);
+        return Response.ok(driverEntity).build();
+    }
+
+    @DELETE
+    @Path("/{employeeName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public String deleteDriver(@Nonnull @PathParam("employeeName") String employeeName){
+        driverService.deleteDriver(employeeName);
+        return String.format("Driver: %s deleted successfully", employeeName);
     }
 
 }

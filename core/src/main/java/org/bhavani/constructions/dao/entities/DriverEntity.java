@@ -38,8 +38,4 @@ public class DriverEntity extends Employee {
     @Lob
     @Column(name = "license")
     private byte[] license;
-
-    @Lob
-    @Column(name = "aadhar")
-    private byte[] aadhar;
 }
