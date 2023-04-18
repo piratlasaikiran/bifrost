@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface DriverEntityDao {
 
-    Optional<DriverEntity> getEmployee(String userName);
+    Optional<DriverEntity> getDriver(String driverName);
 
-    void saveEmployee(DriverEntity driver);
+    void saveDriver(DriverEntity driver);
 
-    void deleteEmployee(DriverEntity driver);
+    void deleteDriver(DriverEntity driver);
 }

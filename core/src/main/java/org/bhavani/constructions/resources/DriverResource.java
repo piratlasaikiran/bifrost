@@ -32,7 +32,7 @@ public class DriverResource {
     private final DriverService driverService;
 
     @POST
-    @Path("/create-new-employee")
+    @Path("/create-new-driver")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
     public Response createDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
@@ -46,7 +46,7 @@ public class DriverResource {
     }
 
     @PUT
-    @Path("/update-employee")
+    @Path("/update-driver")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
     public Response updateDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
@@ -60,21 +60,21 @@ public class DriverResource {
     }
 
     @GET
-    @Path("/{employeeName}")
+    @Path("/{driverName}")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response getDriver(@Nonnull @PathParam("employeeName") String employeeName){
-        DriverEntity driverEntity = driverService.getDriver(employeeName);
+    public Response getDriver(@Nonnull @PathParam("driverName") String driverName){
+        DriverEntity driverEntity = driverService.getDriver(driverName);
         return Response.ok(driverEntity).build();
     }
 
     @DELETE
-    @Path("/{employeeName}")
+    @Path("/{driverName}")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public String deleteDriver(@Nonnull @PathParam("employeeName") String employeeName){
-        driverService.deleteDriver(employeeName);
-        return String.format("Driver: %s deleted successfully", employeeName);
+    public String deleteDriver(@Nonnull @PathParam("driverName") String driverName){
+        driverService.deleteDriver(driverName);
+        return String.format("Driver: %s deleted successfully", driverName);
     }
 
 }

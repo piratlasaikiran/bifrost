@@ -22,7 +22,7 @@ public class DriverEntityDaoImpl extends AbstractDAO<DriverEntity> implements Dr
     }
 
     @Override
-    public Optional<DriverEntity> getEmployee(String driverName) {
+    public Optional<DriverEntity> getDriver(String driverName) {
         Map<String, Object> params = new HashMap<>();
         params.put(NAME, driverName);
         log.info("Fetching driver: {}", driverName);
@@ -30,13 +30,13 @@ public class DriverEntityDaoImpl extends AbstractDAO<DriverEntity> implements Dr
     }
 
     @Override
-    public void saveEmployee(DriverEntity driverEntity) {
+    public void saveDriver(DriverEntity driverEntity) {
         log.info("Saving driver: {}", driverEntity.getName());
         persist(driverEntity);
     }
 
     @Override
-    public void deleteEmployee(DriverEntity driverEntity) {
+    public void deleteDriver(DriverEntity driverEntity) {
         currentSession().delete(driverEntity);
     }
 }

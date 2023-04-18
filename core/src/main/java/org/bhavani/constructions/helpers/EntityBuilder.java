@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class EntityBuilder {
-    public static SupervisorEntity createEmployeeEntity(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                                        String userId) {
+    public static SupervisorEntity createSupervisorEntity(CreateSupervisorRequestDTO createSupervisorRequestDTO,
+                                                          InputStream aadhar, String userId) throws IOException {
 
         return SupervisorEntity.builder()
                 .name(createSupervisorRequestDTO.getName())
@@ -19,6 +19,7 @@ public class EntityBuilder {
                 .bankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber())
                 .salary(createSupervisorRequestDTO.getSalary())
                 .admin(createSupervisorRequestDTO.isAdmin())
+                .aadhar(IOUtils.toByteArray(aadhar))
                 .companyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber())
                 .atmCardNumber(createSupervisorRequestDTO.getAtmCardNumber())
                 .vehicleNumber(createSupervisorRequestDTO.getVehicleNumber())
@@ -29,8 +30,8 @@ public class EntityBuilder {
 
     }
 
-    public static DriverEntity createEmployeeEntity(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
-                                                    InputStream aadhar, String userId) throws IOException {
+    public static DriverEntity createDriverEntity(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
+                                                  InputStream aadhar, String userId) throws IOException {
 
         return DriverEntity.builder()
                 .name(createDriverRequestDTO.getName())

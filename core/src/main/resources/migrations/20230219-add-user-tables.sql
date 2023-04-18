@@ -12,6 +12,7 @@ create table supervisors(
 	atm_card bigint(30) default null,
 	vehicle_num varchar(25) default null,
 	ot_pay integer not null default 0,
+	aadhar longblob DEFAULT NULL,
 	created_by varchar(255) DEFAULT NULL,
 	updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

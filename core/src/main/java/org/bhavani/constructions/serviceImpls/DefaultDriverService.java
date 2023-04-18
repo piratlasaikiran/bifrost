@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
-import static org.bhavani.constructions.helpers.EntityBuilder.createEmployeeEntity;
+import static org.bhavani.constructions.helpers.EntityBuilder.createDriverEntity;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -23,7 +23,7 @@ public class DefaultDriverService implements DriverService {
     private final DriverEntityDao driverEntityDao;
     @Override
     public DriverEntity getDriver(String driverName) {
-        return driverEntityDao.getEmployee(driverName).orElseThrow(() -> {
+        return driverEntityDao.getDriver(driverName).orElseThrow(() -> {
             log.error("{} doesn't exist. Create user first", driverName);
             return new IllegalArgumentException(USER_NOT_FOUND);
         });
@@ -34,12 +34,12 @@ public class DefaultDriverService implements DriverService {
                                      @FormDataParam("file") InputStream license, @FormDataParam("file") InputStream aadhar,
                                      String userId) {
         try{
-            DriverEntity driverEntity = createEmployeeEntity(createDriverRequestDTO, license, aadhar, userId);
-            driverEntityDao.getEmployee(createDriverRequestDTO.getName()).ifPresent(existingDriver -> {
+            DriverEntity driverEntity = createDriverEntity(createDriverRequestDTO, license, aadhar, userId);
+            driverEntityDao.getDriver(createDriverRequestDTO.getName()).ifPresent(existingDriver -> {
                 log.error("{} already present. User different name.", existingDriver.getName());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
-            driverEntityDao.saveEmployee(driverEntity);
+            driverEntityDao.saveDriver(driverEntity);
             return driverEntity;
         }catch (IOException ioException){
             log.error("Error while parsing license/aadhar");
@@ -49,11 +49,11 @@ public class DefaultDriverService implements DriverService {
 
     @Override
     public void deleteDriver(String driverName) {
-        DriverEntity driverEntity = driverEntityDao.getEmployee(driverName).orElseThrow(() -> {
+        DriverEntity driverEntity = driverEntityDao.getDriver(driverName).orElseThrow(() -> {
             log.error("{} doesn't exist. Create user first", driverName);
             return new IllegalArgumentException(USER_NOT_FOUND);
         });
-        driverEntityDao.deleteEmployee(driverEntity);
+        driverEntityDao.deleteDriver(driverEntity);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DefaultDriverService implements DriverService {
 
     @Override
     public DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, String userId) {
-        DriverEntity driverEntity = driverEntityDao.getEmployee(createDriverRequestDTO.getName()).orElseThrow(() -> {
+        DriverEntity driverEntity = driverEntityDao.getDriver(createDriverRequestDTO.getName()).orElseThrow(() -> {
             log.error("{} doesn't exist. Create user first", createDriverRequestDTO.getName());
             return new IllegalArgumentException(USER_NOT_FOUND);
         });

@@ -32,27 +32,27 @@ public class SupervisorEntityDaoImpl extends AbstractDAO<SupervisorEntity> imple
     }
 
     @Override
-    public Optional<SupervisorEntity> getEmployee(String employeeName) {
+    public Optional<SupervisorEntity> getSupervisor(String supervisorName) {
         Map<String, Object> params = new HashMap<>();
-        params.put(NAME, employeeName);
-        log.info("Fetching supervisor: {}", employeeName);
+        params.put(NAME, supervisorName);
+        log.info("Fetching supervisor: {}", supervisorName);
         return findOneByNamedQuery("GetSupervisorByName", params);
     }
 
     @Override
-    public void saveEmployee(SupervisorEntity supervisor) {
+    public void saveSupervisor(SupervisorEntity supervisor) {
         log.info("Saving supervisor: {}", supervisor.getName());
         persist(supervisor);
     }
 
     @Override
-    public void updateEmployee(SupervisorEntity supervisor) {
+    public void updateSupervisor(SupervisorEntity supervisor) {
         log.info("Updating user: {}", supervisor.getName());
         saveOrUpdate(supervisor);
     }
 
     @Override
-    public void deleteEmployee(SupervisorEntity supervisor){
+    public void deleteSupervisor(SupervisorEntity supervisor){
         currentSession().delete(supervisor);
     }
 }
