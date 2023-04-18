@@ -3,18 +3,14 @@ package org.bhavani.constructions.services;
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 
-import java.io.InputStream;
-
 public interface SupervisorService {
-    SupervisorEntity getSupervisor(String supervisorName);
+    SupervisorEntity getEmployee(String employeeName);
 
-    SupervisorEntity createSupervisor(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                      InputStream aadhar, String userId);
+    SupervisorEntity createEmployee(CreateSupervisorRequestDTO createSupervisorRequestDTO,
+                                    String userId);
 
-    SupervisorEntity updateSupervisor(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                      InputStream aadhar, String userId);
+    SupervisorEntity updateEmployee(CreateSupervisorRequestDTO createSupervisorRequestDTO,
+                                    String userId);
 
-    void deleteSuperVisor(String supervisorName);
-
-    SupervisorEntity createSupervisorResponse(SupervisorEntity supervisor);
+    void deleteEmployee(String employeeName);
 }

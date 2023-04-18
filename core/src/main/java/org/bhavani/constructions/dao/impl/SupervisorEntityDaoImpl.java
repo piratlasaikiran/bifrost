@@ -31,28 +31,30 @@ public class SupervisorEntityDaoImpl extends AbstractDAO<SupervisorEntity> imple
         this.currentSession().saveOrUpdate(supervisor);
     }
 
+    private final String GET_SUPERVISOR_BY_NAME = "GetEmployeeByName";
+
     @Override
-    public Optional<SupervisorEntity> getSupervisor(String supervisorName) {
+    public Optional<SupervisorEntity> getEmployee(String userName) {
         Map<String, Object> params = new HashMap<>();
-        params.put(NAME, supervisorName);
-        log.info("Fetching supervisor: {}", supervisorName);
-        return findOneByNamedQuery("GetSupervisorByName", params);
+        params.put(NAME, userName);
+        log.info("Fetching user: {}", userName);
+        return findOneByNamedQuery(GET_SUPERVISOR_BY_NAME, params);
     }
 
     @Override
-    public void saveSupervisor(SupervisorEntity supervisor) {
-        log.info("Saving supervisor: {}", supervisor.getName());
+    public void saveEmployee(SupervisorEntity supervisor) {
+        log.info("Saving user: {}", supervisor.getName());
         persist(supervisor);
     }
 
     @Override
-    public void updateSupervisor(SupervisorEntity supervisor) {
+    public void updateEmployee(SupervisorEntity supervisor) {
         log.info("Updating user: {}", supervisor.getName());
         saveOrUpdate(supervisor);
     }
 
     @Override
-    public void deleteSupervisor(SupervisorEntity supervisor){
+    public void deleteEmployee(SupervisorEntity supervisor){
         currentSession().delete(supervisor);
     }
 }

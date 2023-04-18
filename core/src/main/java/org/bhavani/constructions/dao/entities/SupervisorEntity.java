@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "GetSupervisorByName",
+        @NamedQuery(name = "GetEmployeeByName",
                 query = "select e from SupervisorEntity e where e.name = :name")
 })
 @Table(name = "supervisors")
