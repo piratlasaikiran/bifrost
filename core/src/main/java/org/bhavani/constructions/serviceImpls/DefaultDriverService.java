@@ -7,14 +7,13 @@ import org.bhavani.constructions.dao.api.DriverEntityDao;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.dto.CreateDriverRequestDTO;
 import org.bhavani.constructions.services.DriverService;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
-import static org.bhavani.constructions.helpers.EntityBuilder.createDriverEntity;
+import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -31,7 +30,7 @@ public class DefaultDriverService implements DriverService {
 
     @Override
     public DriverEntity createDriver(CreateDriverRequestDTO createDriverRequestDTO,
-                                     @FormDataParam("file") InputStream license, @FormDataParam("file") InputStream aadhar,
+                                     InputStream license, InputStream aadhar,
                                      String userId) {
         try{
             DriverEntity driverEntity = createDriverEntity(createDriverRequestDTO, license, aadhar, userId);

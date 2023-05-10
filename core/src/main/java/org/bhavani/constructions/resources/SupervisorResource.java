@@ -32,7 +32,7 @@ public class SupervisorResource {
     private final SupervisorService supervisorService;
 
     @GET
-    @Path("/{supervisorName}")
+    @Path("/{supervisorName}/get-supervisor")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getSupervisor(@Nonnull @PathParam("supervisorName") String supervisorName){
@@ -53,10 +53,11 @@ public class SupervisorResource {
     }
 
     @PUT
-    @Path("/update-supervisor")
+    @Path("/{supervisorName}/update-supervisor")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response updateSupervisor(@FormDataParam("createSupervisorPayload") CreateSupervisorRequestDTO createSupervisorRequestDTO,
+    public Response updateSupervisor(@Nonnull @PathParam("supervisorName") String supervisorName,
+                                     @FormDataParam("createSupervisorPayload") CreateSupervisorRequestDTO createSupervisorRequestDTO,
                                      @FormDataParam("aadhar") InputStream aadhar,
                                      @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                      @NotNull @HeaderParam(X_USER_ID) String userId){
@@ -65,7 +66,7 @@ public class SupervisorResource {
     }
 
     @DELETE
-    @Path("/{supervisorName}")
+    @Path("/{supervisorName}/delete-supervisor")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public String deleteSupervisor(@Nonnull @PathParam("supervisorName") String supervisorName){

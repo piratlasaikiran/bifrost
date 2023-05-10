@@ -46,21 +46,22 @@ public class DriverResource {
     }
 
     @PUT
-    @Path("/update-driver")
+    @Path("/{driverName}/update-driver")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    public Response updateDriver(@FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
-                               @FormDataParam("license") InputStream license,
-                               @FormDataParam("license") FormDataContentDisposition licenseContent,
-                               @FormDataParam("aadhar") InputStream aadhar,
-                               @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
-                               @NotNull @HeaderParam(X_USER_ID) String userId){
+    public Response updateDriver(@Nonnull @PathParam("driverName") String driverName,
+                                 @FormDataParam("createDriverPayload") CreateDriverRequestDTO createDriverRequestDTO,
+                                 @FormDataParam("license") InputStream license,
+                                 @FormDataParam("license") FormDataContentDisposition licenseContent,
+                                 @FormDataParam("aadhar") InputStream aadhar,
+                                 @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
+                                 @NotNull @HeaderParam(X_USER_ID) String userId){
         DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, aadhar, userId);
         return Response.ok(driverService.createDriverResponse(driver)).build();
     }
 
     @GET
-    @Path("/{driverName}")
+    @Path("/{driverName}/get-driver")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getDriver(@Nonnull @PathParam("driverName") String driverName){
@@ -69,7 +70,7 @@ public class DriverResource {
     }
 
     @DELETE
-    @Path("/{driverName}")
+    @Path("/{driverName}/delete-driver")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public String deleteDriver(@Nonnull @PathParam("driverName") String driverName){

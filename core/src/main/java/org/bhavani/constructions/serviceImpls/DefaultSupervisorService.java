@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.SupervisorEntityDao;
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
-import org.bhavani.constructions.helpers.EntityBuilder;
+import org.bhavani.constructions.utils.EntityBuilder;
 import org.bhavani.constructions.services.SupervisorService;
 
 import javax.inject.Inject;
