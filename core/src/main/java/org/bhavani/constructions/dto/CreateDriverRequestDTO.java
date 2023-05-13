@@ -34,10 +34,4 @@ public class CreateDriverRequestDTO {
     @NotNull
     @JsonProperty("ot_pay_day_night")
     private int otPayDayNight;
-
-    @JsonProperty("license")
-    private byte[] license;
-
-    @JsonProperty("aadhar")
-    private byte[] aadhar;
 }
