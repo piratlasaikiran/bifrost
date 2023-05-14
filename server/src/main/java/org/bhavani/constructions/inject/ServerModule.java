@@ -7,14 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.bhavani.constructions.config.ServerConfiguration;
 import org.bhavani.constructions.dao.api.*;
 import org.bhavani.constructions.dao.impl.*;
-import org.bhavani.constructions.serviceImpls.DefaultDriverService;
-import org.bhavani.constructions.serviceImpls.DefaultSiteService;
-import org.bhavani.constructions.serviceImpls.DefaultSupervisorService;
-import org.bhavani.constructions.serviceImpls.DefaultVehicleService;
-import org.bhavani.constructions.services.DriverService;
-import org.bhavani.constructions.services.SiteService;
-import org.bhavani.constructions.services.SupervisorService;
-import org.bhavani.constructions.services.VehicleService;
+import org.bhavani.constructions.serviceImpls.*;
+import org.bhavani.constructions.services.*;
 import org.hibernate.SessionFactory;
 import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 
@@ -29,12 +23,14 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(DriverService.class).to(DefaultDriverService.class).in(Singleton.class);
         bind(VehicleService.class).to(DefaultVehicleService.class).in(Singleton.class);
         bind(SiteService.class).to(DefaultSiteService.class).in(Singleton.class);
+        bind(AssetLocationService.class).to(DefaultAssetLocationService.class).in(Singleton.class);
 
         bind(SupervisorEntityDao.class).to(SupervisorEntityDaoImpl.class).in(Singleton.class);
         bind(DriverEntityDao.class).to(DriverEntityDaoImpl.class).in(Singleton.class);
         bind(VehicleEntityDao.class).to(VehicleEntityDaoImpl.class).in(Singleton.class);
         bind(VehicleTaxEntityDao.class).to(VehicleTaxEntityDaoImpl.class).in(Singleton.class);
         bind(SiteEntityDao.class).to(SiteEntityDaoImpl.class).in(Singleton.class);
+        bind(AssetLocationEntityDao.class).to(AssetLocationEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides

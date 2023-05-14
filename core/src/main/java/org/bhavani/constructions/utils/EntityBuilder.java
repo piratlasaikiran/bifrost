@@ -103,5 +103,15 @@ public class EntityBuilder {
     public static String convertListToCommaSeparatedString(List<String> entities) {
         return String.join(STRING_JOIN_DELIMITER, entities);
     }
+
+    public static AssetLocationEntity createAssetLocationEntity(CreateAssetLocationRequestDTO createAssetLocationRequestDTO){
+        return AssetLocationEntity.builder()
+                .assetName(createAssetLocationRequestDTO.getAssetName())
+                .assetType(createAssetLocationRequestDTO.getAssetType())
+                .location(createAssetLocationRequestDTO.getLocation())
+                .startDate(createAssetLocationRequestDTO.getStartDate())
+                .endDate(createAssetLocationRequestDTO.getEndDate())
+                .build();
+    }
 }
 
