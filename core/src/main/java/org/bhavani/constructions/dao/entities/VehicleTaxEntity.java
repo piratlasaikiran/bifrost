@@ -1,5 +1,6 @@
 package org.bhavani.constructions.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
@@ -43,8 +44,10 @@ public class VehicleTaxEntity extends BaseEntity {
     private byte[] taxReceipt;
 
     @Column(name = "validity_start")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate validityStartDate;
 
     @Column(name = "validity_end")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate validityEndDate;
 }

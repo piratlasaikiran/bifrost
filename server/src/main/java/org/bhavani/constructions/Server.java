@@ -13,6 +13,7 @@ import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import org.bhavani.constructions.config.ServerConfiguration;
 import org.bhavani.constructions.inject.ServerModule;
 import org.bhavani.constructions.resources.DriverResource;
+import org.bhavani.constructions.resources.SiteResource;
 import org.bhavani.constructions.resources.SupervisorResource;
 import org.bhavani.constructions.resources.VehicleResource;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -35,6 +36,7 @@ public class Server extends Application<ServerConfiguration> {
         environment.jersey().register(SupervisorResource.class);
         environment.jersey().register(DriverResource.class);
         environment.jersey().register(VehicleResource.class);
+        environment.jersey().register(SiteResource.class);
 
         environment.jersey().register(MultiPartFeature.class);
     }
