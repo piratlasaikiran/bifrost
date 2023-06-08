@@ -8,6 +8,7 @@ public class Constants {
     public static final String START_DATE = "start_date";
     public static final String SITE_NAME = "site_name";
     public static final String ASSET_NAME = "asset_name";
+    public static final String USER_NAME = "user_name";
     public static final String ASSET_LOCATION = "asset_location";
     public static final String STRING_JOIN_DELIMITER = ",";
 
