@@ -1,20 +1,16 @@
 package org.bhavani.constructions.utils;
 
 import org.apache.commons.io.IOUtils;
-import org.bhavani.constructions.dao.entities.DriverEntity;
-import org.bhavani.constructions.dao.entities.SupervisorEntity;
-import org.bhavani.constructions.dao.entities.VehicleEntity;
-import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
-import org.bhavani.constructions.dto.CreateDriverRequestDTO;
-import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
-import org.bhavani.constructions.dto.CreateVehicleRequestDTO;
-import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
+import org.bhavani.constructions.dao.entities.*;
+import org.bhavani.constructions.dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITER;
 
 public class EntityBuilder {
     public static SupervisorEntity createSupervisorEntity(CreateSupervisorRequestDTO createSupervisorRequestDTO,
@@ -89,6 +85,32 @@ public class EntityBuilder {
                 .vehicleClass(createVehicleRequestDTO.getVehicleClass())
                 .insuranceProvider(createVehicleRequestDTO.getInsuranceProvider())
                 .financeProvider(createVehicleRequestDTO.getFinanceProvider())
+                .build();
+    }
+
+    public static SiteEntity createSiteEntity(CreateSiteRequestDTO createSiteRequestDTO){
+        return SiteEntity.builder()
+                .siteName(createSiteRequestDTO.getSiteName())
+                .address(createSiteRequestDTO.getAddress())
+                .currentStatus(createSiteRequestDTO.getSiteStatus())
+                .supervisors(convertListToCommaSeparatedString(createSiteRequestDTO.getSupervisors()))
+                .vehicles(convertListToCommaSeparatedString(createSiteRequestDTO.getVehicles()))
+                .workStartDate(createSiteRequestDTO.getWorkStartDate())
+                .workEndDate(createSiteRequestDTO.getWorkEndDate())
+                .build();
+    }
+
+    public static String convertListToCommaSeparatedString(List<String> entities) {
+        return String.join(STRING_JOIN_DELIMITER, entities);
+    }
+
+    public static AssetLocationEntity createAssetLocationEntity(CreateAssetLocationRequestDTO createAssetLocationRequestDTO){
+        return AssetLocationEntity.builder()
+                .assetName(createAssetLocationRequestDTO.getAssetName())
+                .assetType(createAssetLocationRequestDTO.getAssetType())
+                .location(createAssetLocationRequestDTO.getLocation())
+                .startDate(createAssetLocationRequestDTO.getStartDate())
+                .endDate(createAssetLocationRequestDTO.getEndDate())
                 .build();
     }
 }
