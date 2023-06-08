@@ -113,5 +113,12 @@ public class EntityBuilder {
                 .endDate(createAssetLocationRequestDTO.getEndDate())
                 .build();
     }
+
+    public static UserEntity createUserEntity(String userName, String hashedPassword){
+        return UserEntity.builder()
+                .userName(userName)
+                .password(hashedPassword)
+                .build();
+    }
 }
 
