@@ -71,3 +71,14 @@ create table vehicle_taxes(
     primary key(id),
     constraint vehicle_taxes_vehicle_num_fk FOREIGN KEY(vehicle_num) REFERENCES vehicles (vehicle_num)
 )ENGINE=InnoDB default CHARSET=utf8;
+
+--changeset saikiran.pv:5
+create table users(
+    name varchar(256) not null,
+    password varchar(150) not null,
+    created_by varchar(255) DEFAULT NULL,
+    updated_by varchar(255) DEFAULT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    primary key (name)
+)ENGINE=InnoDB default CHARSET=utf8;
