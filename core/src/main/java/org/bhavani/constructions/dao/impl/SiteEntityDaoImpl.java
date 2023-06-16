@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.SiteEntityDao;
 import org.bhavani.constructions.dao.entities.SiteEntity;
 import org.bhavani.constructions.helpers.AbstractDAO;
+import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,5 +45,12 @@ public class SiteEntityDaoImpl extends AbstractDAO<SiteEntity> implements SiteEn
     @Override
     public void deleteSite(SiteEntity siteEntity) {
         this.currentSession().delete(siteEntity);
+    }
+
+    @Override
+    public List<SiteEntity> getSites() {
+        Map<String, Object> params = new HashMap<>();
+        return findAllByNamedQuery("GetAllSites",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

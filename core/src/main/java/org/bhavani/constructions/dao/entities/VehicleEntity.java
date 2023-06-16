@@ -17,7 +17,9 @@ import javax.persistence.*;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetVehicleByNumber",
-                query = "select V from VehicleEntity V where V.vehicleNumber = :vehicle_num")
+                query = "select V from VehicleEntity V where V.vehicleNumber = :vehicle_num"),
+        @NamedQuery(name = "GetAllVehicles",
+                query = "select V from VehicleEntity V")
 })
 @Table(name = "vehicles")
 public class VehicleEntity extends BaseEntity {

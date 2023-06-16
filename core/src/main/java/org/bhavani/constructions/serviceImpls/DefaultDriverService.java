@@ -11,6 +11,8 @@ import org.bhavani.constructions.services.DriverService;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
@@ -76,6 +78,24 @@ public class DefaultDriverService implements DriverService {
         });
         updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity);
         return driverEntity;
+    }
+
+    @Override
+    public List<CreateDriverRequestDTO> getDrivers() {
+        List<DriverEntity> driverEntities = driverEntityDao.getDrivers();
+        List<CreateDriverRequestDTO> driverRequestDTOS = new ArrayList<>();
+        driverEntities.forEach(driverEntity -> {
+            driverRequestDTOS.add(CreateDriverRequestDTO.builder()
+                            .name(driverEntity.getName())
+                            .personalMobileNumber(driverEntity.getPersonalMobileNumber())
+                            .bankAccountNumber(driverEntity.getBankAccountNumber())
+                            .salary(driverEntity.getSalary())
+                            .admin(driverEntity.isAdmin())
+                            .otPayDay(driverEntity.getOtPayDay())
+                            .otPayDayNight(driverEntity.getOtPayDayNight())
+                            .build());
+        });
+        return driverRequestDTOS;
     }
 
     private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, DriverEntity driverEntity) {

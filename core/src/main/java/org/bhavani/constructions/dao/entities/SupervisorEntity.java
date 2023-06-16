@@ -19,7 +19,9 @@ import javax.persistence.*;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetSupervisorByName",
-                query = "select e from SupervisorEntity e where e.name = :name")
+                query = "select e from SupervisorEntity e where e.name = :name"),
+        @NamedQuery(name = "GetAllSupervisors",
+                query = "select e from SupervisorEntity e")
 })
 @Table(name = "supervisors")
 public class SupervisorEntity extends Employee {

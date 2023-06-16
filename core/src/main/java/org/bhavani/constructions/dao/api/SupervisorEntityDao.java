@@ -2,6 +2,7 @@ package org.bhavani.constructions.dao.api;
 
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SupervisorEntityDao {
@@ -12,4 +13,6 @@ public interface SupervisorEntityDao {
     void updateSupervisor(SupervisorEntity supervisor);
 
     void deleteSupervisor(SupervisorEntity supervisor);
+
+    List<SupervisorEntity> getAllSupervisors();
 }

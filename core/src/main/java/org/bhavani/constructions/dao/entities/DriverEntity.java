@@ -18,7 +18,9 @@ import javax.persistence.*;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetDriverByName",
-                    query = "select e from DriverEntity e where e.name = :name")
+                    query = "select e from DriverEntity e where e.name = :name"),
+        @NamedQuery(name = "GetAllDrivers",
+                    query = "select e from DriverEntity e")
 })
 @Table(name = "drivers")
 public class DriverEntity extends Employee {

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@Builder
 public class CreateSiteRequestDTO {
 
     @NotNull

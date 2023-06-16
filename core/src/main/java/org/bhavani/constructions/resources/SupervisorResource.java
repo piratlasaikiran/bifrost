@@ -19,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -30,6 +32,26 @@ import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 @Slf4j
 public class SupervisorResource {
     private final SupervisorService supervisorService;
+
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getSupervisors(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateSupervisorRequestDTO> supervisors = supervisorService.getSupervisors();
+        return Response.ok(supervisors).build();
+    }
+
+    @GET
+    @Path("/get-supervisor-names")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getSupervisorNames(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateSupervisorRequestDTO> supervisors = supervisorService.getSupervisors();
+        return Response.ok(supervisors.stream()
+                .map(CreateSupervisorRequestDTO::getName)
+                .collect(Collectors.toList())).build();
+    }
 
     @GET
     @Path("/{supervisorName}/get-supervisor")

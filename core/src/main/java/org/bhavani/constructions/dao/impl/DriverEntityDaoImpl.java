@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.DriverEntityDao;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.helpers.AbstractDAO;
+import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,5 +40,12 @@ public class DriverEntityDaoImpl extends AbstractDAO<DriverEntity> implements Dr
     @Override
     public void deleteDriver(DriverEntity driverEntity) {
         currentSession().delete(driverEntity);
+    }
+
+    @Override
+    public List<DriverEntity> getDrivers() {
+        Map<String, Object> params = new HashMap<>();
+        return findAllByNamedQuery("GetAllDrivers",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

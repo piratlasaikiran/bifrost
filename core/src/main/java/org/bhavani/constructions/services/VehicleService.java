@@ -29,4 +29,6 @@ public interface VehicleService {
     void deleteVehicleTaxEntry(String vehicleNumber, VehicleTaxEnum taxType, LocalDate validityStartDate);
 
     void delete(String vehicleNumber);
+
+    List<CreateVehicleRequestDTO> getVehicles();
 }

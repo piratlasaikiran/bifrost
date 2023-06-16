@@ -28,7 +28,9 @@ import static org.jadira.usertype.spi.utils.lang.StringUtils.isEmpty;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetSiteByName",
-                query = "select S from SiteEntity S where S.siteName = :site_name")
+                query = "select S from SiteEntity S where S.siteName = :site_name"),
+        @NamedQuery(name = "GetAllSites",
+                query = "select S from SiteEntity S")
 })
 @Table(name = "sites")
 public class SiteEntity extends BaseEntity {
@@ -63,18 +65,25 @@ public class SiteEntity extends BaseEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate workEndDate;
 
-    private List<String> getSupervisors() {
-        return getEntityList();
+    public List<String> getSupervisors() {
+        return getSupervisorsList();
     }
 
-    private List<String> getVehicles() {
-        return getEntityList();
+    public List<String> getVehicles() {
+        return getVehiclesList();
     }
 
-    private List<String> getEntityList() {
+    private List<String> getSupervisorsList() {
         if (isEmpty(this.supervisors)) {
             return new ArrayList<>();
         }
         return stream(this.supervisors.split(STRING_JOIN_DELIMITER)).collect(Collectors.toList());
+    }
+
+    private List<String> getVehiclesList() {
+        if (isEmpty(this.vehicles)) {
+            return new ArrayList<>();
+        }
+        return stream(this.vehicles.split(STRING_JOIN_DELIMITER)).collect(Collectors.toList());
     }
 }

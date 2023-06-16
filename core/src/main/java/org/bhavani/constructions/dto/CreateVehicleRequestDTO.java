@@ -1,11 +1,13 @@
 package org.bhavani.constructions.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
+@Builder
 public class CreateVehicleRequestDTO {
 
     @NotNull

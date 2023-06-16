@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.VehicleEntity;
 import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
 import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
+import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.dto.CreateVehicleRequestDTO;
 import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
 import org.bhavani.constructions.services.VehicleService;
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.*;
 import static org.bhavani.constructions.utils.VehicleHelper.assignTaxReceiptsForVehicles;
@@ -36,6 +38,26 @@ import static org.bhavani.constructions.utils.VehicleHelper.assignTaxReceiptsFor
 public class VehicleResource {
 
     private final VehicleService vehicleService;
+
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getVehicles(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateVehicleRequestDTO> vehicles = vehicleService.getVehicles();
+        return Response.ok(vehicles).build();
+    }
+
+    @GET
+    @Path("/get-vehicle-numbers")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getVehicleNumbers(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateVehicleRequestDTO> vehicles = vehicleService.getVehicles();
+        return Response.ok(vehicles.stream()
+                .map(CreateVehicleRequestDTO::getVehicleNumber)
+                .collect(Collectors.toList())).build();
+    }
 
     @GET
     @Path("/tax-types")
