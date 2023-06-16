@@ -12,6 +12,9 @@ public class Constants {
     public static final String ASSET_LOCATION = "asset_location";
     public static final String STRING_JOIN_DELIMITER = ",";
 
+    public static final String VEHICLE = "VEHICLE";
+    public static final String EMPLOYEE = "EMPLOYEE";
+
     public static final String VEHICLE_ADDED_SUCCESSFULLY = "Vehicle added successfully";
     public static final String VEHICLE_DELETED_SUCCESSFULLY = "Vehicle deleted successfully";
     public static final String TAX_DOC_ADDED_SUCCESSFULLY = "Tax document added successfully";

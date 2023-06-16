@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.AssetLocationEntityDao;
 import org.bhavani.constructions.dao.entities.AssetLocationEntity;
 import org.bhavani.constructions.helpers.AbstractDAO;
+import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,11 +33,11 @@ public class AssetLocationEntityDaoImpl extends AbstractDAO<AssetLocationEntity>
     }
 
     @Override
-    public Optional<AssetLocationEntity> getAssetLocation(String assetName, String assetLocation, String startDate) {
+    public Optional<AssetLocationEntity> getAssetLocation(String assetName, String assetLocation, LocalDate startDate) {
         Map<String, Object> params = new HashMap<>();
         params.put(ASSET_NAME, assetName);
         params.put(ASSET_LOCATION, assetLocation);
-        params.put(START_DATE, LocalDate.parse(startDate));
+        params.put(START_DATE, startDate);
         log.info("Fetching asset: {}", assetName);
         return findOneByNamedQuery("GetAssetLocationByName.Location.Date", params);
     }
@@ -48,6 +50,21 @@ public class AssetLocationEntityDaoImpl extends AbstractDAO<AssetLocationEntity>
     @Override
     public void deleteAssetLocationEntity(AssetLocationEntity assetLocationEntity) {
         this.currentSession().delete(assetLocationEntity);
+    }
+
+    @Override
+    public List<AssetLocationEntity> getAssetsLocation() {
+        Map<String, Object> params = new HashMap<>();
+        return findAllByNamedQuery("GetAllAssets",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<AssetLocationEntity> getAssetLocationEntities(String assetName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(ASSET_NAME, assetName);
+        return findAllByNamedQuery("GetAssetLocationByName",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 
 }

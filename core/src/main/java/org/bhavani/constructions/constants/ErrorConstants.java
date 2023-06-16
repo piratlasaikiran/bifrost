@@ -7,6 +7,7 @@ public class ErrorConstants {
     public static final String CORRUPTED_DATA = "Failed to parse given data";
     public static final String ASSET_NOT_FOUND = "Asset not found";
     public static final String SITE_NOT_FOUND = "Site not found";
+    public static final String ASSET_LOCATION_INVALID = "Invalid dates. Overlapping with existing entries";
     public static final String ERROR_WHILE_FETCHING_TAX_DOC = " Error while fetching vehicle tax document";
     public static final String INVALID_MOBILE_NUMBER = "Invalid mobile number, check again";
 }
