@@ -4,6 +4,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bhavani.constructions.dto.LoginRequestDTO;
 import org.bhavani.constructions.services.UserService;
 import org.bhavani.constructions.utils.PasswordHelper;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -31,9 +32,9 @@ public class UserResource {
     @Path("/login")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    public Response login(@FormDataParam("userLoginPayload") PasswordHelper.LoginRequest request) {
-        String username = request.getUsername();
-        String password = request.getPassword();
+    public Response login(@FormDataParam("userLoginPayload") LoginRequestDTO loginRequest) {
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
 
         String storedHashedPassword = getUserHashedPassword(username);
 
@@ -48,7 +49,7 @@ public class UserResource {
     @Path("/create-new-user")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    public Response createNewUser(@FormDataParam("userLoginPayload") PasswordHelper.LoginRequest request) {
+    public Response createNewUser(@FormDataParam("userLoginPayload") LoginRequestDTO request) {
         String username = request.getUsername();
         String password = request.getPassword();
         userService.createNewUser(username, password);

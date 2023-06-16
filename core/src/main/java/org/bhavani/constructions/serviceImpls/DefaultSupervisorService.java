@@ -12,6 +12,8 @@ import org.bhavani.constructions.services.SupervisorService;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
@@ -82,6 +84,26 @@ public class DefaultSupervisorService implements SupervisorService {
                 .atmCardNumber(supervisor.getAtmCardNumber())
                 .vehicleNumber(supervisor.getVehicleNumber())
                 .build();
+    }
+
+    @Override
+    public List<CreateSupervisorRequestDTO> getSupervisors() {
+        List<SupervisorEntity> supervisorEntities = supervisorEntityDao.getAllSupervisors();
+        List<CreateSupervisorRequestDTO> supervisorDTOs = new ArrayList<>();
+        supervisorEntities.forEach(supervisor -> {
+            supervisorDTOs.add(CreateSupervisorRequestDTO.builder()
+                            .name(supervisor.getName())
+                            .personalMobileNumber(supervisor.getPersonalMobileNumber())
+                            .bankAccountNumber(supervisor.getBankAccountNumber())
+                            .salary(supervisor.getSalary())
+                            .admin(supervisor.isAdmin())
+                            .companyMobileNumber(supervisor.getCompanyMobileNumber())
+                            .atmCardNumber(supervisor.getAtmCardNumber())
+                            .vehicleNumber(supervisor.getVehicleNumber())
+                            .otPay(supervisor.getOtPay())
+                            .build());
+        });
+        return supervisorDTOs;
     }
 
     private static void updateSupervisorData(CreateSupervisorRequestDTO createSupervisorRequestDTO, InputStream aadhar, SupervisorEntity supervisorEntity) {

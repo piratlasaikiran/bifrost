@@ -4,6 +4,7 @@ import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 
 import java.io.InputStream;
+import java.util.List;
 
 public interface SupervisorService {
     SupervisorEntity getSupervisor(String supervisorName);
@@ -17,4 +18,6 @@ public interface SupervisorService {
     void deleteSuperVisor(String supervisorName);
 
     SupervisorEntity createSupervisorResponse(SupervisorEntity supervisor);
+
+    List<CreateSupervisorRequestDTO> getSupervisors();
 }

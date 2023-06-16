@@ -11,11 +11,11 @@ import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
 import org.bhavani.constructions.dto.CreateVehicleRequestDTO;
 import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
 import org.bhavani.constructions.services.VehicleService;
-import org.bhavani.constructions.utils.VehicleHelper;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -106,6 +106,22 @@ public class DefaultVehicleService implements VehicleService {
                     return new IllegalArgumentException(USER_NOT_FOUND);
                 });
         vehicleEntityDao.deleteVehicle(vehicle);
+    }
+
+    @Override
+    public List<CreateVehicleRequestDTO> getVehicles() {
+        List<VehicleEntity> vehicleEntities = vehicleEntityDao.getVehicles();
+        List<CreateVehicleRequestDTO> vehicleRequestDTOS = new ArrayList<>();
+        vehicleEntities.forEach(vehicleEntity -> vehicleRequestDTOS.add(CreateVehicleRequestDTO.builder()
+                        .vehicleNumber(vehicleEntity.getVehicleNumber())
+                        .owner(vehicleEntity.getOwner())
+                        .chassisNumber(vehicleEntity.getChassisNumber())
+                        .engineNumber(vehicleEntity.getEngineNumber())
+                        .vehicleClass(vehicleEntity.getVehicleClass())
+                        .insuranceProvider(vehicleEntity.getInsuranceProvider())
+                        .financeProvider(vehicleEntity.getFinanceProvider())
+                        .build()));
+        return vehicleRequestDTOS;
     }
 
     private void updateVehicleData(VehicleEntity vehicle, CreateVehicleRequestDTO updateVehicleRequestDTO) {

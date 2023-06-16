@@ -2,6 +2,7 @@ package org.bhavani.constructions.dao.api;
 
 import org.bhavani.constructions.dao.entities.VehicleEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface VehicleEntityDao {
@@ -11,4 +12,6 @@ public interface VehicleEntityDao {
     Optional<VehicleEntity> getVehicle(String vehicleNumber);
 
     void deleteVehicle(VehicleEntity vehicle);
+
+    List<VehicleEntity> getVehicles();
 }

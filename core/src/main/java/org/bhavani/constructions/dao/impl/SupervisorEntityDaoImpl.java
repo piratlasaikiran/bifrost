@@ -5,6 +5,7 @@ import org.bhavani.constructions.dao.api.SupervisorEntityDao;
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dao.entities.subentities.Employee;
 import org.bhavani.constructions.helpers.AbstractDAO;
+import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
@@ -54,5 +55,12 @@ public class SupervisorEntityDaoImpl extends AbstractDAO<SupervisorEntity> imple
     @Override
     public void deleteSupervisor(SupervisorEntity supervisor){
         currentSession().delete(supervisor);
+    }
+
+    @Override
+    public List<SupervisorEntity> getAllSupervisors() {
+        Map<String, Object> params = new HashMap<>();
+        return findAllByNamedQuery("GetAllSupervisors",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

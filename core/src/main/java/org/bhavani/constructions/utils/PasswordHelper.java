@@ -1,7 +1,5 @@
 package org.bhavani.constructions.utils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordHelper {
@@ -13,15 +11,5 @@ public class PasswordHelper {
 
     public static boolean verifyPassword(String plainPassword, String hashedPassword) {
         return BCrypt.checkpw(plainPassword, hashedPassword);
-    }
-
-    @Getter
-    public static class LoginRequest{
-
-        @JsonProperty("username")
-        private String username;
-
-        @JsonProperty("password")
-        private String password;
     }
 }

@@ -9,6 +9,8 @@ import org.bhavani.constructions.services.SiteService;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
@@ -54,5 +56,21 @@ public class DefaultSiteService implements SiteService {
         updatedSiteEntity.setWorkStartDate(createSiteRequestDTO.getWorkStartDate());
         updatedSiteEntity.setWorkEndDate(createSiteRequestDTO.getWorkEndDate());
         return updatedSiteEntity;
+    }
+
+    @Override
+    public List<CreateSiteRequestDTO> getSites() {
+        List<SiteEntity> siteEntities = siteEntityDao.getSites();
+        List<CreateSiteRequestDTO> siteRequestDTOS = new ArrayList<>();
+        siteEntities.forEach(siteEntity -> siteRequestDTOS.add(CreateSiteRequestDTO.builder()
+                        .siteName(siteEntity.getSiteName())
+                        .address(siteEntity.getAddress())
+                        .siteStatus(siteEntity.getCurrentStatus())
+                        .supervisors(siteEntity.getSupervisors())
+                        .vehicles(siteEntity.getVehicles())
+                        .workStartDate(siteEntity.getWorkStartDate())
+                        .workEndDate(siteEntity.getWorkEndDate())
+                .build()));
+        return siteRequestDTOS;
     }
 }
