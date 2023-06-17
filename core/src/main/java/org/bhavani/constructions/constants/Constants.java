@@ -1,5 +1,12 @@
 package org.bhavani.constructions.constants;
 
+import org.bhavani.constructions.dao.entities.models.CommodityType;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.bhavani.constructions.dao.entities.models.CommodityType.*;
+
 public class Constants {
     public static final String NAME = "name";
     public static final String X_USER_ID = "X-User-Id";
@@ -11,6 +18,7 @@ public class Constants {
     public static final String USER_NAME = "user_name";
     public static final String ASSET_LOCATION = "asset_location";
     public static final String STRING_JOIN_DELIMITER = ",";
+    public static final String VENDOR_ID = "vendor_id";
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";
@@ -23,4 +31,18 @@ public class Constants {
     public static final String ASSET_LOCATION_DELETED_SUCCESSFULLY = "Asset location deleted successfully";
 
     public static final int MOBILE_NUMBER_LENGTH = 10;
+
+    public static final Map<CommodityType, String> COMMODITY_BASE_UNITS = new HashMap<CommodityType, String>()
+    {{
+            put(MALE_WITHOUT_OT, "Per Day");
+            put(MALE_WITH_OT, "Per Day");
+            put(FEMALE_WITHOUT_OT, "Per Day");
+            put(FEMALE_WITH_OT, "Per Day");
+            put(SAND, "Per Ton");
+            put(CEMENT, "Per Ton");
+            put(IRON, "Per Ton");
+            put(CONCRETE_CHIP, "Per Ton");
+            put(TAR, "Per Barrel");
+
+    }};
 }

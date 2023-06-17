@@ -120,5 +120,18 @@ public class EntityBuilder {
                 .password(hashedPassword)
                 .build();
     }
+
+    public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) throws IOException {
+        return VendorEntity.builder()
+                .vendorId(createVendorRequestDTO.getVendorId())
+                .location(createVendorRequestDTO.getLocation())
+                .mobileNumber(createVendorRequestDTO.getMobileNumber())
+                .purpose(createVendorRequestDTO.getPurpose())
+                .commodityCosts(createVendorRequestDTO.getCommodityCosts())
+                .contractDocument(IOUtils.toByteArray(contractDoc))
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
 }
 

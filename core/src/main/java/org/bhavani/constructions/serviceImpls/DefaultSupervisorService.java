@@ -40,7 +40,7 @@ public class DefaultSupervisorService implements SupervisorService {
         try {
             SupervisorEntity supervisorEntity = EntityBuilder.createSupervisorEntity(createSupervisorRequestDTO, aadhar, userId);
             supervisorEntityDao.getSupervisor(createSupervisorRequestDTO.getName()).ifPresent(existingSupervisor -> {
-                log.error("{} already present. User different name.", existingSupervisor.getName());
+                log.error("{} already present. Use different name.", existingSupervisor.getName());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
             supervisorEntityDao.saveSupervisor(supervisorEntity);
