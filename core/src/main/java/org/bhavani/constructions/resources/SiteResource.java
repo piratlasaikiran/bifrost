@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -56,6 +57,18 @@ public class SiteResource {
     public Response getSites(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateSiteRequestDTO> siteEntity = siteService.getSites();
         return Response.ok(siteEntity).build();
+    }
+
+    @GET
+    @Path("/get-site-names")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getSiteNames(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateSiteRequestDTO> siteEntity = siteService.getSites();
+        return Response.ok(siteEntity.stream()
+                .map(CreateSiteRequestDTO::getSiteName)
+                .collect(Collectors.toList()))
+                .build();
     }
 
     @GET

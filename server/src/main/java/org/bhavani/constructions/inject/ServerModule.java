@@ -25,6 +25,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(SiteService.class).to(DefaultSiteService.class).in(Singleton.class);
         bind(AssetLocationService.class).to(DefaultAssetLocationService.class).in(Singleton.class);
         bind(UserService.class).to(DefaultUserService.class).in(Singleton.class);
+        bind(VendorService.class).to(DefaultVendorService.class).in(Singleton.class);
 
         bind(SupervisorEntityDao.class).to(SupervisorEntityDaoImpl.class).in(Singleton.class);
         bind(DriverEntityDao.class).to(DriverEntityDaoImpl.class).in(Singleton.class);
@@ -33,6 +34,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(SiteEntityDao.class).to(SiteEntityDaoImpl.class).in(Singleton.class);
         bind(AssetLocationEntityDao.class).to(AssetLocationEntityDaoImpl.class).in(Singleton.class);
         bind(UserEntityDao.class).to(UserEntityDaoImpl.class).in(Singleton.class);
+        bind(VendorEntityDao.class).to(VendorEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides
