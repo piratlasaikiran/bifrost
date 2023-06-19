@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.VehicleEntity;
 import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
 import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
-import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.dto.CreateVehicleRequestDTO;
 import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
 import org.bhavani.constructions.services.VehicleService;
@@ -72,7 +71,6 @@ public class VehicleResource {
     @Path("/create-new-vehicle")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    //ToDo: Think of better approach for getting multiple files
     public Response createVehicle(@FormDataParam("createVehiclePayload") CreateVehicleRequestDTO createVehicleRequestDTO,
                                   @FormDataParam("vehicleTaxes") List<UploadVehicleTaxRequestDTO> vehicleTaxRequestDTOS,
                                   @FormDataParam("puc") InputStream puc,

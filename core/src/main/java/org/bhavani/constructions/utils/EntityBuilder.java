@@ -133,5 +133,34 @@ public class EntityBuilder {
                 .updatedBy(userId)
                 .build();
     }
+
+    public static BankAccountEntity createBankAccountEntity(CreateBankAccountRequestDTO createBankAccountRequestDTO, String userId){
+        return BankAccountEntity.builder()
+                .nickName(createBankAccountRequestDTO.getNickName())
+                .accountNumber(createBankAccountRequestDTO.getAccountNumber())
+                .bankName(createBankAccountRequestDTO.getBankName())
+                .accountHolders(convertListToCommaSeparatedString(createBankAccountRequestDTO.getAccountHolders()))
+                .atmCard(createBankAccountRequestDTO.getAtmCard())
+                .currentBalance(createBankAccountRequestDTO.getCurrentBalance())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream receipt, String userId) throws IOException {
+        return TransactionEntity.builder()
+                .source(createTransactionRequestDTO.getSource())
+                .destination(createTransactionRequestDTO.getDestination())
+                .amount(createTransactionRequestDTO.getAmount())
+                .transactionDate(createTransactionRequestDTO.getTransactionDate())
+                .purpose(createTransactionRequestDTO.getPurpose())
+                .status(createTransactionRequestDTO.getStatus())
+                .mode(createTransactionRequestDTO.getMode())
+                .remarks(createTransactionRequestDTO.getRemarks())
+                .receipt(IOUtils.toByteArray(receipt))
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
 }
 
