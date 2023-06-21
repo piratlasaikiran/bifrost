@@ -38,14 +38,32 @@ create table transactions(
 	destination varchar(256) not null,
     amount bigint(30) default null,
     purpose varchar(255) default null,
-    receipt longblob default null,
+    bill longblob default null,
     remarks varchar(1024) default null,
     status varchar(255) default 'SUBMITTED',
     mode varchar(255) default 'CASH',
+    bank_ac varchar(255) default null,
     transaction_date timestamp not null,
 	created_by varchar(255) default null,
 	updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
     primary key (id)
+)ENGINE=InnoDB default CHARSET=utf8;
+
+--changeset saikiran.pv:4
+create table vendor_attendance(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
+	site varchar(256) not null,
+	vendor_id varchar(256) not null,
+    entered_by varchar(256) default null,
+    attendance_date timestamp not null,
+    commodity_attendance JSON default null,
+	created_by varchar(255) default null,
+	updated_by varchar(255) default null,
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp on update current_timestamp,
+    primary key (id),
+    foreign key (site) references sites (site_name),
+    foreign key (vendor_id) references vendors (vendor_id)
 )ENGINE=InnoDB default CHARSET=utf8;

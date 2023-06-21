@@ -20,4 +20,6 @@ public interface DriverService {
     DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, String userId);
 
     List<CreateDriverRequestDTO> getDrivers();
+
+    List<String> getDriverNames();
 }

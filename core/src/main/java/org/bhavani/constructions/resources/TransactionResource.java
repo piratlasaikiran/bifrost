@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
+import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
+import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -14,13 +16,11 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.util.EnumSet;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -38,11 +38,29 @@ public class TransactionResource {
     @Path("/create-new-transaction")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response saveBankAccount(@FormDataParam("createTransactionPayload") CreateTransactionRequestDTO createTransactionRequestDTO,
-                                    @FormDataParam("receipt") InputStream receipt,
-                                    @FormDataParam("receipt") FormDataContentDisposition receiptContent,
+    public Response saveTransaction(@FormDataParam("createTransactionPayload") CreateTransactionRequestDTO createTransactionRequestDTO,
+                                    @FormDataParam("bill") InputStream bill,
+                                    @FormDataParam("bill") FormDataContentDisposition billContent,
                                     @NotNull @HeaderParam(X_USER_ID) String userId){
-        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, receipt, userId);
+        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, userId);
         return Response.ok(transaction).build();
+    }
+
+    @GET
+    @Path("/transaction-modes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTransactionModes(@NotNull @HeaderParam(X_USER_ID) String userId){
+        EnumSet<TransactionMode> transactionModes = transactionService.getTransactionModes();
+        return Response.ok(transactionModes).build();
+    }
+
+    @GET
+    @Path("/transaction-purposes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTransactionPurposes(@NotNull @HeaderParam(X_USER_ID) String userId){
+        EnumSet<TransactionPurpose> transactionPurposes = transactionService.getTransactionPurposes();
+        return Response.ok(transactionPurposes).build();
     }
 }

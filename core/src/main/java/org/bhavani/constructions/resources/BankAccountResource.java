@@ -41,7 +41,7 @@ public class BankAccountResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response getSites(@NotNull @HeaderParam(X_USER_ID) String userId){
+    public Response getBankAccounts(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateBankAccountRequestDTO> bankAccountRequestDTOS = bankAccountService.getBankAccounts();
         return Response.ok(bankAccountRequestDTOS).build();
     }
@@ -53,5 +53,14 @@ public class BankAccountResource {
     public Response getATMCards(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<Long> atmCards= bankAccountService.getATMCards();
         return Response.ok(atmCards).build();
+    }
+
+    @GET
+    @Path("/nick-names")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAccountNickNames(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<String> accountNickNames= bankAccountService.getAccountNickNames();
+        return Response.ok(accountNickNames).build();
     }
 }

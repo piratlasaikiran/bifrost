@@ -11,4 +11,6 @@ public interface BankAccountService {
     List<CreateBankAccountRequestDTO> getBankAccounts();
 
     List<Long> getATMCards();
+
+    List<String> getAccountNickNames();
 }

@@ -28,6 +28,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(VendorService.class).to(DefaultVendorService.class).in(Singleton.class);
         bind(BankAccountService.class).to(DefaultBankAccountService.class).in(Singleton.class);
         bind(TransactionService.class).to(DefaultTransactionService.class).in(Singleton.class);
+        bind(VendorAttendanceService.class).to(DefaultVendorAttendanceService.class).in(Singleton.class);
 
         bind(SupervisorEntityDao.class).to(SupervisorEntityDaoImpl.class).in(Singleton.class);
         bind(DriverEntityDao.class).to(DriverEntityDaoImpl.class).in(Singleton.class);
@@ -39,6 +40,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(VendorEntityDao.class).to(VendorEntityDaoImpl.class).in(Singleton.class);
         bind(BankAccountEntityDao.class).to(BankAccountEntityDaoImpl.class).in(Singleton.class);
         bind(TransactionEntityDao.class).to(TransactionEntityDaoImpl.class).in(Singleton.class);
+        bind(VendorAttendanceEntityDao.class).to(VendorAttendanceEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides

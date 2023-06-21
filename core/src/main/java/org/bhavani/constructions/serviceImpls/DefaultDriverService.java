@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
@@ -82,7 +83,7 @@ public class DefaultDriverService implements DriverService {
 
     @Override
     public List<CreateDriverRequestDTO> getDrivers() {
-        List<DriverEntity> driverEntities = driverEntityDao.getDrivers();
+        List<DriverEntity> driverEntities = getDriverEntities();
         List<CreateDriverRequestDTO> driverRequestDTOS = new ArrayList<>();
         driverEntities.forEach(driverEntity -> {
             driverRequestDTOS.add(CreateDriverRequestDTO.builder()
@@ -96,6 +97,16 @@ public class DefaultDriverService implements DriverService {
                             .build());
         });
         return driverRequestDTOS;
+    }
+
+    @Override
+    public List<String> getDriverNames() {
+        List<DriverEntity> driverEntities = getDriverEntities();
+        return driverEntities.stream().map(DriverEntity::getName).collect(Collectors.toList());
+    }
+
+    private List<DriverEntity> getDriverEntities() {
+        return driverEntityDao.getDrivers();
     }
 
     private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, DriverEntity driverEntity) {

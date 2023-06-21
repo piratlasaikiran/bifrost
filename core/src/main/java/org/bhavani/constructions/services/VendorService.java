@@ -10,4 +10,6 @@ public interface VendorService {
     VendorEntity createVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId);
 
     List<CreateVendorRequestDTO> getVendors();
+
+    List<String> getVendorIds();
 }

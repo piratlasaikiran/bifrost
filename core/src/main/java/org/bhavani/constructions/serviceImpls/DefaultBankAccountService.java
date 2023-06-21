@@ -52,6 +52,12 @@ public class DefaultBankAccountService implements BankAccountService {
         return bankAccountEntities.stream().map(BankAccountEntity::getAtmCard).collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> getAccountNickNames() {
+        List<BankAccountEntity> bankAccountEntities = getBankAccountEntities();
+        return bankAccountEntities.stream().map(BankAccountEntity::getNickName).collect(Collectors.toList());
+    }
+
     private List<BankAccountEntity> getBankAccountEntities() {
         return bankAccountEntityDao.getBankAccounts();
     }

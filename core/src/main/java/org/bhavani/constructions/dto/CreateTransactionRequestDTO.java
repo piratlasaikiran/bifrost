@@ -12,7 +12,6 @@ import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 
-import javax.persistence.Column;
 import java.time.LocalDate;
 
 @Getter
@@ -46,4 +45,7 @@ public class CreateTransactionRequestDTO {
 
     @JsonProperty("mode")
     private TransactionMode mode;
+
+    @JsonProperty("bank_account")
+    private String bankAccount;
 }

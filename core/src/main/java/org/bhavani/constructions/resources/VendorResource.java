@@ -70,4 +70,13 @@ public class VendorResource {
         List<CreateVendorRequestDTO> vendors = vendorService.getVendors();
         return Response.ok(vendors).build();
     }
+
+    @GET
+    @Path("/ids")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getVendorIds(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<String> vendorIds = vendorService.getVendorIds();
+        return Response.ok(vendorIds).build();
+    }
 }

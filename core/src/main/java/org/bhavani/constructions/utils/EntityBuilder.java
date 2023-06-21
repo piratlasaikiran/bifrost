@@ -2,12 +2,14 @@ package org.bhavani.constructions.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.entities.*;
+import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITER;
@@ -147,8 +149,8 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream receipt, String userId) throws IOException {
-        return TransactionEntity.builder()
+    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) throws IOException {
+        TransactionEntity transactionEntity = TransactionEntity.builder()
                 .source(createTransactionRequestDTO.getSource())
                 .destination(createTransactionRequestDTO.getDestination())
                 .amount(createTransactionRequestDTO.getAmount())
@@ -156,11 +158,29 @@ public class EntityBuilder {
                 .purpose(createTransactionRequestDTO.getPurpose())
                 .status(createTransactionRequestDTO.getStatus())
                 .mode(createTransactionRequestDTO.getMode())
+                .status(TransactionStatus.SUBMITTED)
+                .bankAccount(createTransactionRequestDTO.getBankAccount())
                 .remarks(createTransactionRequestDTO.getRemarks())
-                .receipt(IOUtils.toByteArray(receipt))
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
+        if(Objects.nonNull(bill))
+            transactionEntity.setBill(IOUtils.toByteArray(bill));
+
+        return transactionEntity;
+    }
+
+    public static VendorAttendanceEntity createVendorAttendanceEntity(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId){
+        return VendorAttendanceEntity.builder()
+                .vendorId(createVendorAttendanceRequestDTO.getVendorId())
+                .site(createVendorAttendanceRequestDTO.getSite())
+                .enteredBy(createVendorAttendanceRequestDTO.getEnteredBy())
+                .attendanceDate(createVendorAttendanceRequestDTO.getAttendanceDate())
+                .commodityAttendance(createVendorAttendanceRequestDTO.getCommodityAttendance())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+
     }
 }
 

@@ -51,8 +51,8 @@ public class TransactionEntity extends BaseEntity {
     private String remarks;
 
     @Lob
-    @Column(name = "receipt")
-    private byte[] receipt;
+    @Column(name = "bill")
+    private byte[] bill;
 
     @Column(name = "transaction_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -65,4 +65,7 @@ public class TransactionEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "mode")
     private TransactionMode mode;
+
+    @Column(name = "bank_ac")
+    private String bankAccount;
 }

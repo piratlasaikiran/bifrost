@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.dto.CreateDriverRequestDTO;
-import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.services.DriverService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -37,9 +36,18 @@ public class DriverResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response getSupervisors(@NotNull @HeaderParam(X_USER_ID) String userId){
+    public Response getDrivers(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateDriverRequestDTO> drivers = driverService.getDrivers();
         return Response.ok(drivers).build();
+    }
+
+    @GET
+    @Path("/names")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getDriverNames(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<String> driverNames = driverService.getDriverNames();
+        return Response.ok(driverNames).build();
     }
 
     @POST
