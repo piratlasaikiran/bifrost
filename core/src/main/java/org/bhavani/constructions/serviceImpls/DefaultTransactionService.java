@@ -13,7 +13,9 @@ import org.bhavani.constructions.utils.EntityBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.bhavani.constructions.constants.ErrorConstants.DOC_PARSING_ERROR;
 
@@ -43,5 +45,25 @@ public class DefaultTransactionService implements TransactionService {
     @Override
     public EnumSet<TransactionPurpose> getTransactionPurposes() {
         return EnumSet.allOf(TransactionPurpose.class);
+    }
+
+    @Override
+    public List<CreateTransactionRequestDTO> getAllTransactions() {
+        List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactions();
+        List<CreateTransactionRequestDTO> transactionRequestDTOS = new ArrayList<>();
+        transactionEntities.forEach(transactionEntity -> {
+            transactionRequestDTOS.add(CreateTransactionRequestDTO.builder()
+                            .source(transactionEntity.getSource())
+                            .destination(transactionEntity.getDestination())
+                            .amount(transactionEntity.getAmount())
+                            .mode(transactionEntity.getMode())
+                            .purpose(transactionEntity.getPurpose())
+                            .status(transactionEntity.getStatus())
+                            .transactionDate(transactionEntity.getTransactionDate())
+                            .bankAccount(transactionEntity.getBankAccount())
+                            .remarks(transactionEntity.getRemarks())
+                    .build());
+        });
+        return transactionRequestDTOS;
     }
 }

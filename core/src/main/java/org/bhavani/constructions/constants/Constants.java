@@ -22,6 +22,7 @@ public class Constants {
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";
+    public static final String DRIVER = "DRIVER";
 
     public static final String VEHICLE_ADDED_SUCCESSFULLY = "Vehicle added successfully";
     public static final String VEHICLE_DELETED_SUCCESSFULLY = "Vehicle deleted successfully";

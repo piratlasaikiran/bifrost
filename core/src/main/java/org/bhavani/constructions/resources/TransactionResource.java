@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
-import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -21,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -44,6 +44,15 @@ public class TransactionResource {
                                     @NotNull @HeaderParam(X_USER_ID) String userId){
         TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, userId);
         return Response.ok(transaction).build();
+    }
+
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllTransactions(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateTransactionRequestDTO> transactions = transactionService.getAllTransactions();
+        return Response.ok(transactions).build();
     }
 
     @GET

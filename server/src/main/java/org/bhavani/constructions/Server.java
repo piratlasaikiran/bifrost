@@ -40,6 +40,7 @@ public class Server extends Application<ServerConfiguration> {
         environment.jersey().register(BankAccountResource.class);
         environment.jersey().register(TransactionResource.class);
         environment.jersey().register(VendorAttendanceResource.class);
+        environment.jersey().register(EmployeeAttendanceResource.class);
 
         environment.jersey().register(MultiPartFeature.class);
     }

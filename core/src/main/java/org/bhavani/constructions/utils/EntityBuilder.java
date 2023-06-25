@@ -3,6 +3,7 @@ package org.bhavani.constructions.utils;
 import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
+import org.bhavani.constructions.dao.entities.subentities.EmployeeAttendancePK;
 import org.bhavani.constructions.dto.*;
 
 import java.io.IOException;
@@ -181,6 +182,21 @@ public class EntityBuilder {
                 .updatedBy(userId)
                 .build();
 
+    }
+
+    public static EmployeeAttendanceEntity createEmployeeAttendanceEntity(CreateEmployeeAttendanceRequestDTO createEmployeeAttendanceRequestDTO, String userId){
+        return EmployeeAttendanceEntity.builder()
+                .employeeAttendancePK(EmployeeAttendancePK.builder()
+                        .employeeName(createEmployeeAttendanceRequestDTO.getEmployeeName())
+                        .employeeType(createEmployeeAttendanceRequestDTO.getEmployeeType())
+                        .attendanceDate(createEmployeeAttendanceRequestDTO.getAttendanceDate())
+                        .site(createEmployeeAttendanceRequestDTO.getSite())
+                        .build())
+                .attendanceType(createEmployeeAttendanceRequestDTO.getAttendanceType())
+                .enteredBy(createEmployeeAttendanceRequestDTO.getEnteredBy())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
     }
 }
 

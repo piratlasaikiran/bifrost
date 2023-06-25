@@ -67,3 +67,18 @@ create table vendor_attendance(
     foreign key (site) references sites (site_name),
     foreign key (vendor_id) references vendors (vendor_id)
 )ENGINE=InnoDB default CHARSET=utf8;
+
+create table employee_attendance(
+	name varchar(256) not null,
+	employee_type varchar(256) not null,
+	site varchar(256) not null,
+    entered_by varchar(256) default null,
+    attendance_date timestamp not null,
+    pay_type varchar(256) default null,
+	created_by varchar(255) default null,
+	updated_by varchar(255) default null,
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp on update current_timestamp,
+    primary key (name, employee_type, site),
+    foreign key (site) references sites (site_name)
+)ENGINE=InnoDB default CHARSET=utf8;

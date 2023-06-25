@@ -7,6 +7,7 @@ import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.List;
 
 public interface TransactionService {
     TransactionEntity createTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId);
@@ -14,4 +15,6 @@ public interface TransactionService {
     EnumSet<TransactionMode> getTransactionModes();
 
     EnumSet<TransactionPurpose> getTransactionPurposes();
+
+    List<CreateTransactionRequestDTO> getAllTransactions();
 }
