@@ -7,10 +7,7 @@ import org.bhavani.constructions.dao.api.EmployeeAttendanceDao;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.dao.entities.EmployeeAttendanceEntity;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
-import org.bhavani.constructions.dao.entities.models.AttendanceType;
-import org.bhavani.constructions.dao.entities.models.TransactionMode;
-import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
-import org.bhavani.constructions.dao.entities.models.TransactionStatus;
+import org.bhavani.constructions.dao.entities.models.*;
 import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
 
@@ -53,6 +50,11 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
     @Override
     public EnumSet<AttendanceType> getAttendanceTypes() {
         return EnumSet.allOf(AttendanceType.class);
+    }
+
+    @Override
+    public EnumSet<EmployeeType> getEmployeeTypes() {
+        return EnumSet.allOf(EmployeeType.class);
     }
 
     private static TransactionEntity getTransactionEntity(String source, String destination, long dailyWage, LocalDate attendanceDate) {

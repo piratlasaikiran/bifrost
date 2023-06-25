@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.EmployeeAttendanceEntity;
 import org.bhavani.constructions.dao.entities.models.AttendanceType;
+import org.bhavani.constructions.dao.entities.models.EmployeeType;
 import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
 
@@ -47,5 +48,14 @@ public class EmployeeAttendanceResource {
     public Response getAttendanceTypes(@NotNull @HeaderParam(X_USER_ID) String userId){
         EnumSet<AttendanceType> attendanceTypes = employeeAttendanceService.getAttendanceTypes();
         return Response.ok(attendanceTypes).build();
+    }
+
+    @GET
+    @Path("/employee-types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getEmployeeTypes(@NotNull @HeaderParam(X_USER_ID) String userId){
+        EnumSet<EmployeeType> employeeTypes = employeeAttendanceService.getEmployeeTypes();
+        return Response.ok(employeeTypes).build();
     }
 }

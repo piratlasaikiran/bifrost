@@ -79,6 +79,6 @@ create table employee_attendance(
 	updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (name, employee_type, site),
+    primary key (name, employee_type, site, attendance_date),
     foreign key (site) references sites (site_name)
 )ENGINE=InnoDB default CHARSET=utf8;
