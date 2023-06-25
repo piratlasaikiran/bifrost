@@ -17,7 +17,8 @@ create table supervisors(
 	updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (id)
+    primary key (id),
+    constraint supervisors_atm_card_fk FOREIGN KEY(atm_card) REFERENCES bank_accounts (atm_card)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:2

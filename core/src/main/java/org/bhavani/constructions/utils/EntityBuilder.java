@@ -2,12 +2,15 @@ package org.bhavani.constructions.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.entities.*;
+import org.bhavani.constructions.dao.entities.models.TransactionStatus;
+import org.bhavani.constructions.dao.entities.subentities.EmployeeAttendancePK;
 import org.bhavani.constructions.dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITER;
@@ -129,6 +132,68 @@ public class EntityBuilder {
                 .purpose(createVendorRequestDTO.getPurpose())
                 .commodityCosts(createVendorRequestDTO.getCommodityCosts())
                 .contractDocument(IOUtils.toByteArray(contractDoc))
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static BankAccountEntity createBankAccountEntity(CreateBankAccountRequestDTO createBankAccountRequestDTO, String userId){
+        return BankAccountEntity.builder()
+                .nickName(createBankAccountRequestDTO.getNickName())
+                .accountNumber(createBankAccountRequestDTO.getAccountNumber())
+                .bankName(createBankAccountRequestDTO.getBankName())
+                .accountHolders(convertListToCommaSeparatedString(createBankAccountRequestDTO.getAccountHolders()))
+                .atmCard(createBankAccountRequestDTO.getAtmCard())
+                .currentBalance(createBankAccountRequestDTO.getCurrentBalance())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) throws IOException {
+        TransactionEntity transactionEntity = TransactionEntity.builder()
+                .source(createTransactionRequestDTO.getSource())
+                .destination(createTransactionRequestDTO.getDestination())
+                .amount(createTransactionRequestDTO.getAmount())
+                .transactionDate(createTransactionRequestDTO.getTransactionDate())
+                .purpose(createTransactionRequestDTO.getPurpose())
+                .status(createTransactionRequestDTO.getStatus())
+                .mode(createTransactionRequestDTO.getMode())
+                .status(TransactionStatus.SUBMITTED)
+                .bankAccount(createTransactionRequestDTO.getBankAccount())
+                .remarks(createTransactionRequestDTO.getRemarks())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+        if(Objects.nonNull(bill))
+            transactionEntity.setBill(IOUtils.toByteArray(bill));
+
+        return transactionEntity;
+    }
+
+    public static VendorAttendanceEntity createVendorAttendanceEntity(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId){
+        return VendorAttendanceEntity.builder()
+                .vendorId(createVendorAttendanceRequestDTO.getVendorId())
+                .site(createVendorAttendanceRequestDTO.getSite())
+                .enteredBy(createVendorAttendanceRequestDTO.getEnteredBy())
+                .attendanceDate(createVendorAttendanceRequestDTO.getAttendanceDate())
+                .commodityAttendance(createVendorAttendanceRequestDTO.getCommodityAttendance())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+
+    }
+
+    public static EmployeeAttendanceEntity createEmployeeAttendanceEntity(CreateEmployeeAttendanceRequestDTO createEmployeeAttendanceRequestDTO, String userId){
+        return EmployeeAttendanceEntity.builder()
+                .employeeAttendancePK(EmployeeAttendancePK.builder()
+                        .employeeName(createEmployeeAttendanceRequestDTO.getEmployeeName())
+                        .employeeType(createEmployeeAttendanceRequestDTO.getEmployeeType())
+                        .attendanceDate(createEmployeeAttendanceRequestDTO.getAttendanceDate())
+                        .site(createEmployeeAttendanceRequestDTO.getSite())
+                        .build())
+                .attendanceType(createEmployeeAttendanceRequestDTO.getAttendanceType())
+                .enteredBy(createEmployeeAttendanceRequestDTO.getEnteredBy())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

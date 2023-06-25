@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.VendorEntityDao;
 import org.bhavani.constructions.dao.entities.VendorEntity;
+import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
 import org.bhavani.constructions.services.VendorService;
 import org.bhavani.constructions.utils.EntityBuilder;
@@ -12,10 +13,13 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import static org.bhavani.constructions.constants.ErrorConstants.DOC_PARSING_ERROR;
-import static org.bhavani.constructions.constants.ErrorConstants.USER_EXISTS;
+import static org.bhavani.constructions.constants.Constants.COMMODITY_ATTENDANCE_UNITS;
+import static org.bhavani.constructions.constants.ErrorConstants.*;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -41,7 +45,7 @@ public class DefaultVendorService implements VendorService {
 
     @Override
     public List<CreateVendorRequestDTO> getVendors() {
-        List<VendorEntity> vendorEntities = vendorEntityDao.getAllVendors();
+        List<VendorEntity> vendorEntities = getVendorEntities();
         List<CreateVendorRequestDTO> vendorRequestDTOS = new ArrayList<>();
         vendorEntities.forEach(vendorEntity -> vendorRequestDTOS.add(CreateVendorRequestDTO.builder()
                         .vendorId(vendorEntity.getVendorId())
@@ -51,5 +55,28 @@ public class DefaultVendorService implements VendorService {
                         .commodityCosts(vendorEntity.getCommodityCosts())
                         .build()));
         return vendorRequestDTOS;
+    }
+
+    @Override
+    public List<String> getVendorIds() {
+        List<VendorEntity> vendorEntities = getVendorEntities();
+        return vendorEntities.stream().map(VendorEntity::getVendorId).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<CommodityType, String> getAttendanceUnits(String vendorId) {
+        VendorEntity vendorEntity = vendorEntityDao.getVendor(vendorId).orElseThrow(() -> {
+            log.error("Vendor with ID: {} not found", vendorId);
+            return new RuntimeException(VENDOR_NOT_FOUND);
+        });
+        Map<CommodityType, String> vendorAttendanceUnits = new HashMap<>();
+        vendorEntity.getCommodityCosts().forEach((commodity, cost) -> {
+            vendorAttendanceUnits.put(commodity, COMMODITY_ATTENDANCE_UNITS.get(commodity));
+        });
+        return vendorAttendanceUnits;
+    }
+
+    private List<VendorEntity> getVendorEntities() {
+        return vendorEntityDao.getAllVendors();
     }
 }

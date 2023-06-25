@@ -22,6 +22,7 @@ public class Constants {
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";
+    public static final String DRIVER = "DRIVER";
 
     public static final String VEHICLE_ADDED_SUCCESSFULLY = "Vehicle added successfully";
     public static final String VEHICLE_DELETED_SUCCESSFULLY = "Vehicle deleted successfully";
@@ -43,6 +44,18 @@ public class Constants {
             put(IRON, "Per Ton");
             put(CONCRETE_CHIP, "Per Ton");
             put(TAR, "Per Barrel");
+    }};
 
+    public static final Map<CommodityType, String> COMMODITY_ATTENDANCE_UNITS = new HashMap<CommodityType, String>()
+    {{
+        put(MALE_WITHOUT_OT, "No.of Persons");
+        put(MALE_WITH_OT, "No.of Persons");
+        put(FEMALE_WITHOUT_OT, "No.of Persons");
+        put(FEMALE_WITH_OT, "No.of Persons");
+        put(SAND, "No.of Tons");
+        put(CEMENT, "No.of Tons");
+        put(IRON, "No.of Tons");
+        put(CONCRETE_CHIP, "No.of Tons");
+        put(TAR, "No.of Barrels");
     }};
 }

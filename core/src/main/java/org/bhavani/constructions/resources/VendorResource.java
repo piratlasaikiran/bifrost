@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.VendorEntity;
+import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dao.entities.models.VendorPurpose;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
@@ -21,9 +22,9 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import static org.bhavani.constructions.constants.Constants.COMMODITY_BASE_UNITS;
-import static org.bhavani.constructions.constants.Constants.X_USER_ID;
+import static org.bhavani.constructions.constants.Constants.*;
 
 @Path("/vendors")
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,6 +41,16 @@ public class VendorResource {
     @UnitOfWork
     public Response getCommodityTypes(@NotNull @HeaderParam(X_USER_ID) String userId){
         return Response.ok(COMMODITY_BASE_UNITS).build();
+    }
+
+    @GET
+    @Path("/{vendorId}/get-commodity-attendance-units")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getCommodityAttendanceUnits(@NotNull @PathParam("vendorId") String vendorId,
+                                                @NotNull @HeaderParam(X_USER_ID) String userId){
+        Map<CommodityType, String> vendorAttendanceUnits = vendorService.getAttendanceUnits(vendorId);
+        return Response.ok(vendorAttendanceUnits).build();
     }
 
     @GET
@@ -69,5 +80,14 @@ public class VendorResource {
     public Response getVendors(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateVendorRequestDTO> vendors = vendorService.getVendors();
         return Response.ok(vendors).build();
+    }
+
+    @GET
+    @Path("/ids")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getVendorIds(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<String> vendorIds = vendorService.getVendorIds();
+        return Response.ok(vendorIds).build();
     }
 }
