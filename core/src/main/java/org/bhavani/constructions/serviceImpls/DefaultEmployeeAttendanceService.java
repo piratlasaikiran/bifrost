@@ -7,14 +7,18 @@ import org.bhavani.constructions.dao.api.EmployeeAttendanceDao;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.dao.entities.EmployeeAttendanceEntity;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
+import org.bhavani.constructions.dao.entities.VendorAttendanceEntity;
 import org.bhavani.constructions.dao.entities.models.*;
 import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
+import org.bhavani.constructions.dto.CreateVendorAttendanceRequestDTO;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
 
 import javax.inject.Inject;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 
 import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_ERROR;
@@ -55,6 +59,26 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
     @Override
     public EnumSet<EmployeeType> getEmployeeTypes() {
         return EnumSet.allOf(EmployeeType.class);
+    }
+
+    @Override
+    public List<CreateEmployeeAttendanceRequestDTO> getAllEmployeeAttendances() {
+        List<EmployeeAttendanceEntity> employeeAttendanceEntities = employeeAttendanceDao.getAllEmployeeAttendance();
+        List<CreateEmployeeAttendanceRequestDTO> employeeAttendanceRequestDTOS = new ArrayList<>();
+        employeeAttendanceEntities.forEach(employeeAttendanceEntity -> {
+            employeeAttendanceRequestDTOS.add(CreateEmployeeAttendanceRequestDTO.builder()
+                    .employeeName(employeeAttendanceEntity.getEmployeeAttendancePK().getEmployeeName())
+                    .site(employeeAttendanceEntity.getEmployeeAttendancePK().getSite())
+                    .attendanceDate(employeeAttendanceEntity.getEmployeeAttendancePK().getAttendanceDate())
+                    .employeeType(employeeAttendanceEntity.getEmployeeAttendancePK().getEmployeeType())
+                    .attendanceType(employeeAttendanceEntity.getAttendanceType())
+                    .enteredBy(employeeAttendanceEntity.getEnteredBy())
+                    .makeTransaction(employeeAttendanceEntity.isMakeTransaction())
+                    .bankAccount(employeeAttendanceEntity.getBankAccount())
+                    .build()
+            );
+        });
+        return employeeAttendanceRequestDTOS;
     }
 
     private static TransactionEntity getTransactionEntity(String source, String destination, long dailyWage, LocalDate attendanceDate) {

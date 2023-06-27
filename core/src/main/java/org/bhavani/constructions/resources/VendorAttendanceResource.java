@@ -11,12 +11,11 @@ import org.bhavani.constructions.services.VendorAttendanceService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.List;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -34,8 +33,17 @@ public class VendorAttendanceResource {
     @Path("/enter-attendance")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response saveSite(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, @NotNull @HeaderParam(X_USER_ID) String userId){
+    public Response saveVendorAttendance(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, @NotNull @HeaderParam(X_USER_ID) String userId){
         VendorAttendanceEntity vendorAttendance = vendorAttendanceService.enterAttendance(createVendorAttendanceRequestDTO, userId);
         return Response.ok(vendorAttendance).build();
+    }
+
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllVendorAttendance(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateVendorAttendanceRequestDTO> vendorAttendanceRequestDTOS = vendorAttendanceService.getAllVendorAttendance();
+        return Response.ok(vendorAttendanceRequestDTOS).build();
     }
 }

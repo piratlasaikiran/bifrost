@@ -16,6 +16,8 @@ import org.bhavani.constructions.services.VendorAttendanceService;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -64,5 +66,24 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
         }
 
         return vendorAttendanceEntity;
+    }
+
+    @Override
+    public List<CreateVendorAttendanceRequestDTO> getAllVendorAttendance() {
+        List<VendorAttendanceEntity> vendorAttendanceEntities = vendorAttendanceEntityDao.getAllVendorAttendance();
+        List<CreateVendorAttendanceRequestDTO> vendorAttendanceRequestDTOS = new ArrayList<>();
+        vendorAttendanceEntities.forEach(vendorAttendanceEntity -> {
+            vendorAttendanceRequestDTOS.add(CreateVendorAttendanceRequestDTO.builder()
+                            .vendorId(vendorAttendanceEntity.getVendorId())
+                            .site(vendorAttendanceEntity.getSite())
+                            .attendanceDate(vendorAttendanceEntity.getAttendanceDate())
+                            .commodityAttendance(vendorAttendanceEntity.getCommodityAttendance())
+                            .enteredBy(vendorAttendanceEntity.getEnteredBy())
+                            .makeTransaction(vendorAttendanceEntity.isMakeTransaction())
+                            .bankAccount(vendorAttendanceEntity.getBankAccount())
+                            .build()
+            );
+        });
+        return vendorAttendanceRequestDTOS;
     }
 }

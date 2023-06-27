@@ -31,9 +31,15 @@ public class EmployeeAttendanceEntity extends BaseEntity {
     EmployeeAttendancePK employeeAttendancePK;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pay_type")
+    @Column(name = "attendance_type")
     private AttendanceType attendanceType;
 
     @Column(name = "entered_by")
     private String enteredBy;
+
+    @Column(name = "make_transaction")
+    private boolean makeTransaction;
+
+    @Column(name = "bank_account")
+    private String bankAccount;
 }
