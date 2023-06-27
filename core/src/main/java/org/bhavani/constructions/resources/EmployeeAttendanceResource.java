@@ -18,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -57,5 +58,14 @@ public class EmployeeAttendanceResource {
     public Response getEmployeeTypes(@NotNull @HeaderParam(X_USER_ID) String userId){
         EnumSet<EmployeeType> employeeTypes = employeeAttendanceService.getEmployeeTypes();
         return Response.ok(employeeTypes).build();
+    }
+
+    @GET
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllEmployeeAttendances(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateEmployeeAttendanceRequestDTO> createEmployeeAttendanceRequestDTOS = employeeAttendanceService.getAllEmployeeAttendances();
+        return Response.ok(createEmployeeAttendanceRequestDTOS).build();
     }
 }

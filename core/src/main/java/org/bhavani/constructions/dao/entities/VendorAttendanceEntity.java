@@ -51,4 +51,10 @@ public class VendorAttendanceEntity extends BaseEntity {
     @Type(type = "json")
     @Column(name = "commodity_attendance")
     private Map<CommodityType, Integer> commodityAttendance;
+
+    @Column(name = "make_transaction")
+    private boolean makeTransaction;
+
+    @Column(name = "bank_account")
+    private String bankAccount;
 }

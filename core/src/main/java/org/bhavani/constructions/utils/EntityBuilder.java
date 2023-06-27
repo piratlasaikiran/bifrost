@@ -76,7 +76,7 @@ public class EntityBuilder {
                         throw new RuntimeException(e);
                     }
                 })
-                                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     public static VehicleEntity createVehicle(CreateVehicleRequestDTO createVehicleRequestDTO){
@@ -178,6 +178,8 @@ public class EntityBuilder {
                 .enteredBy(createVendorAttendanceRequestDTO.getEnteredBy())
                 .attendanceDate(createVendorAttendanceRequestDTO.getAttendanceDate())
                 .commodityAttendance(createVendorAttendanceRequestDTO.getCommodityAttendance())
+                .makeTransaction(createVendorAttendanceRequestDTO.isMakeTransaction())
+                .bankAccount(createVendorAttendanceRequestDTO.getBankAccount())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -194,6 +196,8 @@ public class EntityBuilder {
                         .build())
                 .attendanceType(createEmployeeAttendanceRequestDTO.getAttendanceType())
                 .enteredBy(createEmployeeAttendanceRequestDTO.getEnteredBy())
+                .makeTransaction(createEmployeeAttendanceRequestDTO.isMakeTransaction())
+                .bankAccount(createEmployeeAttendanceRequestDTO.getBankAccount())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

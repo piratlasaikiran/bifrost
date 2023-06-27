@@ -41,5 +41,4 @@ public class CreateVendorAttendanceRequestDTO {
 
     @JsonProperty("bank_account")
     private String bankAccount;
-    
 }
