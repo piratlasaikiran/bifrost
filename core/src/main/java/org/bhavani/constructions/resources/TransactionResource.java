@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
+import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
+import org.bhavani.constructions.dto.PassBookResponseDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -71,5 +73,33 @@ public class TransactionResource {
     public Response getTransactionPurposes(@NotNull @HeaderParam(X_USER_ID) String userId){
         EnumSet<TransactionPurpose> transactionPurposes = transactionService.getTransactionPurposes();
         return Response.ok(transactionPurposes).build();
+    }
+
+    @GET
+    @Path("/transaction-statuses")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTransactionStatuses(@NotNull @HeaderParam(X_USER_ID) String userId){
+        EnumSet<TransactionStatus> transactionStatuses = transactionService.getTransactionStatuses();
+        return Response.ok(transactionStatuses).build();
+    }
+
+    @GET
+    @Path("/passbook-main-pages")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllPassBookMainPages(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PassBookResponseDTO> passBooks = transactionService.getAllPassBookMainPages();
+        return Response.ok(passBooks).build();
+    }
+
+    @GET
+    @Path("/passbooks/{accountName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllPassBookMainPages(@NotNull @PathParam("accountName") String accountName,
+                                            @NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PassBookResponseDTO> passBooks = transactionService.getAccountPassBook(accountName);
+        return Response.ok(passBooks).build();
     }
 }

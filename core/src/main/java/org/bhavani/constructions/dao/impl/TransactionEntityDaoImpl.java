@@ -21,6 +21,7 @@ public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> imp
     @Override
     public void saveTransaction(TransactionEntity transactionEntity) {
         persist(transactionEntity);
+        currentSession().flush();
     }
 
     @Override

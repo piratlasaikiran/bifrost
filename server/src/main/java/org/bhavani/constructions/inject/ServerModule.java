@@ -43,6 +43,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(TransactionEntityDao.class).to(TransactionEntityDaoImpl.class).in(Singleton.class);
         bind(VendorAttendanceEntityDao.class).to(VendorAttendanceEntityDaoImpl.class).in(Singleton.class);
         bind(EmployeeAttendanceDao.class).to(EmployeeAttendanceDaoImpl.class).in(Singleton.class);
+        bind(PassBookEntityDao.class).to(PassBookEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides

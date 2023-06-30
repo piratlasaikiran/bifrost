@@ -2,28 +2,21 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bhavani.constructions.dao.api.VendorAttendanceEntityDao;
-import org.bhavani.constructions.dao.api.VendorEntityDao;
-import org.bhavani.constructions.dao.entities.TransactionEntity;
-import org.bhavani.constructions.dao.entities.VendorAttendanceEntity;
-import org.bhavani.constructions.dao.entities.VendorEntity;
+import org.bhavani.constructions.dao.api.*;
+import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
-import org.bhavani.constructions.dao.entities.models.TransactionMode;
-import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
-import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateVendorAttendanceRequestDTO;
 import org.bhavani.constructions.services.VendorAttendanceService;
 
 import javax.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_ERROR;
 import static org.bhavani.constructions.utils.EntityBuilder.createVendorAttendanceEntity;
+import static org.bhavani.constructions.utils.EntityBuilder.getTransactionEntityForAttendance;
+import static org.bhavani.constructions.utils.PassBookHelper.createPassBookEntities;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -31,6 +24,10 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
 
     private final VendorAttendanceEntityDao vendorAttendanceEntityDao;
     private final VendorEntityDao vendorEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
+    private final PassBookEntityDao passBookEntityDao;
+    private final SupervisorEntityDao supervisorEntityDao;
+    private final DriverEntityDao driverEntityDao;
 
     @Override
     public VendorAttendanceEntity enterAttendance(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId) {
@@ -52,19 +49,11 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             vendorCommodityAttendance.forEach((commodity, units) -> vendorPaymentAmount.addAndGet((long) vendorCommodityCosts.get(commodity) * units));
 
             //Making a transaction now.
-            TransactionEntity transactionEntity = TransactionEntity.builder()
-                    .source(createVendorAttendanceRequestDTO.getEnteredBy())
-                    .destination(createVendorAttendanceRequestDTO.getVendorId())
-                    .amount(vendorPaymentAmount.get())
-                    .purpose(TransactionPurpose.ATTENDANCE)
-                    .remarks("Making automated payment by attendance marking")
-                    .transactionDate(createVendorAttendanceRequestDTO.getAttendanceDate())
-                    .status(TransactionStatus.SUBMITTED)
-                    .mode(TransactionMode.CASH)
-                    .build();
-
+            TransactionEntity transactionEntity = getTransactionEntityForAttendance(createVendorAttendanceRequestDTO.getEnteredBy(),
+                    createVendorAttendanceRequestDTO.getVendorId(), vendorPaymentAmount.get(),
+                    createVendorAttendanceRequestDTO.getAttendanceDate(), createVendorAttendanceRequestDTO.getBankAccount(), userId);
+            saveTransactionAndPassBookEntries(transactionEntity);
         }
-
         return vendorAttendanceEntity;
     }
 
@@ -85,5 +74,25 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             );
         });
         return vendorAttendanceRequestDTOS;
+    }
+
+    private void saveTransactionAndPassBookEntries(TransactionEntity transactionEntity) {
+        transactionEntityDao.saveTransaction(transactionEntity);
+        Set<String> employees = getAllEmployeeNames();
+        List<PassBookEntity> passBookEntities = createPassBookEntities(transactionEntity, employees, getPreviousPassBookBalance(transactionEntity.getSource()), getPreviousPassBookBalance(transactionEntity.getDestination()));
+        passBookEntityDao.savePassBookEntities(passBookEntities);
+    }
+
+    private Long getPreviousPassBookBalance(String accountName){
+        Optional<PassBookEntity> previousPassBookEntity = passBookEntityDao.getLatestPassBookEntity(accountName);
+        return previousPassBookEntity.isPresent() ? previousPassBookEntity.get().getCurrentBalance() : 0L;
+    }
+
+    private Set<String> getAllEmployeeNames() {
+        Set<String> employeeNames = new HashSet<>();
+        employeeNames.addAll(driverEntityDao.getDrivers().stream().map(DriverEntity::getName).collect(Collectors.toSet()));
+        employeeNames.addAll(supervisorEntityDao.getAllSupervisors().stream().map(SupervisorEntity::getName).collect(Collectors.toSet()));
+        employeeNames.addAll(vendorEntityDao.getAllVendors().stream().map(VendorEntity::getVendorId).collect(Collectors.toSet()));
+        return employeeNames;
     }
 }
