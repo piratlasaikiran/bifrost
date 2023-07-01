@@ -3,6 +3,7 @@ package org.bhavani.constructions.constants;
 public class ErrorConstants {
     public static final String USER_NOT_FOUND = "User Not Found";
     public static final String USER_EXISTS = "User already exists in database";
+    public static final String ATM_CARD_IN_USE = "ATM Card already in use";
     public static final String VENDOR_NOT_FOUND = "Vendor not found";
     public static final String DOC_PARSING_ERROR = "Error while parsing given document";
     public static final String CORRUPTED_DATA = "Failed to parse given data";

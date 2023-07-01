@@ -20,6 +20,8 @@ import javax.persistence.*;
 @NamedQueries(value = {
         @NamedQuery(name = "GetSupervisorByName",
                 query = "select e from SupervisorEntity e where e.name = :name"),
+        @NamedQuery(name = "GetSupervisorByATMCard",
+                query = "select e from SupervisorEntity e where e.atmCardNumber = :atm_card"),
         @NamedQuery(name = "GetAllSupervisors",
                 query = "select e from SupervisorEntity e")
 })

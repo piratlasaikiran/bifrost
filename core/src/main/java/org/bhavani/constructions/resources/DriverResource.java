@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
@@ -94,6 +95,24 @@ public class DriverResource {
     public Response getDriver(@Nonnull @PathParam("driverName") String driverName){
         DriverEntity driverEntity = driverService.getDriver(driverName);
         return Response.ok(driverEntity).build();
+    }
+
+    @GET
+    @Path("/{driverName}/get-aadhar")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAadhar(@Nonnull @PathParam("driverName") String driverName){
+        InputStream aadhar = new ByteArrayInputStream(driverService.getDriver(driverName).getAadhar());
+        return Response.ok(aadhar).build();
+    }
+
+    @GET
+    @Path("/{driverName}/get-license")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getLicense(@Nonnull @PathParam("driverName") String driverName){
+        InputStream license = new ByteArrayInputStream(driverService.getDriver(driverName).getLicense());
+        return Response.ok(license).build();
     }
 
     @DELETE

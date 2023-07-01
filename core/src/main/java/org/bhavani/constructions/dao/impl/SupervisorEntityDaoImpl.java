@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.Constants.ATM_CARD;
 import static org.bhavani.constructions.constants.Constants.NAME;
 
 @Slf4j
@@ -62,5 +63,13 @@ public class SupervisorEntityDaoImpl extends AbstractDAO<SupervisorEntity> imple
         Map<String, Object> params = new HashMap<>();
         return findAllByNamedQuery("GetAllSupervisors",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public Optional<SupervisorEntity> getSupervisorByATMCard(Long atmCardNumber) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(ATM_CARD, atmCardNumber);
+        log.info("Fetching supervisor with ATM card: {}", atmCardNumber);
+        return findOneByNamedQuery("GetSupervisorByATMCard", params);
     }
 }

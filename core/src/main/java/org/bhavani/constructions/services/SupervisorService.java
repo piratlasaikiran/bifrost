@@ -13,7 +13,7 @@ public interface SupervisorService {
                                       InputStream aadhar, String userId);
 
     SupervisorEntity updateSupervisor(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                      InputStream aadhar, String userId);
+                                      InputStream aadhar, String userId, String supervisorName);
 
     void deleteSuperVisor(String supervisorName);
 

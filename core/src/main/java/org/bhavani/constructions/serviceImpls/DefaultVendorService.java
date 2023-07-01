@@ -2,7 +2,9 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.VendorEntityDao;
+import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dao.entities.VendorEntity;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
@@ -12,10 +14,7 @@ import org.bhavani.constructions.utils.EntityBuilder;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.COMMODITY_ATTENDANCE_UNITS;
@@ -74,6 +73,37 @@ public class DefaultVendorService implements VendorService {
             vendorAttendanceUnits.put(commodity, COMMODITY_ATTENDANCE_UNITS.get(commodity));
         });
         return vendorAttendanceUnits;
+    }
+
+    @Override
+    public VendorEntity getVendor(String vendorId) {
+        Optional<VendorEntity> vendorEntity = vendorEntityDao.getVendor(vendorId);
+        if(!vendorEntity.isPresent()){
+            log.info("No vendor with ID: {}", vendorId);
+            throw new IllegalArgumentException(USER_NOT_FOUND);
+        }
+        return vendorEntity.get();
+    }
+
+    @Override
+    public VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
+        VendorEntity vendorEntity = getVendor(createVendorRequestDTO.getVendorId());
+        updateVendorDate(vendorEntity, createVendorRequestDTO, contractDocument, userId);
+        return vendorEntity;
+    }
+
+    private void updateVendorDate(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
+        try{
+            vendorEntity.setLocation(createVendorRequestDTO.getLocation());
+            vendorEntity.setPurpose(createVendorRequestDTO.getPurpose());
+            vendorEntity.setCommodityCosts(createVendorRequestDTO.getCommodityCosts());
+            vendorEntity.setContractDocument(IOUtils.toByteArray(contractDocument));
+            vendorEntity.setMobileNumber(createVendorRequestDTO.getMobileNumber());
+            vendorEntity.setUpdatedBy(userId);
+        }catch(IOException ioException){
+            log.error("Error while updating vendor data");
+            throw new RuntimeException(CORRUPTED_DATA);
+        }
     }
 
     private List<VendorEntity> getVendorEntities() {

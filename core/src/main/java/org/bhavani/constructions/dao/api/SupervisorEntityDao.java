@@ -15,4 +15,6 @@ public interface SupervisorEntityDao {
     void deleteSupervisor(SupervisorEntity supervisor);
 
     List<SupervisorEntity> getAllSupervisors();
+
+    Optional<SupervisorEntity> getSupervisorByATMCard(Long atmCardNumber);
 }
