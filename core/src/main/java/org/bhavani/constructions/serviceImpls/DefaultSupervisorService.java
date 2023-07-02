@@ -67,9 +67,15 @@ public class DefaultSupervisorService implements SupervisorService {
                     throw new IllegalArgumentException(ATM_CARD_IN_USE);
         }
         SupervisorEntity supervisorEntity = supervisorEntityDao.getSupervisor(supervisorName).orElseThrow(() -> {
-            log.error("{} doesn't exist. Create user first", createSupervisorRequestDTO.getName());
+            log.error("{} doesn't exist. Create user first", supervisorName);
             return new IllegalArgumentException(USER_NOT_FOUND);
         });
+        if(!supervisorName.equals(createSupervisorRequestDTO.getName())) {
+            supervisorEntityDao.getSupervisor(createSupervisorRequestDTO.getName()).ifPresent(newSupervisorEntity -> {
+                log.error("User: {} already exists", createSupervisorRequestDTO.getName());
+                throw new IllegalArgumentException(USER_EXISTS);
+            });
+        }
         updateSupervisorData(createSupervisorRequestDTO, aadhar, supervisorEntity);
         supervisorEntityDao.updateSupervisor(supervisorEntity);
         return supervisorEntity;
@@ -94,7 +100,6 @@ public class DefaultSupervisorService implements SupervisorService {
                 .admin(supervisor.isAdmin())
                 .companyMobileNumber(supervisor.getCompanyMobileNumber())
                 .atmCardNumber(supervisor.getAtmCardNumber())
-                .vehicleNumber(supervisor.getVehicleNumber())
                 .build();
     }
 
@@ -111,7 +116,6 @@ public class DefaultSupervisorService implements SupervisorService {
                             .admin(supervisor.isAdmin())
                             .companyMobileNumber(supervisor.getCompanyMobileNumber())
                             .atmCardNumber(supervisor.getAtmCardNumber())
-                            .vehicleNumber(supervisor.getVehicleNumber())
                             .otPay(supervisor.getOtPay())
                             .build());
         });
@@ -128,7 +132,6 @@ public class DefaultSupervisorService implements SupervisorService {
             supervisorEntity.setAadhar(IOUtils.toByteArray(aadhar));
             supervisorEntity.setCompanyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber());
             supervisorEntity.setAtmCardNumber(createSupervisorRequestDTO.getAtmCardNumber());
-            supervisorEntity.setVehicleNumber(createSupervisorRequestDTO.getVehicleNumber());
             supervisorEntity.setOtPay(createSupervisorRequestDTO.getOtPay());
         }catch(IOException ioException){
             log.error("Error while updating driver data");

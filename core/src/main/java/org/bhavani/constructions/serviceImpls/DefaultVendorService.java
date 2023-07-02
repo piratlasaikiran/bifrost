@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.COMMODITY_ATTENDANCE_UNITS;
 import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -48,7 +49,7 @@ public class DefaultVendorService implements VendorService {
         List<CreateVendorRequestDTO> vendorRequestDTOS = new ArrayList<>();
         vendorEntities.forEach(vendorEntity -> vendorRequestDTOS.add(CreateVendorRequestDTO.builder()
                         .vendorId(vendorEntity.getVendorId())
-                        .purpose(vendorEntity.getPurpose())
+                        .purposes(vendorEntity.getPurposes())
                         .location(vendorEntity.getLocation())
                         .mobileNumber(vendorEntity.getMobileNumber())
                         .commodityCosts(vendorEntity.getCommodityCosts())
@@ -86,16 +87,24 @@ public class DefaultVendorService implements VendorService {
     }
 
     @Override
-    public VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
-        VendorEntity vendorEntity = getVendor(createVendorRequestDTO.getVendorId());
+    public VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument,
+                                     String userId, String vendorId) {
+        VendorEntity vendorEntity = getVendor(vendorId);
+        if(!vendorId.equals(createVendorRequestDTO.getVendorId())) {
+            vendorEntityDao.getVendor(createVendorRequestDTO.getVendorId()).ifPresent(newVendorEntity -> {
+                log.error("User: {} already exists", createVendorRequestDTO.getVendorId());
+                throw new IllegalArgumentException(USER_EXISTS);
+            });
+        }
         updateVendorDate(vendorEntity, createVendorRequestDTO, contractDocument, userId);
         return vendorEntity;
     }
 
     private void updateVendorDate(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
         try{
+            vendorEntity.setVendorId(createVendorRequestDTO.getVendorId());
             vendorEntity.setLocation(createVendorRequestDTO.getLocation());
-            vendorEntity.setPurpose(createVendorRequestDTO.getPurpose());
+            vendorEntity.setPurposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())));
             vendorEntity.setCommodityCosts(createVendorRequestDTO.getCommodityCosts());
             vendorEntity.setContractDocument(IOUtils.toByteArray(contractDocument));
             vendorEntity.setMobileNumber(createVendorRequestDTO.getMobileNumber());

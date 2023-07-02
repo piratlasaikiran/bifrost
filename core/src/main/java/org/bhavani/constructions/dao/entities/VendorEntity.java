@@ -1,5 +1,6 @@
 package org.bhavani.constructions.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,14 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITER;
+import static org.jadira.usertype.spi.utils.lang.StringUtils.isEmpty;
 
 @SuperBuilder
 @NoArgsConstructor
@@ -32,6 +40,11 @@ import java.util.Map;
 public class VendorEntity extends BaseEntity {
 
     @Id
+    @Column(name = "id")
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "vendor_id")
     private String vendorId;
 
@@ -45,12 +58,22 @@ public class VendorEntity extends BaseEntity {
     @Column(name = "location")
     private String location;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "purpose")
-    private VendorPurpose purpose;
+    @Column(name = "purposes")
+    private String purposes;
 
     @Type(type = "json")
     @Column(name = "commodity_costs")
     private Map<CommodityType, Integer> commodityCosts;
+
+    public List<VendorPurpose> getPurposes() {
+        return getPurposesList();
+    }
+
+    private List<VendorPurpose> getPurposesList() {
+        if (isEmpty(this.purposes)) {
+            return new ArrayList<>();
+        }
+        return stream(this.purposes.split(STRING_JOIN_DELIMITER)).map(VendorPurpose::valueOf).collect(Collectors.toList());
+    }
 
 }

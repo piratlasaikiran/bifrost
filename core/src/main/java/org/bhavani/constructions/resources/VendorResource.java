@@ -13,6 +13,7 @@ import org.bhavani.constructions.services.VendorService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -89,10 +90,11 @@ public class VendorResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response updateVendor(@FormDataParam("createVendorPayLoad") CreateVendorRequestDTO createVendorRequestDTO,
-                               @FormDataParam("contractDocument") InputStream contractDocument,
-                               @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
-                               @NotNull @HeaderParam(X_USER_ID) String userId){
-        VendorEntity vendorEntity = vendorService.updateVendor(createVendorRequestDTO, contractDocument, userId);
+                                 @FormDataParam("contractDocument") InputStream contractDocument,
+                                 @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
+                                 @NotNull @HeaderParam(X_USER_ID) String userId,
+                                 @Nonnull @PathParam("vendorId") String vendorId){
+        VendorEntity vendorEntity = vendorService.updateVendor(createVendorRequestDTO, contractDocument, userId, vendorId);
         return Response.ok(vendorEntity).build();
     }
 

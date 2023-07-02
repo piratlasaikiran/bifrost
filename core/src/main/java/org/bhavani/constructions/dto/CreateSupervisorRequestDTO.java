@@ -39,9 +39,6 @@ public class CreateSupervisorRequestDTO {
     @JsonProperty("atm_card")
     private Long atmCardNumber;
 
-    @JsonProperty("vehicle_num")
-    private String vehicleNumber;
-
     @NotNull
     @JsonProperty("ot_pay")
     private int otPay;

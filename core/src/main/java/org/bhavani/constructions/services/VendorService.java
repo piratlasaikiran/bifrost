@@ -20,5 +20,6 @@ public interface VendorService {
 
     VendorEntity getVendor(String vendorId);
 
-    VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId);
+    VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument,
+                              String userId, String vendorId);
 }

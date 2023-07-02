@@ -84,7 +84,7 @@ public class DriverResource {
                                  @FormDataParam("aadhar") InputStream aadhar,
                                  @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                  @NotNull @HeaderParam(X_USER_ID) String userId){
-        DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, aadhar, userId);
+        DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, aadhar, userId, driverName);
         return Response.ok(driverService.createDriverResponse(driver)).build();
     }
 

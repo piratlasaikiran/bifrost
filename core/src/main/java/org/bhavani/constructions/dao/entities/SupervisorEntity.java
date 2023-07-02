@@ -40,9 +40,6 @@ public class SupervisorEntity extends Employee {
     @Column(name = "atm_card")
     private Long atmCardNumber;
 
-    @Column(name = "vehicle_num")
-    private String vehicleNumber;
-
     @Column(name = "ot_pay")
     private int otPay;
 }

@@ -2,17 +2,18 @@
 
 --changeset saikiran.pv:1
 create table vendors(
-	vendor_id varchar(256) not null,
-	contract_doc longblob default null,
-	location varchar(150) not null,
-	mobile_number bigint(10) not default null,
-	purpose varchar(150) default null,
-	commodity_costs JSON default null,
-	created_by varchar(255) default null,
-	updated_by varchar(255) default null,
+    id bigint(20) unsigned not null AUTO_INCREMENT,
+    vendor_id varchar(256) default null,
+    contract_doc longblob default null,
+    location varchar(150) not null,
+    mobile_number bigint(10) not null,
+    purposes varchar(2048) default null,
+    commodity_costs JSON default null,
+    created_by varchar(255) default null,
+    updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (vendor_id),
+    primary key (id),
     constraint vendors_location_fk foreign key (location) references sites (site_name)
 )ENGINE=InnoDB default CHARSET=utf8;
 
@@ -54,31 +55,30 @@ create table transactions(
 --changeset saikiran.pv:4
 create table vendor_attendance(
     id bigint(20) unsigned not null AUTO_INCREMENT,
-	site varchar(256) not null,
-	vendor_id varchar(256) not null,
+    site varchar(150) not null,
+    vendor_id varchar(256) not null,
     entered_by varchar(256) default null,
     attendance_date timestamp not null,
     commodity_attendance JSON default null,
     make_transaction tinyint(1) not null default 1,
     bank_account varchar(256) default null,
-	created_by varchar(255) default null,
-	updated_by varchar(255) default null,
+    created_by varchar(255) default null,
+    updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
     primary key (id),
-    foreign key (site) references sites (site_name),
-    foreign key (vendor_id) references vendors (vendor_id)
+    constraint vendor_attendance_site_fk foreign key (site) references sites (site_name)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 create table employee_attendance(
-	name varchar(256) not null,
-	employee_type varchar(256) not null,
-	site varchar(256) not null,
+    name varchar(256) not null,
+    employee_type varchar(256) not null,
+    site varchar(256) not null,
     entered_by varchar(256) default null,
     attendance_date timestamp not null,
     attendance_type varchar(256) default null,
-	created_by varchar(255) default null,
-	updated_by varchar(255) default null,
+    created_by varchar(255) default null,
+    updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
     primary key (name, employee_type, attendance_date),
