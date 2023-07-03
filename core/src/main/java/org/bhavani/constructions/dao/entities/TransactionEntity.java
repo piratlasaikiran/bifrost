@@ -14,6 +14,7 @@ import org.bhavani.constructions.dao.entities.subentities.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @SuperBuilder
 @NoArgsConstructor
@@ -68,4 +69,7 @@ public class TransactionEntity extends BaseEntity {
 
     @Column(name = "bank_ac")
     private String bankAccount;
+
+    @OneToMany(mappedBy = "transactionEntity", cascade = CascadeType.ALL)
+    private List<PassBookEntity> passBookEntities;
 }

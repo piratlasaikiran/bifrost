@@ -13,7 +13,7 @@ public interface AssetLocationService {
 
     AssetLocationEntity getAssetLocation(String assetName, String location, LocalDate startDate);
 
-    AssetLocationEntity updateAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO, String assetName) throws OverlappingIntervalsException;
+    AssetLocationEntity updateAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO, Long assetLocationId) throws OverlappingIntervalsException;
 
     void deleteAssetLocation(String assetName, String assetLocation, LocalDate startDate);
 

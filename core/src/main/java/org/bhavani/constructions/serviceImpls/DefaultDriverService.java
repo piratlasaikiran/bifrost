@@ -72,11 +72,18 @@ public class DefaultDriverService implements DriverService {
     }
 
     @Override
-    public DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, String userId) {
-        DriverEntity driverEntity = driverEntityDao.getDriver(createDriverRequestDTO.getName()).orElseThrow(() -> {
+    public DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar,
+                                     String userId, String driverName) {
+        DriverEntity driverEntity = driverEntityDao.getDriver(driverName).orElseThrow(() -> {
             log.error("{} doesn't exist. Create user first", createDriverRequestDTO.getName());
             return new IllegalArgumentException(USER_NOT_FOUND);
         });
+        if(!driverName.equals(createDriverRequestDTO.getName())) {
+            driverEntityDao.getDriver(createDriverRequestDTO.getName()).ifPresent(newDriverEntity -> {
+                log.error("User: {} already exists", createDriverRequestDTO.getName());
+                throw new IllegalArgumentException(USER_EXISTS);
+            });
+        }
         updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity);
         return driverEntity;
     }
@@ -109,7 +116,8 @@ public class DefaultDriverService implements DriverService {
         return driverEntityDao.getDrivers();
     }
 
-    private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar, DriverEntity driverEntity) {
+    private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
+                                  InputStream aadhar, DriverEntity driverEntity) {
         try {
 
             driverEntity.setName(createDriverRequestDTO.getName());

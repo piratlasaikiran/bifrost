@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dao.entities.models.VendorPurpose;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -22,8 +23,8 @@ public class CreateVendorRequestDTO {
     @JsonProperty("mobile_number")
     private Long mobileNumber;
 
-    @JsonProperty("purpose")
-    private VendorPurpose purpose;
+    @JsonProperty("purposes")
+    private List<VendorPurpose> purposes;
 
     @JsonProperty("location")
     private String location;

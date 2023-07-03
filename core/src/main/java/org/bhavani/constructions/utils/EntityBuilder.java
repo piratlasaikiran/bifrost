@@ -2,12 +2,15 @@ package org.bhavani.constructions.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.entities.*;
+import org.bhavani.constructions.dao.entities.models.TransactionMode;
+import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dao.entities.subentities.EmployeeAttendancePK;
 import org.bhavani.constructions.dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +31,6 @@ public class EntityBuilder {
                 .aadhar(IOUtils.toByteArray(aadhar))
                 .companyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber())
                 .atmCardNumber(createSupervisorRequestDTO.getAtmCardNumber())
-                .vehicleNumber(createSupervisorRequestDTO.getVehicleNumber())
                 .otPay(createSupervisorRequestDTO.getOtPay())
                 .createdBy(userId)
                 .updatedBy(userId)
@@ -129,7 +131,7 @@ public class EntityBuilder {
                 .vendorId(createVendorRequestDTO.getVendorId())
                 .location(createVendorRequestDTO.getLocation())
                 .mobileNumber(createVendorRequestDTO.getMobileNumber())
-                .purpose(createVendorRequestDTO.getPurpose())
+                .purposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())))
                 .commodityCosts(createVendorRequestDTO.getCommodityCosts())
                 .contractDocument(IOUtils.toByteArray(contractDoc))
                 .createdBy(userId)
@@ -198,6 +200,24 @@ public class EntityBuilder {
                 .enteredBy(createEmployeeAttendanceRequestDTO.getEnteredBy())
                 .makeTransaction(createEmployeeAttendanceRequestDTO.isMakeTransaction())
                 .bankAccount(createEmployeeAttendanceRequestDTO.getBankAccount())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static TransactionEntity getTransactionEntityForAttendance(String source, String destination,
+                                                                      long amount, LocalDate attendanceDate, String bankAccount,
+                                                                      String userId) {
+        return TransactionEntity.builder()
+                .source(source)
+                .destination(destination)
+                .amount(amount)
+                .purpose(TransactionPurpose.ATTENDANCE)
+                .remarks("Making automated payment by attendance marking")
+                .transactionDate(attendanceDate)
+                .status(TransactionStatus.SUBMITTED)
+                .mode(TransactionMode.CASH)
+                .bankAccount(bankAccount)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

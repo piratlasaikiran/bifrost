@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +61,16 @@ public class SupervisorResource {
     public Response getSupervisor(@Nonnull @PathParam("supervisorName") String supervisorName){
         SupervisorEntity supervisor = supervisorService.getSupervisor(supervisorName);
         return Response.ok(supervisor).build();
-        }
+    }
+
+    @GET
+    @Path("/{supervisorName}/get-aadhar")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAadhar(@Nonnull @PathParam("supervisorName") String supervisorName){
+        InputStream aadhar = new ByteArrayInputStream(supervisorService.getSupervisor(supervisorName).getAadhar());
+        return Response.ok(aadhar).build();
+    }
 
     @POST
     @Path("/create-new-supervisor")
@@ -83,7 +93,7 @@ public class SupervisorResource {
                                      @FormDataParam("aadhar") InputStream aadhar,
                                      @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                      @NotNull @HeaderParam(X_USER_ID) String userId){
-        SupervisorEntity supervisor = supervisorService.updateSupervisor(createSupervisorRequestDTO, aadhar, userId);
+        SupervisorEntity supervisor = supervisorService.updateSupervisor(createSupervisorRequestDTO, aadhar, userId, supervisorName);
         return Response.ok(supervisorService.createSupervisorResponse(supervisor)).build();
     }
 

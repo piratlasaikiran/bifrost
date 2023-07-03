@@ -25,11 +25,8 @@ public class AssetLocationEntityDaoImpl extends AbstractDAO<AssetLocationEntity>
     }
 
     @Override
-    public Optional<AssetLocationEntity> getAssetLocation(String assetName) {
-        Map<String, Object> params = new HashMap<>();
-        params.put(ASSET_NAME, assetName);
-        log.info("Fetching asset: {}", assetName);
-        return findOneByNamedQuery("GetAssetLocationByName", params);
+    public Optional<AssetLocationEntity> getAssetLocation(Long assetLocationId) {
+        return this.get(assetLocationId);
     }
 
     @Override

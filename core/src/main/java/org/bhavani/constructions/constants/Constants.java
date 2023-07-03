@@ -1,9 +1,9 @@
 package org.bhavani.constructions.constants;
 
 import org.bhavani.constructions.dao.entities.models.CommodityType;
+import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.bhavani.constructions.dao.entities.models.CommodityType.*;
 
@@ -19,10 +19,13 @@ public class Constants {
     public static final String ASSET_LOCATION = "asset_location";
     public static final String STRING_JOIN_DELIMITER = ",";
     public static final String VENDOR_ID = "vendor_id";
+    public static final String ATM_CARD = "atm_card";
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";
     public static final String DRIVER = "DRIVER";
+    public static final String MY_ACCOUNT = "My Account";
+    public static final String ACCOUNT_NAME = "account_name";
 
     public static final String VEHICLE_ADDED_SUCCESSFULLY = "Vehicle added successfully";
     public static final String VEHICLE_DELETED_SUCCESSFULLY = "Vehicle deleted successfully";
@@ -57,5 +60,13 @@ public class Constants {
         put(IRON, "No.of Tons");
         put(CONCRETE_CHIP, "No.of Tons");
         put(TAR, "No.of Barrels");
+    }};
+
+    public static final Map<TransactionStatus, List<TransactionStatus>> TRANSACTION_STATE_CHANGE_ALLOWANCE = new HashMap<TransactionStatus, List<TransactionStatus>>()
+    {{
+        put(TransactionStatus.SUBMITTED, Arrays.asList(TransactionStatus.CHECKED, TransactionStatus.REJECTED, TransactionStatus.ON_HOLD));
+        put(TransactionStatus.ON_HOLD, Arrays.asList(TransactionStatus.CHECKED, TransactionStatus.REJECTED));
+        put(TransactionStatus.CHECKED, new ArrayList<>());
+        put(TransactionStatus.REJECTED, new ArrayList<>());
     }};
 }

@@ -20,6 +20,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CreateTransactionRequestDTO {
 
+    @JsonProperty("transaction_id")
+    private Long transactionId;
+
     @JsonProperty("source")
     private String source;
 

@@ -20,6 +20,8 @@ import javax.persistence.*;
 @NamedQueries(value = {
         @NamedQuery(name = "GetSupervisorByName",
                 query = "select e from SupervisorEntity e where e.name = :name"),
+        @NamedQuery(name = "GetSupervisorByATMCard",
+                query = "select e from SupervisorEntity e where e.atmCardNumber = :atm_card"),
         @NamedQuery(name = "GetAllSupervisors",
                 query = "select e from SupervisorEntity e")
 })
@@ -37,9 +39,6 @@ public class SupervisorEntity extends Employee {
 
     @Column(name = "atm_card")
     private Long atmCardNumber;
-
-    @Column(name = "vehicle_num")
-    private String vehicleNumber;
 
     @Column(name = "ot_pay")
     private int otPay;

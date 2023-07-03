@@ -10,7 +10,6 @@ create table supervisors(
 	admin tinyint(1) not null default 0,
 	company_mob_num bigint(10) default null,
 	atm_card bigint(30) default null,
-	vehicle_num varchar(25) default null,
 	ot_pay integer not null default 0,
 	aadhar longblob DEFAULT NULL,
 	created_by varchar(255) DEFAULT NULL,

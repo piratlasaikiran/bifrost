@@ -13,12 +13,14 @@ import org.bhavani.constructions.services.VendorService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +56,16 @@ public class VendorResource {
     }
 
     @GET
+    @Path("/{vendorId}/get-contract-document")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getContractDocument(@NotNull @PathParam("vendorId") String vendorId,
+                                                @NotNull @HeaderParam(X_USER_ID) String userId){
+        InputStream contractDoc = new ByteArrayInputStream(vendorService.getVendor(vendorId).getContractDocument());
+        return Response.ok(contractDoc).build();
+    }
+
+    @GET
     @Path("/get-vendor-purposes")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
@@ -70,6 +82,19 @@ public class VendorResource {
                                    @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
                                    @NotNull @HeaderParam(X_USER_ID) String userId){
         VendorEntity vendorEntity = vendorService.createVendor(createVendorRequestDTO, contractDocument, userId);
+        return Response.ok(vendorEntity).build();
+    }
+
+    @PUT
+    @Path("/{vendorId}/update-vendor")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response updateVendor(@FormDataParam("createVendorPayLoad") CreateVendorRequestDTO createVendorRequestDTO,
+                                 @FormDataParam("contractDocument") InputStream contractDocument,
+                                 @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
+                                 @NotNull @HeaderParam(X_USER_ID) String userId,
+                                 @Nonnull @PathParam("vendorId") String vendorId){
+        VendorEntity vendorEntity = vendorService.updateVendor(createVendorRequestDTO, contractDocument, userId, vendorId);
         return Response.ok(vendorEntity).build();
     }
 

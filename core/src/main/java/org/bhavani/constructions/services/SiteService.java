@@ -11,7 +11,7 @@ public interface SiteService {
 
     SiteEntity getSite(String siteName);
 
-    SiteEntity updateSite(String siteName, CreateSiteRequestDTO createSiteRequestDTO);
+    SiteEntity updateSite(String siteName, CreateSiteRequestDTO createSiteRequestDTO, String userId);
 
     List<CreateSiteRequestDTO> getSites();
 }

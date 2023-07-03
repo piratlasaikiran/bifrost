@@ -68,15 +68,15 @@ public class AssetLocationResource {
     }
 
     @PUT
-    @Path("/{assetName}/update-asset")
+    @Path("/{assetLocationId}/update-asset-location")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response updateAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO,
-                               @PathParam("assetName") @NotNull String assetName,
+                               @PathParam("assetLocationId") @NotNull Long assetLocationId,
                                @NotNull @HeaderParam(X_USER_ID) String userId) throws OverlappingIntervalsException {
         AssetLocationEntity assetLocationEntity;
         try{
-            assetLocationEntity = assetLocationService.updateAssetLocation(createAssetLocationRequestDTO, assetName);
+            assetLocationEntity = assetLocationService.updateAssetLocation(createAssetLocationRequestDTO, assetLocationId);
         }catch (OverlappingIntervalsException exception){
             throw new OverlappingIntervalsException(exception.getMessage());
         }

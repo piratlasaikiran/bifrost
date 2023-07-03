@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.ErrorConstants.SITE_EXISTS;
 import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
 import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 import static org.bhavani.constructions.utils.EntityBuilder.createSiteEntity;
@@ -42,11 +43,17 @@ public class DefaultSiteService implements SiteService {
     }
 
     @Override
-    public SiteEntity updateSite(String siteName, CreateSiteRequestDTO createSiteRequestDTO) {
+    public SiteEntity updateSite(String siteName, CreateSiteRequestDTO createSiteRequestDTO, String userId) {
         Optional<SiteEntity> siteEntity = siteEntityDao.getSite(siteName);
         if(!siteEntity.isPresent()){
             log.error("Site: {} not found", siteName);
             throw new IllegalArgumentException(USER_NOT_FOUND);
+        }
+        if(!siteName.equals(createSiteRequestDTO.getSiteName())){
+            siteEntityDao.getSite(createSiteRequestDTO.getSiteName()).ifPresent(newSiteEntity -> {
+                log.error("Site: {} already exists. Choose another name.", createSiteRequestDTO.getSiteName());
+                throw new IllegalArgumentException(SITE_EXISTS);
+            });
         }
         SiteEntity updatedSiteEntity = siteEntity.get();
         updatedSiteEntity.setAddress(createSiteRequestDTO.getAddress());
