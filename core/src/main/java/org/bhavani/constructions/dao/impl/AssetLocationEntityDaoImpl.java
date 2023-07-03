@@ -52,7 +52,7 @@ public class AssetLocationEntityDaoImpl extends AbstractDAO<AssetLocationEntity>
     @Override
     public List<AssetLocationEntity> getAssetsLocation() {
         Map<String, Object> params = new HashMap<>();
-        return findAllByNamedQuery("GetAllAssets",
+        return findAllByNamedQuery("GetAllAssetLocations",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 

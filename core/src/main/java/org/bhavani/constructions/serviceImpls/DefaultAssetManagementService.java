@@ -3,12 +3,15 @@ package org.bhavani.constructions.serviceImpls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.AssetLocationEntityDao;
+import org.bhavani.constructions.dao.api.AssetOwnershipEntityDao;
 import org.bhavani.constructions.dao.api.SiteEntityDao;
 import org.bhavani.constructions.dao.entities.AssetLocationEntity;
+import org.bhavani.constructions.dao.entities.AssetOwnershipEntity;
 import org.bhavani.constructions.dao.entities.SiteEntity;
 import org.bhavani.constructions.dto.CreateAssetLocationRequestDTO;
+import org.bhavani.constructions.dto.CreateAssetOwnershipRequestDTO;
 import org.bhavani.constructions.exceptions.OverlappingIntervalsException;
-import org.bhavani.constructions.services.AssetLocationService;
+import org.bhavani.constructions.services.AssetManagementService;
 
 import javax.inject.Inject;
 
@@ -18,16 +21,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.bhavani.constructions.constants.Constants.VEHICLE;
 import static org.bhavani.constructions.constants.ErrorConstants.*;
-import static org.bhavani.constructions.utils.EntityBuilder.createAssetLocationEntity;
+import static org.bhavani.constructions.utils.EntityBuilder.*;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
-public class DefaultAssetLocationService implements AssetLocationService {
+public class DefaultAssetManagementService implements AssetManagementService {
 
     private final AssetLocationEntityDao assetLocationEntityDao;
+    private final AssetOwnershipEntityDao assetOwnershipEntityDao;
     private final SiteEntityDao siteEntityDao;
 
     @Override
@@ -45,10 +50,12 @@ public class DefaultAssetLocationService implements AssetLocationService {
         }
 
         if(createAssetLocationRequestDTO.getAssetType().equals(VEHICLE)){
-            siteEntity.getVehicles().add(assetName);
+            List<String> updatedVehicles = Stream.concat(siteEntity.getVehicles().stream(), Stream.of(assetName)).collect(Collectors.toList());
+            siteEntity.setVehicles(convertListToCommaSeparatedString(updatedVehicles));
         }
         else{
-            siteEntity.getSupervisors().add(assetName);
+            List<String> updatedSupervisors = Stream.concat(siteEntity.getSupervisors().stream(), Stream.of(assetName)).collect(Collectors.toList());
+            siteEntity.setSupervisors(convertListToCommaSeparatedString(updatedSupervisors));
         }
         assetLocationEntityDao.saveAssetLocation(assetLocationEntity);
         log.info("Asset: {} at location: {} saved successfully", assetLocationEntity.getAssetName(), assetLocationEntity.getLocation());
@@ -71,7 +78,7 @@ public class DefaultAssetLocationService implements AssetLocationService {
             throw new OverlappingIntervalsException(ASSET_LOCATION_INVALID);
         }
         AssetLocationEntity assetLocationEntity = assetLocationEntityDao.getAssetLocation(assetLocationId).orElseThrow(() -> {
-            log.error("Asset with ID: {} doesn't exist. ", assetLocationId);
+            log.error("AssetLocation with ID: {} doesn't exist. ", assetLocationId);
             return new IllegalArgumentException(ASSET_NOT_FOUND);
         });
         assetLocationEntity.setAssetType(createAssetLocationRequestDTO.getAssetType());
@@ -110,29 +117,84 @@ public class DefaultAssetLocationService implements AssetLocationService {
         return assetLocationRequestDTOS;
     }
 
+    @Override
+    public void saveAssetOwnership(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO, String userId) throws OverlappingIntervalsException {
+        AssetOwnershipEntity assetOwnershipEntity = createAssetOwnershipEntity(createAssetOwnershipRequestDTO, userId);
+        if(!isValidAssetOwnershipEntry(createAssetOwnershipRequestDTO)){
+            log.error("Overlapping intervals.");
+            throw new OverlappingIntervalsException(ASSET_OWNERSHIP_INVALID);
+        }
+        assetOwnershipEntityDao.saveAssetOwnership(assetOwnershipEntity);
+    }
+
+    @Override
+    public List<CreateAssetOwnershipRequestDTO> getAssetsOwnership() {
+        List<AssetOwnershipEntity> assetOwnershipEntities = assetOwnershipEntityDao.getAssetsOwnership();
+        List<CreateAssetOwnershipRequestDTO> assetOwnershipRequestDTOS = new ArrayList<>();
+        assetOwnershipEntities.forEach(assetsOwnership -> {
+            assetOwnershipRequestDTOS.add(CreateAssetOwnershipRequestDTO.builder()
+                    .assetOwnershipId(assetsOwnership.getId())
+                    .assetName(assetsOwnership.getAssetName())
+                    .assetType(assetsOwnership.getAssetType())
+                    .currentOwner(assetsOwnership.getCurrentOwner())
+                    .startDate(assetsOwnership.getStartDate())
+                    .endDate(assetsOwnership.getEndDate())
+                    .build());
+        });
+        return assetOwnershipRequestDTOS;
+    }
+
+    @Override
+    public AssetOwnershipEntity updateAssetOwnership(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO, Long assetOwnershipId) throws OverlappingIntervalsException {
+        if(!isValidAssetOwnershipEntry(createAssetOwnershipRequestDTO)){
+            log.error("Overlapping intervals.");
+            throw new OverlappingIntervalsException(ASSET_LOCATION_INVALID);
+        }
+        AssetOwnershipEntity assetOwnershipEntity = assetOwnershipEntityDao.getAssetOwnership(assetOwnershipId).orElseThrow(() -> {
+            log.error("AssetOwnership with ID: {} doesn't exist. ", assetOwnershipId);
+            return new IllegalArgumentException(ASSET_NOT_FOUND);
+        });
+        assetOwnershipEntity.setAssetType(createAssetOwnershipRequestDTO.getAssetType());
+        assetOwnershipEntity.setAssetName(createAssetOwnershipRequestDTO.getAssetName());
+        assetOwnershipEntity.setCurrentOwner(createAssetOwnershipRequestDTO.getCurrentOwner());
+        assetOwnershipEntity.setStartDate(createAssetOwnershipRequestDTO.getStartDate());
+        assetOwnershipEntity.setEndDate(createAssetOwnershipRequestDTO.getEndDate());
+        return assetOwnershipEntity;
+    }
+
+    private boolean isValidAssetOwnershipEntry(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO) {
+        List<AssetOwnershipEntity> assetOwnershipEntities = assetOwnershipEntityDao
+                .getAssetOwnershipEntities(createAssetOwnershipRequestDTO.getAssetName())
+                .stream().filter(assetOwnershipEntity -> !Objects.equals(assetOwnershipEntity.getId(), createAssetOwnershipRequestDTO.getAssetOwnershipId()))
+                .collect(Collectors.toList());
+        for(AssetOwnershipEntity assetOwnershipEntity : assetOwnershipEntities){
+            if(overlappingExistence(assetOwnershipEntity.getStartDate(), assetOwnershipEntity.getEndDate(),
+                    createAssetOwnershipRequestDTO.getStartDate(), createAssetOwnershipRequestDTO.getEndDate()))
+                return false;
+        }
+        return true;
+    }
+
     private boolean isValidAssetLocationEntry(CreateAssetLocationRequestDTO createAssetLocationRequestDTO){
         List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao
                 .getAssetLocationEntities(createAssetLocationRequestDTO.getAssetName())
                 .stream().filter(assetLocationEntity -> !Objects.equals(assetLocationEntity.getId(), createAssetLocationRequestDTO.getAssetLocationId()))
                 .collect(Collectors.toList());
         for(AssetLocationEntity assetLocationEntity : assetLocationEntities){
-            if(overlappingExistence(assetLocationEntity, createAssetLocationRequestDTO))
+            if(overlappingExistence(assetLocationEntity.getStartDate(), assetLocationEntity.getEndDate(),
+                    createAssetLocationRequestDTO.getStartDate(), createAssetLocationRequestDTO.getEndDate()))
                 return false;
         }
         return true;
     }
 
-    private boolean overlappingExistence(AssetLocationEntity assetLocationEntity, CreateAssetLocationRequestDTO createAssetLocationRequestDTO) {
-        LocalDate historicalStartDate = assetLocationEntity.getStartDate();
-        LocalDate historicalEndDate = assetLocationEntity.getEndDate();
-        LocalDate currentEntityStartDate = createAssetLocationRequestDTO.getStartDate();
-        LocalDate currentEntityEndDate = createAssetLocationRequestDTO.getEndDate();
-
-        if((historicalStartDate.isBefore(currentEntityStartDate) && historicalEndDate.isAfter(currentEntityEndDate)) ||
-                (currentEntityStartDate.isBefore(historicalStartDate) && currentEntityEndDate.isAfter(historicalEndDate))  ||
-                (currentEntityStartDate.isBefore(historicalStartDate) && currentEntityEndDate.isBefore(historicalEndDate)) ||
-                (currentEntityStartDate.isEqual(historicalStartDate)) || currentEntityEndDate.isEqual(historicalEndDate))
-            return true;
-        return false;
+    private boolean overlappingExistence(LocalDate historicalStartDate, LocalDate historicalEndDate,  LocalDate currentEntityStartDate, LocalDate currentEntityEndDate) {
+        if (Objects.isNull(currentEntityEndDate)) {
+            currentEntityEndDate = LocalDate.now();
+        }
+        if (Objects.isNull(historicalEndDate)) {
+            historicalEndDate = LocalDate.now();
+        }
+        return currentEntityStartDate.isBefore(historicalEndDate) && historicalStartDate.isBefore(currentEntityEndDate);
     }
 }

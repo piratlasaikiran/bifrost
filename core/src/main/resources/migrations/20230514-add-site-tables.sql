@@ -32,3 +32,18 @@ create table entity_location(
     primary key (id),
     constraint entity_location_cur_location_fk FOREIGN KEY (cur_location) REFERENCES sites (site_name)
 )ENGINE=InnoDB default CHARSET=utf8;
+
+--changeset saikiran.pv:3
+create table entity_ownership(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
+    asset_type varchar(150) not null,
+    asset_name varchar(150) default null,
+    cur_owner varchar(150) not null,
+    start_date timestamp NULL DEFAULT NULL,
+    end_date timestamp NULL DEFAULT NULL,
+    created_by varchar(255) DEFAULT NULL,
+    updated_by varchar(255) DEFAULT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    primary key (id)
+)ENGINE=InnoDB default CHARSET=utf8;

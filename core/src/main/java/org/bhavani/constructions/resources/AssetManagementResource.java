@@ -5,11 +5,11 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.AssetLocationEntity;
-import org.bhavani.constructions.dao.entities.SiteEntity;
+import org.bhavani.constructions.dao.entities.AssetOwnershipEntity;
 import org.bhavani.constructions.dto.CreateAssetLocationRequestDTO;
-import org.bhavani.constructions.dto.CreateSiteRequestDTO;
+import org.bhavani.constructions.dto.CreateAssetOwnershipRequestDTO;
 import org.bhavani.constructions.exceptions.OverlappingIntervalsException;
-import org.bhavani.constructions.services.AssetLocationService;
+import org.bhavani.constructions.services.AssetManagementService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,15 +23,15 @@ import java.util.List;
 
 import static org.bhavani.constructions.constants.Constants.*;
 
-@Path("/asset-locations")
+@Path("/asset-management")
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
-@Api(value = "asset-locations")
+@Api(value = "asset-management")
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
-public class AssetLocationResource {
+public class AssetManagementResource {
 
-    private final AssetLocationService assetLocationService;
+    private final AssetManagementService assetManagementService;
 
     @POST
     @Path("/create-asset-location")
@@ -40,7 +40,7 @@ public class AssetLocationResource {
     public Response saveAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO, @NotNull @HeaderParam(X_USER_ID) String userId)
             throws OverlappingIntervalsException {
         try{
-            assetLocationService.saveAssetLocation(createAssetLocationRequestDTO);
+            assetManagementService.saveAssetLocation(createAssetLocationRequestDTO);
         }catch (OverlappingIntervalsException exception){
             throw new OverlappingIntervalsException(exception.getMessage());
         }
@@ -54,17 +54,26 @@ public class AssetLocationResource {
     public Response getAssetLocation(@NotNull @PathParam("assetName") String assetName,
                                      @NotNull @QueryParam("location") String location,
                                      @NotNull @QueryParam("startDate") String startDate){
-        AssetLocationEntity assetLocationEntity = assetLocationService.getAssetLocation(assetName, location, LocalDate.parse(startDate));
+        AssetLocationEntity assetLocationEntity = assetManagementService.getAssetLocation(assetName, location, LocalDate.parse(startDate));
         return Response.ok(assetLocationEntity).build();
     }
 
     @GET
-    @Path("/")
+    @Path("/asset-locations")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getAssetsLocation(@NotNull @HeaderParam(X_USER_ID) String userId){
-        List<CreateAssetLocationRequestDTO> assetLocationRequestDTOs = assetLocationService.getAssetsLocation();
+        List<CreateAssetLocationRequestDTO> assetLocationRequestDTOs = assetManagementService.getAssetsLocation();
         return Response.ok(assetLocationRequestDTOs).build();
+    }
+
+    @GET
+    @Path("/asset-ownerships")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAssetsOwnership(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<CreateAssetOwnershipRequestDTO> assetOwnershipRequestDTOs = assetManagementService.getAssetsOwnership();
+        return Response.ok(assetOwnershipRequestDTOs).build();
     }
 
     @PUT
@@ -76,7 +85,7 @@ public class AssetLocationResource {
                                @NotNull @HeaderParam(X_USER_ID) String userId) throws OverlappingIntervalsException {
         AssetLocationEntity assetLocationEntity;
         try{
-            assetLocationEntity = assetLocationService.updateAssetLocation(createAssetLocationRequestDTO, assetLocationId);
+            assetLocationEntity = assetManagementService.updateAssetLocation(createAssetLocationRequestDTO, assetLocationId);
         }catch (OverlappingIntervalsException exception){
             throw new OverlappingIntervalsException(exception.getMessage());
         }
@@ -91,9 +100,37 @@ public class AssetLocationResource {
                                         @QueryParam("assetLocation") @NotNull String assetLocation,
                                         @QueryParam("startDate") @NotNull String startDate,
                                         @NotNull @HeaderParam(X_USER_ID) String userId){
-        assetLocationService.deleteAssetLocation(assetName, assetLocation, LocalDate.parse(startDate));
+        assetManagementService.deleteAssetLocation(assetName, assetLocation, LocalDate.parse(startDate));
         return Response.ok(ASSET_LOCATION_DELETED_SUCCESSFULLY).build();
     }
 
+    @POST
+    @Path("/create-asset-ownership")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response saveAssetOwnership(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO, @NotNull @HeaderParam(X_USER_ID) String userId)
+            throws OverlappingIntervalsException {
+        try{
+            assetManagementService.saveAssetOwnership(createAssetOwnershipRequestDTO, userId);
+        }catch (OverlappingIntervalsException exception){
+            throw new OverlappingIntervalsException(exception.getMessage());
+        }
+        return Response.ok(ASSET_LOCATION_ADDED_SUCCESSFULLY).build();
+    }
 
+    @PUT
+    @Path("/{assetOwnershipId}/update-asset-ownership")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response updateAssetOwnership(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO,
+                                        @PathParam("assetOwnershipId") @NotNull Long assetOwnershipId,
+                                        @NotNull @HeaderParam(X_USER_ID) String userId) throws OverlappingIntervalsException {
+        AssetOwnershipEntity assetOwnershipEntity;
+        try{
+            assetOwnershipEntity = assetManagementService.updateAssetOwnership(createAssetOwnershipRequestDTO, assetOwnershipId);
+        }catch (OverlappingIntervalsException exception){
+            throw new OverlappingIntervalsException(exception.getMessage());
+        }
+        return Response.ok(assetOwnershipEntity).build();
+    }
 }

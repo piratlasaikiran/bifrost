@@ -19,16 +19,13 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @NamedQueries(value = {
-        @NamedQuery(name = "GetAssetLocationByName",
-                query = "select A from AssetLocationEntity A where A.assetName = :asset_name"),
-        @NamedQuery(name = "GetAssetLocationByName.Location.Date",
-                query = "select A from AssetLocationEntity A where A.assetName = :asset_name and " +
-                        "A.location = :asset_location and A.startDate = :start_date"),
-        @NamedQuery(name = "GetAllAssetLocations",
-                query = "select A from AssetLocationEntity A")
+        @NamedQuery(name = "GetAssetOwnershipsByName",
+                query = "select A from AssetOwnershipEntity A where A.assetName = :asset_name"),
+        @NamedQuery(name = "GetAllAssetOwnerships",
+                query = "select A from AssetOwnershipEntity A")
 })
-@Table(name = "entity_location")
-public class AssetLocationEntity extends BaseEntity {
+@Table(name = "entity_ownership")
+public class AssetOwnershipEntity extends BaseEntity {
 
     @Id
     @Column(name = "id")
@@ -42,8 +39,8 @@ public class AssetLocationEntity extends BaseEntity {
     @Column(name = "asset_name")
     private String assetName;
 
-    @Column(name = "cur_location")
-    private String location;
+    @Column(name = "cur_owner")
+    private String currentOwner;
 
     @Column(name = "start_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

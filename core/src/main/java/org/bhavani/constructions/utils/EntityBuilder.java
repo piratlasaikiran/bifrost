@@ -222,5 +222,17 @@ public class EntityBuilder {
                 .updatedBy(userId)
                 .build();
     }
+
+    public static AssetOwnershipEntity createAssetOwnershipEntity(CreateAssetOwnershipRequestDTO createAssetOwnershipRequestDTO, String userId){
+        return AssetOwnershipEntity.builder()
+                .assetType(createAssetOwnershipRequestDTO.getAssetType())
+                .assetName(createAssetOwnershipRequestDTO.getAssetName())
+                .currentOwner(createAssetOwnershipRequestDTO.getCurrentOwner())
+                .startDate(createAssetOwnershipRequestDTO.getStartDate())
+                .endDate(createAssetOwnershipRequestDTO.getEndDate())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
 }
 
