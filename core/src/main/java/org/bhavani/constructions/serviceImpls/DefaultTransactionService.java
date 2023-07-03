@@ -2,6 +2,7 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.PassBookEntityDao;
 import org.bhavani.constructions.dao.api.TransactionEntityDao;
 import org.bhavani.constructions.dao.entities.PassBookEntity;
@@ -11,17 +12,18 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.dto.PassBookResponseDTO;
+import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.bhavani.constructions.utils.EntityBuilder;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
+import static org.bhavani.constructions.constants.Constants.TRANSACTION_STATE_CHANGE_ALLOWANCE;
 import static org.bhavani.constructions.constants.ErrorConstants.DOC_PARSING_ERROR;
+import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_NOT_FOUND;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -101,8 +103,58 @@ public class DefaultTransactionService implements TransactionService {
         return EnumSet.allOf(TransactionStatus.class);
     }
 
+    @Override
+    public TransactionEntity updateTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId, Long transactionId) {
+        TransactionEntity transactionEntity = transactionEntityDao.getTransaction(transactionId).orElseThrow(() -> {
+            log.error("Transaction not found");
+             return new RuntimeException(TRANSACTION_NOT_FOUND);
+        });
+        transactionEntity.setSource(createTransactionRequestDTO.getSource());
+        transactionEntity.setDestination(createTransactionRequestDTO.getDestination());
+        transactionEntity.setAmount(createTransactionRequestDTO.getAmount());
+        transactionEntity.setTransactionDate(createTransactionRequestDTO.getTransactionDate());
+        transactionEntity.setPurpose(createTransactionRequestDTO.getPurpose());
+        transactionEntity.setMode(createTransactionRequestDTO.getMode());
+        transactionEntity.setBankAccount(createTransactionRequestDTO.getBankAccount());
+        transactionEntity.setStatus(createTransactionRequestDTO.getStatus());
+        transactionEntity.setRemarks(createTransactionRequestDTO.getRemarks());
+        try{
+            if(Objects.nonNull(bill))
+                transactionEntity.setBill(IOUtils.toByteArray(bill));
+        }catch (IOException exception){
+            log.error("Error while updating transaction document");
+            throw new RuntimeException(DOC_PARSING_ERROR);
+        }
+        return transactionEntity;
+    }
+
+    @Override
+    public TransactionEntity getTransaction(Long transactionId) {
+        return transactionEntityDao.getTransaction(transactionId).orElseThrow(() -> {
+            log.error("Transaction not found");
+            return new RuntimeException(TRANSACTION_NOT_FOUND);
+        });
+    }
+
+    @Override
+    public Map<TransactionStatus, List<TransactionStatus>> getTransactionStatusChangeMapping() {
+        return TRANSACTION_STATE_CHANGE_ALLOWANCE;
+    }
+
+    @Override
+    public void changeTransactionStatus(TransactionStatusChangeDTO transactionStatusChangeDTO, String userId) {
+        TransactionEntity transactionEntity = transactionEntityDao.getTransaction(transactionStatusChangeDTO.getTransactionId()).orElseThrow(() -> {
+            log.error("Transaction not found");
+            return new RuntimeException(TRANSACTION_NOT_FOUND);
+        });
+        transactionEntity.setStatus(transactionStatusChangeDTO.getDesiredStatus());
+        //ToDo: Handle many things.
+        // Automated entry to passbook, pending balance, etc..
+    }
+
     private CreateTransactionRequestDTO getTransactionRequestDTO(TransactionEntity transactionEntity) {
         return CreateTransactionRequestDTO.builder()
+                .transactionId(transactionEntity.getId())
                 .source(transactionEntity.getSource())
                 .destination(transactionEntity.getDestination())
                 .amount(transactionEntity.getAmount())

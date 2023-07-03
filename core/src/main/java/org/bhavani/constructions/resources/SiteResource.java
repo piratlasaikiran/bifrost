@@ -84,7 +84,7 @@ public class SiteResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response updateSite(@PathParam("siteName") @NotNull String siteName, CreateSiteRequestDTO createSiteRequestDTO, @NotNull @HeaderParam(X_USER_ID) String userId){
-        SiteEntity siteEntity = siteService.updateSite(siteName, createSiteRequestDTO);
+        SiteEntity siteEntity = siteService.updateSite(siteName, createSiteRequestDTO, userId);
         return Response.ok(siteEntity).build();
     }
 }

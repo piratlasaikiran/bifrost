@@ -10,6 +10,7 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.dto.PassBookResponseDTO;
+import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -20,9 +21,11 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
@@ -101,5 +104,48 @@ public class TransactionResource {
                                             @NotNull @HeaderParam(X_USER_ID) String userId){
         List<PassBookResponseDTO> passBooks = transactionService.getAccountPassBook(accountName);
         return Response.ok(passBooks).build();
+    }
+
+    @PUT
+    @Path("/{transactionId}/update-transaction")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response updateTransaction(@NotNull @PathParam("transactionId") Long transactionId,
+                                      @FormDataParam("createTransactionPayload") CreateTransactionRequestDTO createTransactionRequestDTO,
+                                      @FormDataParam("bill") InputStream bill,
+                                      @FormDataParam("bill") FormDataContentDisposition billContent,
+                                      @NotNull @HeaderParam(X_USER_ID) String userId){
+        TransactionEntity transaction = transactionService.updateTransaction(createTransactionRequestDTO, bill, userId, transactionId);
+        return Response.ok(transaction).build();
+    }
+
+    @GET
+    @Path("/{transactionId}/get-bill")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTransactionBill(@NotNull @PathParam("transactionId") Long transactionId,
+                                            @NotNull @HeaderParam(X_USER_ID) String userId){
+        InputStream aadhar = new ByteArrayInputStream(transactionService.getTransaction(transactionId).getBill());
+        return Response.ok(aadhar).build();
+    }
+
+    @GET
+    @Path("/state-changes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTransactionStateChangeMap(@NotNull @HeaderParam(X_USER_ID) String userId){
+        Map<TransactionStatus,List<TransactionStatus>> transactionStatusChangeMapping = transactionService.getTransactionStatusChangeMapping();
+        return Response.ok(transactionStatusChangeMapping).build();
+    }
+
+    @POST
+    @Path("/{transactionId}/update-transaction-status")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response changeTransactionState(@NotNull @PathParam("transactionId") Long transactionId,
+                                           TransactionStatusChangeDTO transactionStatusChangeDTO,
+                                           @NotNull @HeaderParam(X_USER_ID) String userId){
+        transactionService.changeTransactionStatus(transactionStatusChangeDTO, userId);
+        return Response.ok().build();
     }
 }

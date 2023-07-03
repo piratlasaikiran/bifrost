@@ -6,10 +6,12 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.dto.PassBookResponseDTO;
+import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
 
 import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 public interface TransactionService {
     TransactionEntity createTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId);
@@ -25,4 +27,12 @@ public interface TransactionService {
     List<PassBookResponseDTO> getAccountPassBook(String accountName);
 
     EnumSet<TransactionStatus> getTransactionStatuses();
+
+    TransactionEntity updateTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId, Long transactionId);
+
+    TransactionEntity getTransaction(Long transactionId);
+
+    Map<TransactionStatus, List<TransactionStatus>> getTransactionStatusChangeMapping();
+
+    void changeTransactionStatus(TransactionStatusChangeDTO transactionStatusChangeDTO, String userId);
 }

@@ -44,7 +44,8 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
                 int dailyWage = createEmployeeAttendanceRequestDTO.getAttendanceType() == AttendanceType.DAY ? driverEntity.getOtPayDay() : driverEntity.getOtPayDayNight();
                 TransactionEntity transactionEntity = getTransactionEntityForAttendance(createEmployeeAttendanceRequestDTO.getEnteredBy(), createEmployeeAttendanceRequestDTO.getEmployeeName(),
                         dailyWage, createEmployeeAttendanceRequestDTO.getAttendanceDate(), createEmployeeAttendanceRequestDTO.getBankAccount(), userId);
-                saveTransactionAndPassBookEntries(transactionEntity);
+                transactionEntityDao.saveTransaction(transactionEntity);
+                savePassBookEntries(transactionEntity);
             }
         }
         return employeeAttendanceEntity;
@@ -80,8 +81,7 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
         return employeeAttendanceRequestDTOS;
     }
 
-    private void saveTransactionAndPassBookEntries(TransactionEntity transactionEntity) {
-        transactionEntityDao.saveTransaction(transactionEntity);
+    private void savePassBookEntries(TransactionEntity transactionEntity) {
         Set<String> employees = getAllEmployeeNames();
         List<PassBookEntity> passBookEntities = createPassBookEntities(transactionEntity, employees, getPreviousPassBookBalance(transactionEntity.getSource()), getPreviousPassBookBalance(transactionEntity.getDestination()));
         passBookEntityDao.savePassBookEntities(passBookEntities);

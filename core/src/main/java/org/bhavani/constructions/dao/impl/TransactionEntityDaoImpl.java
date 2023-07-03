@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> implements TransactionEntityDao {
 
@@ -29,5 +30,10 @@ public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> imp
         Map<String, Object> params = new HashMap<>();
         return findAllByNamedQuery("GetAllTransactions",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public Optional<TransactionEntity> getTransaction(Long transactionId) {
+        return this.get(transactionId);
     }
 }

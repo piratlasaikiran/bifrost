@@ -1,9 +1,9 @@
 package org.bhavani.constructions.constants;
 
 import org.bhavani.constructions.dao.entities.models.CommodityType;
+import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.bhavani.constructions.dao.entities.models.CommodityType.*;
 
@@ -60,5 +60,13 @@ public class Constants {
         put(IRON, "No.of Tons");
         put(CONCRETE_CHIP, "No.of Tons");
         put(TAR, "No.of Barrels");
+    }};
+
+    public static final Map<TransactionStatus, List<TransactionStatus>> TRANSACTION_STATE_CHANGE_ALLOWANCE = new HashMap<TransactionStatus, List<TransactionStatus>>()
+    {{
+        put(TransactionStatus.SUBMITTED, Arrays.asList(TransactionStatus.CHECKED, TransactionStatus.REJECTED, TransactionStatus.ON_HOLD));
+        put(TransactionStatus.ON_HOLD, Arrays.asList(TransactionStatus.CHECKED, TransactionStatus.REJECTED));
+        put(TransactionStatus.CHECKED, new ArrayList<>());
+        put(TransactionStatus.REJECTED, new ArrayList<>());
     }};
 }
