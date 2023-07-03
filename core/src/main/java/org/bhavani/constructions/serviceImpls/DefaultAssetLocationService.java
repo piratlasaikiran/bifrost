@@ -15,11 +15,12 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.VEHICLE;
-import static org.bhavani.constructions.constants.ErrorConstants.ASSET_LOCATION_INVALID;
-import static org.bhavani.constructions.constants.ErrorConstants.SITE_NOT_FOUND;
+import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.createAssetLocationEntity;
 
 @Slf4j
@@ -64,13 +65,17 @@ public class DefaultAssetLocationService implements AssetLocationService {
     }
 
     @Override
-    public AssetLocationEntity updateAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO, String assetName) throws OverlappingIntervalsException {
+    public AssetLocationEntity updateAssetLocation(CreateAssetLocationRequestDTO createAssetLocationRequestDTO, Long assetLocationId) throws OverlappingIntervalsException {
         if(!isValidAssetLocationEntry(createAssetLocationRequestDTO)){
             log.error("Overlapping intervals.");
             throw new OverlappingIntervalsException(ASSET_LOCATION_INVALID);
         }
-        AssetLocationEntity assetLocationEntity = getAssetLocation(assetName, createAssetLocationRequestDTO.getLocation(), createAssetLocationRequestDTO.getStartDate());
+        AssetLocationEntity assetLocationEntity = assetLocationEntityDao.getAssetLocation(assetLocationId).orElseThrow(() -> {
+            log.error("Asset with ID: {} doesn't exist. ", assetLocationId);
+            return new IllegalArgumentException(ASSET_NOT_FOUND);
+        });
         assetLocationEntity.setAssetType(createAssetLocationRequestDTO.getAssetType());
+        assetLocationEntity.setAssetName(createAssetLocationRequestDTO.getAssetName());
         assetLocationEntity.setLocation(createAssetLocationRequestDTO.getLocation());
         assetLocationEntity.setStartDate(createAssetLocationRequestDTO.getStartDate());
         assetLocationEntity.setEndDate(createAssetLocationRequestDTO.getEndDate());
@@ -94,6 +99,7 @@ public class DefaultAssetLocationService implements AssetLocationService {
         List<CreateAssetLocationRequestDTO> assetLocationRequestDTOS = new ArrayList<>();
         assetLocationEntities.forEach(assetLocationEntity -> {
             assetLocationRequestDTOS.add(CreateAssetLocationRequestDTO.builder()
+                            .assetLocationId(assetLocationEntity.getId())
                             .assetName(assetLocationEntity.getAssetName())
                             .assetType(assetLocationEntity.getAssetType())
                             .location(assetLocationEntity.getLocation())
@@ -106,7 +112,9 @@ public class DefaultAssetLocationService implements AssetLocationService {
 
     private boolean isValidAssetLocationEntry(CreateAssetLocationRequestDTO createAssetLocationRequestDTO){
         List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao
-                .getAssetLocationEntities(createAssetLocationRequestDTO.getAssetName());
+                .getAssetLocationEntities(createAssetLocationRequestDTO.getAssetName())
+                .stream().filter(assetLocationEntity -> !Objects.equals(assetLocationEntity.getId(), createAssetLocationRequestDTO.getAssetLocationId()))
+                .collect(Collectors.toList());
         for(AssetLocationEntity assetLocationEntity : assetLocationEntities){
             if(overlappingExistence(assetLocationEntity, createAssetLocationRequestDTO))
                 return false;

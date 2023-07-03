@@ -17,6 +17,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CreateAssetLocationRequestDTO {
 
+    @JsonProperty("asset_location_id")
+    private Long assetLocationId;
+
     @JsonProperty("asset_type")
     private String assetType;
 
