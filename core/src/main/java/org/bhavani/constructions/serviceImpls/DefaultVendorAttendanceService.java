@@ -52,7 +52,7 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             TransactionEntity transactionEntity = getTransactionEntityForAttendance(createVendorAttendanceRequestDTO.getEnteredBy(),
                     createVendorAttendanceRequestDTO.getVendorId(), vendorPaymentAmount.get(),
                     createVendorAttendanceRequestDTO.getAttendanceDate(), createVendorAttendanceRequestDTO.getBankAccount(), userId);
-            saveTransactionAndPassBookEntries(transactionEntity);
+            transactionEntityDao.saveTransaction(transactionEntity);
         }
         return vendorAttendanceEntity;
     }
@@ -74,25 +74,5 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             );
         });
         return vendorAttendanceRequestDTOS;
-    }
-
-    private void saveTransactionAndPassBookEntries(TransactionEntity transactionEntity) {
-        transactionEntityDao.saveTransaction(transactionEntity);
-        Set<String> employees = getAllEmployeeNames();
-        List<PassBookEntity> passBookEntities = createPassBookEntities(transactionEntity, employees, getPreviousPassBookBalance(transactionEntity.getSource()), getPreviousPassBookBalance(transactionEntity.getDestination()));
-        passBookEntityDao.savePassBookEntities(passBookEntities);
-    }
-
-    private Long getPreviousPassBookBalance(String accountName){
-        Optional<PassBookEntity> previousPassBookEntity = passBookEntityDao.getLatestPassBookEntity(accountName);
-        return previousPassBookEntity.isPresent() ? previousPassBookEntity.get().getCurrentBalance() : 0L;
-    }
-
-    private Set<String> getAllEmployeeNames() {
-        Set<String> employeeNames = new HashSet<>();
-        employeeNames.addAll(driverEntityDao.getDrivers().stream().map(DriverEntity::getName).collect(Collectors.toSet()));
-        employeeNames.addAll(supervisorEntityDao.getAllSupervisors().stream().map(SupervisorEntity::getName).collect(Collectors.toSet()));
-        employeeNames.addAll(vendorEntityDao.getAllVendors().stream().map(VendorEntity::getVendorId).collect(Collectors.toSet()));
-        return employeeNames;
     }
 }

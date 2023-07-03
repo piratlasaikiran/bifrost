@@ -45,7 +45,6 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
                 TransactionEntity transactionEntity = getTransactionEntityForAttendance(createEmployeeAttendanceRequestDTO.getEnteredBy(), createEmployeeAttendanceRequestDTO.getEmployeeName(),
                         dailyWage, createEmployeeAttendanceRequestDTO.getAttendanceDate(), createEmployeeAttendanceRequestDTO.getBankAccount(), userId);
                 transactionEntityDao.saveTransaction(transactionEntity);
-                savePassBookEntries(transactionEntity);
             }
         }
         return employeeAttendanceEntity;
@@ -79,24 +78,5 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
             );
         });
         return employeeAttendanceRequestDTOS;
-    }
-
-    private void savePassBookEntries(TransactionEntity transactionEntity) {
-        Set<String> employees = getAllEmployeeNames();
-        List<PassBookEntity> passBookEntities = createPassBookEntities(transactionEntity, employees, getPreviousPassBookBalance(transactionEntity.getSource()), getPreviousPassBookBalance(transactionEntity.getDestination()));
-        passBookEntityDao.savePassBookEntities(passBookEntities);
-    }
-
-    private Long getPreviousPassBookBalance(String accountName){
-        Optional<PassBookEntity> previousPassBookEntity = passBookEntityDao.getLatestPassBookEntity(accountName);
-        return previousPassBookEntity.isPresent() ? previousPassBookEntity.get().getCurrentBalance() : 0L;
-    }
-
-    private Set<String> getAllEmployeeNames() {
-        Set<String> employeeNames = new HashSet<>();
-        employeeNames.addAll(driverEntityDao.getDrivers().stream().map(DriverEntity::getName).collect(Collectors.toSet()));
-        employeeNames.addAll(supervisorEntityDao.getAllSupervisors().stream().map(SupervisorEntity::getName).collect(Collectors.toSet()));
-        employeeNames.addAll(vendorEntityDao.getAllVendors().stream().map(VendorEntity::getVendorId).collect(Collectors.toSet()));
-        return employeeNames;
     }
 }
