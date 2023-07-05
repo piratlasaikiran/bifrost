@@ -4,6 +4,7 @@ import org.bhavani.constructions.dao.api.VehicleTaxEntityDao;
 import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
 import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
 import org.bhavani.constructions.helpers.AbstractDAO;
+import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;
 
 import javax.inject.Inject;
@@ -43,5 +44,12 @@ public class VehicleTaxEntityDaoImpl extends AbstractDAO<VehicleTaxEntity> imple
 
     public void saveVehicleTaxEntity(VehicleTaxEntity vehicleTaxEntity) {
         this.currentSession().saveOrUpdate(vehicleTaxEntity);
+    }
+
+    @Override
+    public List<VehicleTaxEntity> getLatestTaxTypesForAllVehicles() {
+        Map<String, Object> params = new HashMap<>();
+        return findAllByNamedQuery("LatestTaxTypesByVehicleNumber",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

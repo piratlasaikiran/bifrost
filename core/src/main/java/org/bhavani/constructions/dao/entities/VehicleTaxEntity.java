@@ -18,7 +18,12 @@ import java.time.LocalDate;
 @NamedQueries(value = {
         @NamedQuery(name = "GetTaxEntryByDetails",
                 query = "select T from VehicleTaxEntity T where T.vehicleNumber = :vehicle_num " +
-                        "and T.taxType = :tax_type and T.validityStartDate = :start_date")
+                        "and T.taxType = :tax_type and T.validityStartDate = :start_date"),
+        @NamedQuery(
+                name = "LatestTaxTypesByVehicleNumber",
+                query = "SELECT V FROM VehicleTaxEntity V WHERE (V.vehicleNumber, V.taxType, V.validityEndDate) IN ("
+                        + " SELECT V2.vehicleNumber, V2.taxType, MAX(V2.validityEndDate) "
+                        + " FROM VehicleTaxEntity V2 GROUP BY V2.vehicleNumber, V2.taxType)")
 })
 @Table(name = "vehicle_taxes")
 public class VehicleTaxEntity extends BaseEntity {

@@ -3,6 +3,7 @@ package org.bhavani.constructions.dao.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.VehicleEntityDao;
 import org.bhavani.constructions.dao.entities.VehicleEntity;
+import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
 import org.bhavani.constructions.helpers.AbstractDAO;
 import org.bhavani.constructions.helpers.PageRequestUtil;
 import org.hibernate.SessionFactory;

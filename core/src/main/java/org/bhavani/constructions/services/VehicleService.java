@@ -9,6 +9,7 @@ import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 public interface VehicleService {
 
@@ -16,7 +17,7 @@ public interface VehicleService {
 
     void addVehicle(CreateVehicleRequestDTO createVehicleRequestDTO, List<UploadVehicleTaxRequestDTO> vehicleTaxRequestDTOS);
 
-    VehicleEntity updateVehicle(CreateVehicleRequestDTO createVehicleRequestDTO);
+    VehicleEntity updateVehicle(CreateVehicleRequestDTO createVehicleRequestDTO, String vehicleNumber);
 
     VehicleEntity getVehicle(String vehicleNumber);
 
@@ -31,4 +32,6 @@ public interface VehicleService {
     void delete(String vehicleNumber);
 
     List<CreateVehicleRequestDTO> getVehicles();
+
+    Map<String, List<UploadVehicleTaxRequestDTO>> getLatestTaxTypesByVehicleNumber();
 }
