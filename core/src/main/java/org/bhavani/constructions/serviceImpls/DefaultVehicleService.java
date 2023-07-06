@@ -15,9 +15,7 @@ import org.bhavani.constructions.services.VehicleService;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
 import static org.bhavani.constructions.utils.EntityBuilder.*;
@@ -42,8 +40,8 @@ public class DefaultVehicleService implements VehicleService {
     }
 
     @Override
-    public VehicleEntity updateVehicle(CreateVehicleRequestDTO updateVehicleRequestDTO) {
-        VehicleEntity vehicle = vehicleEntityDao.getVehicle(updateVehicleRequestDTO.getVehicleNumber())
+    public VehicleEntity updateVehicle(CreateVehicleRequestDTO updateVehicleRequestDTO, String vehicleNumber) {
+        VehicleEntity vehicle = vehicleEntityDao.getVehicle(vehicleNumber)
                 .orElseThrow(() -> {
                     log.error("{} doesn't exist. Create vehicle first", updateVehicleRequestDTO.getVehicleNumber());
                     return new IllegalArgumentException(USER_NOT_FOUND);
@@ -112,19 +110,60 @@ public class DefaultVehicleService implements VehicleService {
     public List<CreateVehicleRequestDTO> getVehicles() {
         List<VehicleEntity> vehicleEntities = vehicleEntityDao.getVehicles();
         List<CreateVehicleRequestDTO> vehicleRequestDTOS = new ArrayList<>();
-        vehicleEntities.forEach(vehicleEntity -> vehicleRequestDTOS.add(CreateVehicleRequestDTO.builder()
-                        .vehicleNumber(vehicleEntity.getVehicleNumber())
-                        .owner(vehicleEntity.getOwner())
-                        .chassisNumber(vehicleEntity.getChassisNumber())
-                        .engineNumber(vehicleEntity.getEngineNumber())
-                        .vehicleClass(vehicleEntity.getVehicleClass())
-                        .insuranceProvider(vehicleEntity.getInsuranceProvider())
-                        .financeProvider(vehicleEntity.getFinanceProvider())
-                        .build()));
+        vehicleEntities.forEach(vehicleEntity -> vehicleRequestDTOS.add(getVehicleDTO(vehicleEntity)));
         return vehicleRequestDTOS;
     }
 
+    private static CreateVehicleRequestDTO getVehicleDTO(VehicleEntity vehicleEntity) {
+        return CreateVehicleRequestDTO.builder()
+                .vehicleNumber(vehicleEntity.getVehicleNumber())
+                .owner(vehicleEntity.getOwner())
+                .chassisNumber(vehicleEntity.getChassisNumber())
+                .engineNumber(vehicleEntity.getEngineNumber())
+                .vehicleClass(vehicleEntity.getVehicleClass())
+                .insuranceProvider(vehicleEntity.getInsuranceProvider())
+                .financeProvider(vehicleEntity.getFinanceProvider())
+                .build();
+    }
+
+    @Override
+    public Map<String, List<UploadVehicleTaxRequestDTO>> getLatestTaxTypesByVehicleNumber() {
+        List<VehicleTaxEntity> vehicleTaxEntities = vehicleTaxEntityDao.getLatestTaxTypesForAllVehicles();
+        Map<String, List<UploadVehicleTaxRequestDTO>> vehicleLatestTaxes = new HashMap<>();
+        vehicleTaxEntities.forEach(vehicleTaxEntity -> {
+            UploadVehicleTaxRequestDTO vehicleTaxRequestDTO = getVehicleTaxDTO(vehicleTaxEntity);
+            List<UploadVehicleTaxRequestDTO> existingLatestTaxes = vehicleLatestTaxes.get(vehicleTaxEntity.getVehicleNumber());
+            if(Objects.isNull(existingLatestTaxes)) {
+                existingLatestTaxes = new ArrayList<>();
+                vehicleLatestTaxes.put(vehicleTaxEntity.getVehicleNumber(), existingLatestTaxes);
+            }
+            existingLatestTaxes.add(vehicleTaxRequestDTO);
+        });
+        return vehicleLatestTaxes;
+    }
+
+    @Override
+    public List<UploadVehicleTaxRequestDTO> getVehicleTaxes(String vehicleNumber) {
+        List<VehicleTaxEntity> vehicleTaxEntities = vehicleTaxEntityDao.getTaxesForVehicle(vehicleNumber);
+        List<UploadVehicleTaxRequestDTO> vehicleTaxRequestDTOS = new ArrayList<>();
+        vehicleTaxEntities.forEach(vehicleTaxEntity -> {
+            vehicleTaxRequestDTOS.add(getVehicleTaxDTO(vehicleTaxEntity));
+        });
+        return vehicleTaxRequestDTOS;
+    }
+
+    private UploadVehicleTaxRequestDTO getVehicleTaxDTO(VehicleTaxEntity vehicleTaxEntity) {
+        return UploadVehicleTaxRequestDTO.builder()
+                .vehicleNumber(vehicleTaxEntity.getVehicleNumber())
+                .taxType(vehicleTaxEntity.getTaxType())
+                .amount(vehicleTaxEntity.getAmount())
+                .validityStartDate(vehicleTaxEntity.getValidityStartDate())
+                .validityEndDate(vehicleTaxEntity.getValidityEndDate())
+                .build();
+    }
+
     private void updateVehicleData(VehicleEntity vehicle, CreateVehicleRequestDTO updateVehicleRequestDTO) {
+        vehicle.setVehicleNumber(updateVehicleRequestDTO.getVehicleNumber());
         vehicle.setOwner(updateVehicleRequestDTO.getOwner());
         vehicle.setChassisNumber(updateVehicleRequestDTO.getChassisNumber());
         vehicle.setEngineNumber(updateVehicleRequestDTO.getEngineNumber());

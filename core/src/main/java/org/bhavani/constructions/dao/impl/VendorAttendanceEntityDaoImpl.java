@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class VendorAttendanceEntityDaoImpl extends AbstractDAO<VendorAttendanceEntity> implements VendorAttendanceEntityDao {
 
@@ -28,5 +29,10 @@ public class VendorAttendanceEntityDaoImpl extends AbstractDAO<VendorAttendanceE
         Map<String, Object> params = new HashMap<>();
         return findAllByNamedQuery("GetAllVendorAttendances",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public Optional<VendorAttendanceEntity> getVendorAttendance(Long existingVendorAttendanceId) {
+        return this.get(existingVendorAttendanceId);
     }
 }

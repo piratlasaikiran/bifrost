@@ -15,10 +15,10 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAssetLocationRequestDTO {
+public class CreateAssetOwnershipRequestDTO {
 
-    @JsonProperty("asset_location_id")
-    private Long assetLocationId;
+    @JsonProperty("asset_ownership_id")
+    private Long assetOwnershipId;
 
     @JsonProperty("asset_type")
     private String assetType;
@@ -26,16 +26,16 @@ public class CreateAssetLocationRequestDTO {
     @JsonProperty("asset_name")
     private String assetName;
 
-    @JsonProperty("location")
-        private String location;
+    @JsonProperty("cur_owner")
+    private String currentOwner;
 
+    @JsonProperty("start_date")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @JsonProperty("start_date")
     private LocalDate startDate;
 
+    @JsonProperty("end_date")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @JsonProperty("end_date")
     private LocalDate endDate;
 }

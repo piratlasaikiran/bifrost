@@ -19,10 +19,12 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.*;
@@ -92,12 +94,14 @@ public class VehicleResource {
     }
 
     @PUT
-    @Path("/update-vehicle")
+    @Path("/{vehicleNumber}/update-vehicle")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response updateVehicle(CreateVehicleRequestDTO createVehicleRequestDTO){
-        VehicleEntity vehicle = vehicleService.updateVehicle(createVehicleRequestDTO);
+    public Response updateVehicle(@NotNull @PathParam("vehicleNumber") String vehicleNumber,
+                                  CreateVehicleRequestDTO createVehicleRequestDTO,
+                                  @NotNull @HeaderParam(X_USER_ID) String userId){
+        VehicleEntity vehicle = vehicleService.updateVehicle(createVehicleRequestDTO, vehicleNumber);
         return Response.ok(vehicle).build();
     }
 
@@ -150,14 +154,15 @@ public class VehicleResource {
     }
 
     @GET
-    @Path("/{vehicleNumber}/tax-type/{taxType}/validity-start-date/{validityStartDate}/get-vehicle-tax-details")
+    @Path("/{vehicleNumber}/tax-type/{taxType}/validity-start-date/{validityStartDate}/get-vehicle-tax-document")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getTaxDocument(@PathParam("vehicleNumber") @NotNull String vehicleNumber,
                                    @PathParam("taxType") @NotNull String taxType,
                                    @PathParam("validityStartDate") @NotNull String validityStartDate){
         VehicleTaxEntity vehicleTaxEntity = vehicleService.getVehicleTaxEntry(vehicleNumber, VehicleTaxEnum.valueOf(taxType), LocalDate.parse(validityStartDate));
-        return Response.ok(vehicleTaxEntity).build();
+        InputStream vehicleTaxDocument = new ByteArrayInputStream(vehicleTaxEntity.getTaxReceipt());
+        return Response.ok(vehicleTaxDocument).build();
     }
 
     @DELETE
@@ -169,5 +174,24 @@ public class VehicleResource {
                                       @PathParam("validityStartDate") @NotNull String validityStartDate){
         vehicleService.deleteVehicleTaxEntry(vehicleNumber, VehicleTaxEnum.valueOf(taxType), LocalDate.parse(validityStartDate));
         return Response.ok(TAX_DOC_DELETED_SUCCESSFULLY).build();
+    }
+
+    @GET
+    @Path("/get-latest-vehicle-taxes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getLatestTaxTypesByVehicleNumber(@NotNull @HeaderParam(X_USER_ID) String userId){
+        Map<String, List<UploadVehicleTaxRequestDTO>> vehicleLatestTaxes = vehicleService.getLatestTaxTypesByVehicleNumber();
+        return Response.ok(vehicleLatestTaxes).build();
+    }
+
+    @GET
+    @Path("/{vehicleNumber}/get-vehicle-taxes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTaxesForVehicle(@PathParam("vehicleNumber") @NotNull String vehicleNumber,
+                                       @NotNull @HeaderParam(X_USER_ID) String userId){
+        List<UploadVehicleTaxRequestDTO> vehicleTaxes = vehicleService.getVehicleTaxes(vehicleNumber);
+        return Response.ok(vehicleTaxes).build();
     }
 }

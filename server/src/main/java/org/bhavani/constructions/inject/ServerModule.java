@@ -23,7 +23,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(DriverService.class).to(DefaultDriverService.class).in(Singleton.class);
         bind(VehicleService.class).to(DefaultVehicleService.class).in(Singleton.class);
         bind(SiteService.class).to(DefaultSiteService.class).in(Singleton.class);
-        bind(AssetLocationService.class).to(DefaultAssetLocationService.class).in(Singleton.class);
+        bind(AssetManagementService.class).to(DefaultAssetManagementService.class).in(Singleton.class);
         bind(UserService.class).to(DefaultUserService.class).in(Singleton.class);
         bind(VendorService.class).to(DefaultVendorService.class).in(Singleton.class);
         bind(BankAccountService.class).to(DefaultBankAccountService.class).in(Singleton.class);
@@ -44,6 +44,7 @@ public class ServerModule extends DropwizardAwareModule<ServerConfiguration> {
         bind(VendorAttendanceEntityDao.class).to(VendorAttendanceEntityDaoImpl.class).in(Singleton.class);
         bind(EmployeeAttendanceDao.class).to(EmployeeAttendanceDaoImpl.class).in(Singleton.class);
         bind(PassBookEntityDao.class).to(PassBookEntityDaoImpl.class).in(Singleton.class);
+        bind(AssetOwnershipEntityDao.class).to(AssetOwnershipEntityDaoImpl.class).in(Singleton.class);
     }
 
     @Provides

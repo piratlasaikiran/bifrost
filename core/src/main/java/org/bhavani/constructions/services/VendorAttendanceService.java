@@ -9,4 +9,6 @@ public interface VendorAttendanceService {
     VendorAttendanceEntity enterAttendance(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId);
 
     List<CreateVendorAttendanceRequestDTO> getAllVendorAttendance();
+
+    VendorAttendanceEntity updateAttendance(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId, Long existingVendorAttendanceId);
 }

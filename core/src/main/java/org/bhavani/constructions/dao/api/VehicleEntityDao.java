@@ -1,6 +1,7 @@
 package org.bhavani.constructions.dao.api;
 
 import org.bhavani.constructions.dao.entities.VehicleEntity;
+import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
 
 import java.util.List;
 import java.util.Optional;

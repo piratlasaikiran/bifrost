@@ -11,8 +11,11 @@ public class ErrorConstants {
     public static final String SITE_NOT_FOUND = "Site not found";
     public static final String SITE_EXISTS = "Site exists. Choose another name";
     public static final String ASSET_LOCATION_INVALID = "Invalid dates. Overlapping with existing entries";
+    public static final String ASSET_OWNERSHIP_INVALID = "Invalid dates. Overlapping with existing entries";
     public static final String TRANSACTION_ERROR = "Error while making transaction";
     public static final String TRANSACTION_NOT_FOUND = "Transaction not found";
     public static final String ERROR_WHILE_FETCHING_TAX_DOC = " Error while fetching vehicle tax document";
     public static final String INVALID_MOBILE_NUMBER = "Invalid mobile number, check again";
+    public static final String ATTENDANCE_ENTRY_NOT_FOUND = "Attendance entry not found";
+
 }

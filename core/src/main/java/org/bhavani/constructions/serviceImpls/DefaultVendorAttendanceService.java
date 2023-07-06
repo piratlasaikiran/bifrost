@@ -3,20 +3,23 @@ package org.bhavani.constructions.serviceImpls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.*;
-import org.bhavani.constructions.dao.entities.*;
+import org.bhavani.constructions.dao.entities.TransactionEntity;
+import org.bhavani.constructions.dao.entities.VendorAttendanceEntity;
+import org.bhavani.constructions.dao.entities.VendorEntity;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dto.CreateVendorAttendanceRequestDTO;
 import org.bhavani.constructions.services.VendorAttendanceService;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
+import static org.bhavani.constructions.constants.ErrorConstants.ATTENDANCE_ENTRY_NOT_FOUND;
 import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_ERROR;
 import static org.bhavani.constructions.utils.EntityBuilder.createVendorAttendanceEntity;
 import static org.bhavani.constructions.utils.EntityBuilder.getTransactionEntityForAttendance;
-import static org.bhavani.constructions.utils.PassBookHelper.createPassBookEntities;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -63,6 +66,7 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
         List<CreateVendorAttendanceRequestDTO> vendorAttendanceRequestDTOS = new ArrayList<>();
         vendorAttendanceEntities.forEach(vendorAttendanceEntity -> {
             vendorAttendanceRequestDTOS.add(CreateVendorAttendanceRequestDTO.builder()
+                            .id(vendorAttendanceEntity.getId())
                             .vendorId(vendorAttendanceEntity.getVendorId())
                             .site(vendorAttendanceEntity.getSite())
                             .attendanceDate(vendorAttendanceEntity.getAttendanceDate())
@@ -74,5 +78,24 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             );
         });
         return vendorAttendanceRequestDTOS;
+    }
+
+    @Override
+    public VendorAttendanceEntity updateAttendance(CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO, String userId, Long existingVendorAttendanceId) {
+        VendorAttendanceEntity existingVendorAttendanceEntity = vendorAttendanceEntityDao.getVendorAttendance(existingVendorAttendanceId).orElseThrow(() -> {
+            log.error("Error while updating attendance");
+            return new RuntimeException(ATTENDANCE_ENTRY_NOT_FOUND);
+        });
+        existingVendorAttendanceEntity.setSite(createVendorAttendanceRequestDTO.getSite());
+        existingVendorAttendanceEntity.setVendorId(createVendorAttendanceRequestDTO.getVendorId());
+        existingVendorAttendanceEntity.setEnteredBy(createVendorAttendanceRequestDTO.getEnteredBy());
+        existingVendorAttendanceEntity.setAttendanceDate(createVendorAttendanceRequestDTO.getAttendanceDate());
+        existingVendorAttendanceEntity.setCommodityAttendance(createVendorAttendanceRequestDTO.getCommodityAttendance());
+        existingVendorAttendanceEntity.setMakeTransaction(createVendorAttendanceRequestDTO.isMakeTransaction());
+        existingVendorAttendanceEntity.setBankAccount(createVendorAttendanceRequestDTO.getBankAccount());
+
+        //ToDo: make changes in existing transaction entity and reflect balances accordingly.
+
+        return existingVendorAttendanceEntity;
     }
 }

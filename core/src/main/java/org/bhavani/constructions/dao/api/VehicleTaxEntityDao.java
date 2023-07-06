@@ -16,4 +16,8 @@ public interface VehicleTaxEntityDao {
     Optional<VehicleTaxEntity> getVehicleTaxEntity(String vehicleNumber, VehicleTaxEnum taxType, LocalDate validityStartDate);
 
     void deleteVehicleTaxEntry(VehicleTaxEntity vehicleTaxEntity);
+
+    List<VehicleTaxEntity> getLatestTaxTypesForAllVehicles();
+
+    List<VehicleTaxEntity> getTaxesForVehicle(String vehicleNumber);
 }

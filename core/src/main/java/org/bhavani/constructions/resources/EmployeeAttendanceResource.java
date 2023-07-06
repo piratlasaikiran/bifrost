@@ -10,6 +10,7 @@ import org.bhavani.constructions.dao.entities.models.EmployeeType;
 import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -67,5 +68,16 @@ public class EmployeeAttendanceResource {
     public Response getAllEmployeeAttendances(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateEmployeeAttendanceRequestDTO> createEmployeeAttendanceRequestDTOS = employeeAttendanceService.getAllEmployeeAttendances();
         return Response.ok(createEmployeeAttendanceRequestDTOS).build();
+    }
+
+    @PUT
+    @Path("/{existingEmployeeAttendanceId}/update-attendance")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response updateAttendance(@Nonnull @PathParam("existingEmployeeAttendanceId") Long existingEmployeeAttendanceId,
+                                     CreateEmployeeAttendanceRequestDTO createEmployeeAttendanceRequestDTO,
+                                     @NotNull @HeaderParam(X_USER_ID) String userId){
+        EmployeeAttendanceEntity employeeAttendanceEntity = employeeAttendanceService.updateAttendance(createEmployeeAttendanceRequestDTO, userId, existingEmployeeAttendanceId);
+        return Response.ok(employeeAttendanceEntity).build();
     }
 }
