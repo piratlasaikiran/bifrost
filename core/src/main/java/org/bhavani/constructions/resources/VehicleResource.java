@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -153,14 +154,15 @@ public class VehicleResource {
     }
 
     @GET
-    @Path("/{vehicleNumber}/tax-type/{taxType}/validity-start-date/{validityStartDate}/get-vehicle-tax-details")
+    @Path("/{vehicleNumber}/tax-type/{taxType}/validity-start-date/{validityStartDate}/get-vehicle-tax-document")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getTaxDocument(@PathParam("vehicleNumber") @NotNull String vehicleNumber,
                                    @PathParam("taxType") @NotNull String taxType,
                                    @PathParam("validityStartDate") @NotNull String validityStartDate){
         VehicleTaxEntity vehicleTaxEntity = vehicleService.getVehicleTaxEntry(vehicleNumber, VehicleTaxEnum.valueOf(taxType), LocalDate.parse(validityStartDate));
-        return Response.ok(vehicleTaxEntity).build();
+        InputStream vehicleTaxDocument = new ByteArrayInputStream(vehicleTaxEntity.getTaxReceipt());
+        return Response.ok(vehicleTaxDocument).build();
     }
 
     @DELETE
@@ -181,5 +183,15 @@ public class VehicleResource {
     public Response getLatestTaxTypesByVehicleNumber(@NotNull @HeaderParam(X_USER_ID) String userId){
         Map<String, List<UploadVehicleTaxRequestDTO>> vehicleLatestTaxes = vehicleService.getLatestTaxTypesByVehicleNumber();
         return Response.ok(vehicleLatestTaxes).build();
+    }
+
+    @GET
+    @Path("/{vehicleNumber}/get-vehicle-taxes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getTaxesForVehicle(@PathParam("vehicleNumber") @NotNull String vehicleNumber,
+                                       @NotNull @HeaderParam(X_USER_ID) String userId){
+        List<UploadVehicleTaxRequestDTO> vehicleTaxes = vehicleService.getVehicleTaxes(vehicleNumber);
+        return Response.ok(vehicleTaxes).build();
     }
 }

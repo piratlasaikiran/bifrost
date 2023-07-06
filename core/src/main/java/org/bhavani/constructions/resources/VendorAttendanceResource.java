@@ -8,6 +8,7 @@ import org.bhavani.constructions.dao.entities.VendorAttendanceEntity;
 import org.bhavani.constructions.dto.CreateVendorAttendanceRequestDTO;
 import org.bhavani.constructions.services.VendorAttendanceService;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -45,5 +46,16 @@ public class VendorAttendanceResource {
     public Response getAllVendorAttendance(@NotNull @HeaderParam(X_USER_ID) String userId){
         List<CreateVendorAttendanceRequestDTO> vendorAttendanceRequestDTOS = vendorAttendanceService.getAllVendorAttendance();
         return Response.ok(vendorAttendanceRequestDTOS).build();
+    }
+
+    @PUT
+    @Path("/{existingVendorAttendanceId}/update-vendor-attendance")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response updateVendorAttendance(@Nonnull @PathParam("existingVendorAttendanceId") Long existingVendorAttendanceId,
+                                           CreateVendorAttendanceRequestDTO createVendorAttendanceRequestDTO,
+                                           @NotNull @HeaderParam(X_USER_ID) String userId){
+        VendorAttendanceEntity vendorAttendance = vendorAttendanceService.updateAttendance(createVendorAttendanceRequestDTO, userId, existingVendorAttendanceId);
+        return Response.ok(vendorAttendance).build();
     }
 }

@@ -34,4 +34,6 @@ public interface VehicleService {
     List<CreateVehicleRequestDTO> getVehicles();
 
     Map<String, List<UploadVehicleTaxRequestDTO>> getLatestTaxTypesByVehicleNumber();
+
+    List<UploadVehicleTaxRequestDTO> getVehicleTaxes(String vehicleNumber);
 }

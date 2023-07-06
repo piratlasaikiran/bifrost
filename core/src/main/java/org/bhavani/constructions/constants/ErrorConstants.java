@@ -16,4 +16,6 @@ public class ErrorConstants {
     public static final String TRANSACTION_NOT_FOUND = "Transaction not found";
     public static final String ERROR_WHILE_FETCHING_TAX_DOC = " Error while fetching vehicle tax document";
     public static final String INVALID_MOBILE_NUMBER = "Invalid mobile number, check again";
+    public static final String ATTENDANCE_ENTRY_NOT_FOUND = "Attendance entry not found";
+
 }

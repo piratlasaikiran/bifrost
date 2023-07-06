@@ -142,6 +142,16 @@ public class DefaultVehicleService implements VehicleService {
         return vehicleLatestTaxes;
     }
 
+    @Override
+    public List<UploadVehicleTaxRequestDTO> getVehicleTaxes(String vehicleNumber) {
+        List<VehicleTaxEntity> vehicleTaxEntities = vehicleTaxEntityDao.getTaxesForVehicle(vehicleNumber);
+        List<UploadVehicleTaxRequestDTO> vehicleTaxRequestDTOS = new ArrayList<>();
+        vehicleTaxEntities.forEach(vehicleTaxEntity -> {
+            vehicleTaxRequestDTOS.add(getVehicleTaxDTO(vehicleTaxEntity));
+        });
+        return vehicleTaxRequestDTOS;
+    }
+
     private UploadVehicleTaxRequestDTO getVehicleTaxDTO(VehicleTaxEntity vehicleTaxEntity) {
         return UploadVehicleTaxRequestDTO.builder()
                 .vehicleNumber(vehicleTaxEntity.getVehicleNumber())

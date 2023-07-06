@@ -17,4 +17,6 @@ public interface EmployeeAttendanceService {
     EnumSet<EmployeeType> getEmployeeTypes();
 
     List<CreateEmployeeAttendanceRequestDTO> getAllEmployeeAttendances();
+
+    EmployeeAttendanceEntity updateAttendance(CreateEmployeeAttendanceRequestDTO createEmployeeAttendanceRequestDTO, String userId, Long existingEmployeeAttendanceId);
 }

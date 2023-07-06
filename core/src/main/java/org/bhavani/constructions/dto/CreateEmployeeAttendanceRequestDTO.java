@@ -19,6 +19,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CreateEmployeeAttendanceRequestDTO {
 
+    @JsonProperty("employee_attendance_id")
+    private Long id;
+
     @JsonProperty("site")
     private String site;
 

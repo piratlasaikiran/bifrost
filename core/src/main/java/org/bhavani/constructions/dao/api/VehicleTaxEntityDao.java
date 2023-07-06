@@ -18,4 +18,6 @@ public interface VehicleTaxEntityDao {
     void deleteVehicleTaxEntry(VehicleTaxEntity vehicleTaxEntity);
 
     List<VehicleTaxEntity> getLatestTaxTypesForAllVehicles();
+
+    List<VehicleTaxEntity> getTaxesForVehicle(String vehicleNumber);
 }

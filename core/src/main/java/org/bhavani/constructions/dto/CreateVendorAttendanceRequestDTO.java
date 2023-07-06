@@ -19,6 +19,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class CreateVendorAttendanceRequestDTO {
 
+    @JsonProperty("vendor_attendance_id")
+    private Long id;
+
     @JsonProperty("site")
     private String site;
 

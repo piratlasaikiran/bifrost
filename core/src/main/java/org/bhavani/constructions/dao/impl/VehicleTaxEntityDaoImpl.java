@@ -52,4 +52,12 @@ public class VehicleTaxEntityDaoImpl extends AbstractDAO<VehicleTaxEntity> imple
         return findAllByNamedQuery("LatestTaxTypesByVehicleNumber",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
+
+    @Override
+    public List<VehicleTaxEntity> getTaxesForVehicle(String vehicleNumber) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(VEHICLE_NUMBER, vehicleNumber);
+        return findAllByNamedQuery("GetTaxEntriesByVehicleNumber",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
 }

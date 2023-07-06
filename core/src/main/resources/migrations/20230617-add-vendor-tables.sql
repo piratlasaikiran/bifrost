@@ -71,6 +71,7 @@ create table vendor_attendance(
 )ENGINE=InnoDB default CHARSET=utf8;
 
 create table employee_attendance(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
     name varchar(256) not null,
     employee_type varchar(256) not null,
     site varchar(256) not null,
@@ -81,6 +82,6 @@ create table employee_attendance(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (name, employee_type, attendance_date),
+    primary key (id),
     foreign key (site) references sites (site_name)
 )ENGINE=InnoDB default CHARSET=utf8;
