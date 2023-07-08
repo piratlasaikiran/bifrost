@@ -20,6 +20,9 @@ public class CreateVendorRequestDTO {
     @JsonProperty("vendor_id")
     private String vendorId;
 
+    @JsonProperty("name")
+    private String name;
+
     @JsonProperty("mobile_number")
     private Long mobileNumber;
 

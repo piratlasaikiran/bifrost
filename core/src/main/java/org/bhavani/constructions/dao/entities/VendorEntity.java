@@ -33,6 +33,8 @@ import static org.jadira.usertype.spi.utils.lang.StringUtils.isEmpty;
 @NamedQueries(value = {
         @NamedQuery(name = "GetVendorById",
                 query = "select V from VendorEntity V where V.vendorId = :vendor_id"),
+        @NamedQuery(name = "GetVendorByName",
+                query = "select V from VendorEntity V where V.name = :vendor_name"),
         @NamedQuery(name = "GetAllVendors",
                 query = "select V from VendorEntity V")
 })
@@ -44,6 +46,9 @@ public class VendorEntity extends BaseEntity {
     @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "vendor_id")
     private String vendorId;

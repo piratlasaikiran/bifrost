@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.VendorEntityDao;
-import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dao.entities.VendorEntity;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
@@ -31,7 +30,7 @@ public class DefaultVendorService implements VendorService {
     public VendorEntity createVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) {
         try{
             VendorEntity vendorEntity = EntityBuilder.createVendorEntity(createVendorRequestDTO, contractDoc, userId);
-            vendorEntityDao.getVendor(createVendorRequestDTO.getVendorId()).ifPresent(existingVendor -> {
+            vendorEntityDao.getVendorById(createVendorRequestDTO.getVendorId()).ifPresent(existingVendor -> {
                 log.error("{} already present. Use different ID.", existingVendor.getVendorId());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
@@ -48,6 +47,7 @@ public class DefaultVendorService implements VendorService {
         List<VendorEntity> vendorEntities = getVendorEntities();
         List<CreateVendorRequestDTO> vendorRequestDTOS = new ArrayList<>();
         vendorEntities.forEach(vendorEntity -> vendorRequestDTOS.add(CreateVendorRequestDTO.builder()
+                        .name(vendorEntity.getName())
                         .vendorId(vendorEntity.getVendorId())
                         .purposes(vendorEntity.getPurposes())
                         .location(vendorEntity.getLocation())
@@ -65,7 +65,7 @@ public class DefaultVendorService implements VendorService {
 
     @Override
     public Map<CommodityType, String> getAttendanceUnits(String vendorId) {
-        VendorEntity vendorEntity = vendorEntityDao.getVendor(vendorId).orElseThrow(() -> {
+        VendorEntity vendorEntity = vendorEntityDao.getVendorById(vendorId).orElseThrow(() -> {
             log.error("Vendor with ID: {} not found", vendorId);
             return new RuntimeException(VENDOR_NOT_FOUND);
         });
@@ -78,7 +78,7 @@ public class DefaultVendorService implements VendorService {
 
     @Override
     public VendorEntity getVendor(String vendorId) {
-        Optional<VendorEntity> vendorEntity = vendorEntityDao.getVendor(vendorId);
+        Optional<VendorEntity> vendorEntity = vendorEntityDao.getVendorById(vendorId);
         if(!vendorEntity.isPresent()){
             log.info("No vendor with ID: {}", vendorId);
             throw new IllegalArgumentException(USER_NOT_FOUND);
@@ -91,7 +91,7 @@ public class DefaultVendorService implements VendorService {
                                      String userId, String vendorId) {
         VendorEntity vendorEntity = getVendor(vendorId);
         if(!vendorId.equals(createVendorRequestDTO.getVendorId())) {
-            vendorEntityDao.getVendor(createVendorRequestDTO.getVendorId()).ifPresent(newVendorEntity -> {
+            vendorEntityDao.getVendorById(createVendorRequestDTO.getVendorId()).ifPresent(newVendorEntity -> {
                 log.error("User: {} already exists", createVendorRequestDTO.getVendorId());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
@@ -102,6 +102,7 @@ public class DefaultVendorService implements VendorService {
 
     private void updateVendorDate(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
         try{
+            vendorEntity.setName(createVendorRequestDTO.getName());
             vendorEntity.setVendorId(createVendorRequestDTO.getVendorId());
             vendorEntity.setLocation(createVendorRequestDTO.getLocation());
             vendorEntity.setPurposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())));

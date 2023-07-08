@@ -128,6 +128,7 @@ public class EntityBuilder {
     public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) throws IOException {
         return VendorEntity.builder()
                 .vendorId(createVendorRequestDTO.getVendorId())
+                .name(createVendorRequestDTO.getName())
                 .location(createVendorRequestDTO.getLocation())
                 .mobileNumber(createVendorRequestDTO.getMobileNumber())
                 .purposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())))

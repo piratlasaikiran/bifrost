@@ -3,6 +3,7 @@
 --changeset saikiran.pv:1
 create table vendors(
     id bigint(20) unsigned not null AUTO_INCREMENT,
+    name varchar(150) not null,
     vendor_id varchar(256) default null,
     contract_doc longblob default null,
     location varchar(150) not null,

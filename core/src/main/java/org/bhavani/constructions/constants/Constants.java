@@ -20,6 +20,7 @@ public class Constants {
     public static final String STRING_JOIN_DELIMITER = ",";
     public static final String VENDOR_ID = "vendor_id";
     public static final String ATM_CARD = "atm_card";
+    public static final String VENDOR_NAME = "vendor_name";
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";

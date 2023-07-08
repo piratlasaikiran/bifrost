@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VendorEntityDao {
-    Optional<VendorEntity> getVendor(String vendorId);
+    Optional<VendorEntity> getVendorById(String vendorId);
+
+    Optional<VendorEntity> getVendorByName(String vendorName);
 
     void saveSupervisor(VendorEntity vendorEntity);
 

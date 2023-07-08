@@ -40,7 +40,7 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
         vendorAttendanceEntityDao.enterAttendance(vendorAttendanceEntity);
         log.info("Attendance for: {} entered successfully by: {}", vendorAttendanceEntity.getAttendanceDate(), vendorAttendanceEntity.getEnteredBy());
         if(createVendorAttendanceRequestDTO.isMakeTransaction()){
-            VendorEntity vendorEntity = vendorEntityDao.getVendor(createVendorAttendanceRequestDTO.getVendorId()).orElseThrow(() -> {
+            VendorEntity vendorEntity = vendorEntityDao.getVendorById(createVendorAttendanceRequestDTO.getVendorId()).orElseThrow(() -> {
                 log.error("Error while making transaction based on attendance");
                 return new RuntimeException(TRANSACTION_ERROR);
             });

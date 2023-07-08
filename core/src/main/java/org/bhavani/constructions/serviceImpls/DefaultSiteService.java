@@ -56,6 +56,7 @@ public class DefaultSiteService implements SiteService {
             });
         }
         SiteEntity updatedSiteEntity = siteEntity.get();
+        updatedSiteEntity.setSiteName(createSiteRequestDTO.getSiteName());
         updatedSiteEntity.setAddress(createSiteRequestDTO.getAddress());
         updatedSiteEntity.setSupervisors(convertListToCommaSeparatedString(createSiteRequestDTO.getSupervisors()));
         updatedSiteEntity.setVehicles(convertListToCommaSeparatedString(createSiteRequestDTO.getVehicles()));
