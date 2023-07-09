@@ -14,8 +14,7 @@ create table vendors(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    constraint vendors_location_fk foreign key (location) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:2
@@ -67,8 +66,7 @@ create table vendor_attendance(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    constraint vendor_attendance_site_fk foreign key (site) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 create table employee_attendance(
@@ -83,6 +81,5 @@ create table employee_attendance(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    foreign key (site) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;

@@ -36,7 +36,9 @@ import static org.jadira.usertype.spi.utils.lang.StringUtils.isEmpty;
         @NamedQuery(name = "GetVendorByName",
                 query = "select V from VendorEntity V where V.name = :vendor_name"),
         @NamedQuery(name = "GetAllVendors",
-                query = "select V from VendorEntity V")
+                query = "select V from VendorEntity V"),
+        @NamedQuery(name = "GetAllVendorsInSite",
+                query = "select V from VendorEntity V where V.location = :site_name"),
 })
 @Table(name = "vendors")
 public class VendorEntity extends BaseEntity {

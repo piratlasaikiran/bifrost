@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.Constants.EMPLOYEE_NAME;
+import static org.bhavani.constructions.constants.Constants.SITE_NAME;
+
 public class EmployeeAttendanceDaoImpl extends AbstractDAO<EmployeeAttendanceEntity> implements EmployeeAttendanceDao {
 
     @Inject
@@ -34,5 +37,21 @@ public class EmployeeAttendanceDaoImpl extends AbstractDAO<EmployeeAttendanceEnt
     @Override
     public Optional<EmployeeAttendanceEntity> getEmployeeAttendance(Long existingEmployeeAttendanceId) {
         return this.get(existingEmployeeAttendanceId);
+    }
+
+    @Override
+    public List<EmployeeAttendanceEntity> getEmployeeAttendancesForEmployee(String employeeName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(EMPLOYEE_NAME, employeeName);
+        return findAllByNamedQuery("GetEmployeeAttendancesForEmployee",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<EmployeeAttendanceEntity> getAttendancesInSite(String siteName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SITE_NAME, siteName);
+        return findAllByNamedQuery("GetEmployeeAttendancesInSite",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

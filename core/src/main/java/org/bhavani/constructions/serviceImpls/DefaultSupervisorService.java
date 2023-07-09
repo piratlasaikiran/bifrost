@@ -3,8 +3,8 @@ package org.bhavani.constructions.serviceImpls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.bhavani.constructions.dao.api.SupervisorEntityDao;
-import org.bhavani.constructions.dao.entities.SupervisorEntity;
+import org.bhavani.constructions.dao.api.*;
+import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.utils.EntityBuilder;
 import org.bhavani.constructions.services.SupervisorService;
@@ -18,12 +18,20 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
 public class DefaultSupervisorService implements SupervisorService {
 
     private final SupervisorEntityDao supervisorEntityDao;
+    private final EmployeeAttendanceDao employeeAttendanceDao;
+    private final AssetLocationEntityDao assetLocationEntityDao;
+    private final AssetOwnershipEntityDao assetOwnershipEntityDao;
+    private final PassBookEntityDao passBookEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
+    private final SiteEntityDao siteEntityDao;
+
 
     @Override
     public SupervisorEntity getSupervisor(String supervisorName) {
@@ -75,10 +83,37 @@ public class DefaultSupervisorService implements SupervisorService {
                 log.error("User: {} already exists", createSupervisorRequestDTO.getName());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
+            updateDependentEntities(supervisorName, createSupervisorRequestDTO.getName());
         }
         updateSupervisorData(createSupervisorRequestDTO, aadhar, supervisorEntity);
         supervisorEntityDao.updateSupervisor(supervisorEntity);
         return supervisorEntity;
+    }
+
+    private void updateDependentEntities(String oldSupervisorName, String newSupervisorName) {
+        List<EmployeeAttendanceEntity> employeeAttendanceEntities = employeeAttendanceDao.getEmployeeAttendancesForEmployee(oldSupervisorName);
+        employeeAttendanceEntities.forEach(employeeAttendanceEntity -> employeeAttendanceEntity.setEmployeeName(newSupervisorName));
+
+        List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao.getAssetLocationEntities(oldSupervisorName);
+        assetLocationEntities.forEach(assetLocationEntity -> assetLocationEntity.setAssetName(newSupervisorName));
+
+        List<AssetOwnershipEntity> assetOwnershipEntities = assetOwnershipEntityDao.getAssetOwnershipEntitiesByOwnerName(oldSupervisorName);
+        assetOwnershipEntities.forEach(assetOwnershipEntity -> assetOwnershipEntity.setCurrentOwner(newSupervisorName));
+
+        List<TransactionEntity> transactionEntitiesAsSource = transactionEntityDao.getTransactionsBySourceName(oldSupervisorName);
+        List<TransactionEntity> transactionEntitiesAsDestination = transactionEntityDao.getTransactionsByDestinationName(oldSupervisorName);
+        transactionEntitiesAsSource.forEach(transactionEntity -> transactionEntity.setSource(newSupervisorName));
+        transactionEntitiesAsDestination.forEach(transactionEntity -> transactionEntity.setDestination(newSupervisorName));
+
+        List<PassBookEntity> passBookEntities = passBookEntityDao.getAccountPasBook(oldSupervisorName);
+        passBookEntities.forEach(passBookEntity -> passBookEntity.setAccountName(newSupervisorName));
+
+        List<SiteEntity> siteEntities = siteEntityDao.getSitesUnderSupervisor(oldSupervisorName);
+        siteEntities.forEach(siteEntity -> {
+            List<String> supervisors = siteEntity.getSupervisors();
+            supervisors.replaceAll(s -> s.equals(oldSupervisorName) ? newSupervisorName : s);
+            siteEntity.setSupervisors(convertListToCommaSeparatedString(supervisors));
+        });
     }
 
     @Override

@@ -21,12 +21,15 @@ public class Constants {
     public static final String VENDOR_ID = "vendor_id";
     public static final String ATM_CARD = "atm_card";
     public static final String VENDOR_NAME = "vendor_name";
+    public static final String EMPLOYEE_NAME = "employee_name";
 
     public static final String VEHICLE = "VEHICLE";
     public static final String EMPLOYEE = "EMPLOYEE";
     public static final String DRIVER = "DRIVER";
     public static final String MY_ACCOUNT = "My Account";
     public static final String ACCOUNT_NAME = "account_name";
+    public static final String SOURCE = "source";
+    public static final String DESTINATION = "destination";
 
     public static final String VEHICLE_ADDED_SUCCESSFULLY = "Vehicle added successfully";
     public static final String VEHICLE_DELETED_SUCCESSFULLY = "Vehicle deleted successfully";

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.Constants.DESTINATION;
+import static org.bhavani.constructions.constants.Constants.SOURCE;
+
 public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> implements TransactionEntityDao {
 
     @Inject
@@ -35,5 +38,21 @@ public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> imp
     @Override
     public Optional<TransactionEntity> getTransaction(Long transactionId) {
         return this.get(transactionId);
+    }
+
+    @Override
+    public List<TransactionEntity> getTransactionsBySourceName(String sourceName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SOURCE, sourceName);
+        return findAllByNamedQuery("GetTransactionsBySource",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<TransactionEntity> getTransactionsByDestinationName(String destinationName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(DESTINATION, destinationName);
+        return findAllByNamedQuery("GetTransactionsByDestination",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

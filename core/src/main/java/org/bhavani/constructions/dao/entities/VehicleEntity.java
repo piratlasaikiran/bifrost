@@ -1,5 +1,6 @@
 package org.bhavani.constructions.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,11 @@ import javax.persistence.*;
 public class VehicleEntity extends BaseEntity {
 
     @Id
+    @Column(name = "id")
+    @JsonIgnore
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "vehicle_num")
     private String vehicleNumber;
 

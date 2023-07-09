@@ -11,4 +11,8 @@ public interface TransactionEntityDao {
     List<TransactionEntity> getTransactions();
 
     Optional<TransactionEntity> getTransaction(Long transactionId);
+
+    List<TransactionEntity> getTransactionsBySourceName(String sourceName);
+
+    List<TransactionEntity> getTransactionsByDestinationName(String destinationName);
 }

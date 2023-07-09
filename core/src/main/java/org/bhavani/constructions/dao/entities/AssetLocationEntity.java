@@ -25,7 +25,9 @@ import java.time.LocalDate;
                 query = "select A from AssetLocationEntity A where A.assetName = :asset_name and " +
                         "A.location = :asset_location and A.startDate = :start_date"),
         @NamedQuery(name = "GetAllAssetLocations",
-                query = "select A from AssetLocationEntity A")
+                query = "select A from AssetLocationEntity A"),
+        @NamedQuery(name = "GetAssetsInLocation",
+                query = "select A from AssetLocationEntity A where A.location = :site_name")
 })
 @Table(name = "entity_location")
 public class AssetLocationEntity extends BaseEntity {

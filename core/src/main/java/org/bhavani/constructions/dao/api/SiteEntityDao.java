@@ -15,4 +15,8 @@ public interface SiteEntityDao {
     void deleteSite(SiteEntity siteEntity);
 
     List<SiteEntity> getSites();
+
+    List<SiteEntity> getSitesUnderSupervisor(String supervisorName);
+
+    List<SiteEntity> getSitesWithVehicle(String vehicleNumber);
 }

@@ -29,8 +29,7 @@ create table entity_location(
     updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (id),
-    constraint entity_location_cur_location_fk FOREIGN KEY (cur_location) REFERENCES sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:3

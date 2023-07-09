@@ -11,4 +11,6 @@ public interface VendorAttendanceEntityDao {
     List<VendorAttendanceEntity> getAllVendorAttendance();
 
     Optional<VendorAttendanceEntity> getVendorAttendance(Long existingVendorAttendanceId);
+
+    List<VendorAttendanceEntity> getVendorAttendanceInSite(String siteName);
 }

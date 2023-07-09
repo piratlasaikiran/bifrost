@@ -13,4 +13,6 @@ public interface VendorEntityDao {
     void saveSupervisor(VendorEntity vendorEntity);
 
     List<VendorEntity> getAllVendors();
+
+    List<VendorEntity> getVendorsInSite(String siteName);
 }

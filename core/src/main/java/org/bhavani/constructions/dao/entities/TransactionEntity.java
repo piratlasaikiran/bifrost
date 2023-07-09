@@ -24,7 +24,11 @@ import java.util.List;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetAllTransactions",
-                query = "select T from TransactionEntity T")
+                query = "select T from TransactionEntity T"),
+        @NamedQuery(name = "GetTransactionsBySource",
+                query = "select T from TransactionEntity T where T.source = :source"),
+        @NamedQuery(name = "GetTransactionsByDestination",
+                query = "select T from TransactionEntity T where T.destination = :destination")
 })
 @Table(name = "transactions")
 public class TransactionEntity extends BaseEntity {

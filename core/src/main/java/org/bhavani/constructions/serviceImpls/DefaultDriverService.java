@@ -3,8 +3,8 @@ package org.bhavani.constructions.serviceImpls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.bhavani.constructions.dao.api.DriverEntityDao;
-import org.bhavani.constructions.dao.entities.DriverEntity;
+import org.bhavani.constructions.dao.api.*;
+import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dto.CreateDriverRequestDTO;
 import org.bhavani.constructions.services.DriverService;
 
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -23,6 +24,11 @@ import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
 public class DefaultDriverService implements DriverService {
 
     private final DriverEntityDao driverEntityDao;
+    private final EmployeeAttendanceDao employeeAttendanceDao;
+    private final AssetLocationEntityDao assetLocationEntityDao;
+    private final AssetOwnershipEntityDao assetOwnershipEntityDao;
+    private final PassBookEntityDao passBookEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
     @Override
     public DriverEntity getDriver(String driverName) {
         return driverEntityDao.getDriver(driverName).orElseThrow(() -> {
@@ -83,9 +89,29 @@ public class DefaultDriverService implements DriverService {
                 log.error("User: {} already exists", createDriverRequestDTO.getName());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
+//            updateDependentEntities(driverName, createDriverRequestDTO.getName());
         }
         updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity);
         return driverEntity;
+    }
+
+    private void updateDependentEntities(String oldDriverName, String newDriverName) {
+        List<EmployeeAttendanceEntity> employeeAttendanceEntities = employeeAttendanceDao.getEmployeeAttendancesForEmployee(oldDriverName);
+        employeeAttendanceEntities.forEach(employeeAttendanceEntity -> employeeAttendanceEntity.setEmployeeName(newDriverName));
+
+        List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao.getAssetLocationEntities(oldDriverName);
+        assetLocationEntities.forEach(assetLocationEntity -> assetLocationEntity.setAssetName(newDriverName));
+
+        List<AssetOwnershipEntity> assetOwnershipEntities = assetOwnershipEntityDao.getAssetOwnershipEntitiesByOwnerName(oldDriverName);
+        assetOwnershipEntities.forEach(assetOwnershipEntity -> assetOwnershipEntity.setCurrentOwner(newDriverName));
+
+        List<TransactionEntity> transactionEntitiesAsSource = transactionEntityDao.getTransactionsBySourceName(oldDriverName);
+        List<TransactionEntity> transactionEntitiesAsDestination = transactionEntityDao.getTransactionsByDestinationName(oldDriverName);
+        transactionEntitiesAsSource.forEach(transactionEntity -> transactionEntity.setSource(newDriverName));
+        transactionEntitiesAsDestination.forEach(transactionEntity -> transactionEntity.setDestination(newDriverName));
+
+        List<PassBookEntity> passBookEntities = passBookEntityDao.getAccountPasBook(oldDriverName);
+        passBookEntities.forEach(passBookEntity -> passBookEntity.setAccountName(newDriverName));
     }
 
     @Override

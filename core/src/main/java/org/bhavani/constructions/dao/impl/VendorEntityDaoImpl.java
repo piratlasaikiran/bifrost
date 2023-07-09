@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.bhavani.constructions.constants.Constants.VENDOR_ID;
-import static org.bhavani.constructions.constants.Constants.VENDOR_NAME;
+import static org.bhavani.constructions.constants.Constants.*;
 
 @Slf4j
 public class VendorEntityDaoImpl extends AbstractDAO<VendorEntity> implements VendorEntityDao {
@@ -49,6 +48,15 @@ public class VendorEntityDaoImpl extends AbstractDAO<VendorEntity> implements Ve
     public List<VendorEntity> getAllVendors() {
         Map<String, Object> params = new HashMap<>();
         return findAllByNamedQuery("GetAllVendors",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<VendorEntity> getVendorsInSite(String siteName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SITE_NAME, siteName);
+        log.info("Fetching vendors in site: {}", siteName);
+        return findAllByNamedQuery("GetAllVendorsInSite",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

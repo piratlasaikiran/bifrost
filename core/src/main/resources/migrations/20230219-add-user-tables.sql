@@ -41,6 +41,7 @@ create table drivers(
 
 --changeset saikiran.pv:3
 create table vehicles(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
     vehicle_num varchar(25) not null,
     owner varchar(150) not null,
     chassis_num varchar(100) not null,
@@ -52,7 +53,7 @@ create table vehicles(
     updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (vehicle_num)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:4
@@ -68,8 +69,7 @@ create table vehicle_taxes(
     updated_by varchar(255) default null,
     created_at timestamp not null default CURRENT_TIMESTAMP,
     updated_at timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key(id),
-    constraint vehicle_taxes_vehicle_num_fk FOREIGN KEY(vehicle_num) REFERENCES vehicles (vehicle_num)
+    primary key(id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:5

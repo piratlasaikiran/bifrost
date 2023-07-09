@@ -22,7 +22,9 @@ import java.time.LocalDate;
         @NamedQuery(name = "GetAssetOwnershipsByName",
                 query = "select A from AssetOwnershipEntity A where A.assetName = :asset_name"),
         @NamedQuery(name = "GetAllAssetOwnerships",
-                query = "select A from AssetOwnershipEntity A")
+                query = "select A from AssetOwnershipEntity A"),
+        @NamedQuery(name = "GetAssetOwnershipsByOwner",
+                query = "select A from AssetOwnershipEntity A where A.currentOwner = :employee_name"),
 })
 @Table(name = "entity_ownership")
 public class AssetOwnershipEntity extends BaseEntity {
