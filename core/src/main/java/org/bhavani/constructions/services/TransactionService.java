@@ -1,11 +1,13 @@
 package org.bhavani.constructions.services;
 
+import org.bhavani.constructions.dao.entities.PendingBalanceEntity;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.dto.PassBookResponseDTO;
+import org.bhavani.constructions.dto.PendingBalanceResponseDTO;
 import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
 
 import java.io.InputStream;
@@ -35,4 +37,10 @@ public interface TransactionService {
     Map<TransactionStatus, List<TransactionStatus>> getTransactionStatusChangeMapping();
 
     void changeTransactionStatus(TransactionStatusChangeDTO transactionStatusChangeDTO, String userId);
+
+    void settlePendingBalance(String accountName, String userId);
+
+    List<PendingBalanceResponseDTO> getAllPendingBalancesForAllAccounts();
+
+    List<PendingBalanceResponseDTO> getPendingBalancesForAccount(String accountName);
 }

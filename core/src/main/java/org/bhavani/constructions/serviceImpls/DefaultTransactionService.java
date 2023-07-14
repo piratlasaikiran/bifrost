@@ -10,6 +10,7 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
 import org.bhavani.constructions.dto.PassBookResponseDTO;
+import org.bhavani.constructions.dto.PendingBalanceResponseDTO;
 import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
 import org.bhavani.constructions.services.TransactionService;
 import org.bhavani.constructions.utils.EntityBuilder;
@@ -21,8 +22,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.TRANSACTION_STATE_CHANGE_ALLOWANCE;
-import static org.bhavani.constructions.constants.ErrorConstants.DOC_PARSING_ERROR;
-import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_NOT_FOUND;
+import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.utils.EntityBuilder.createPendingBalanceEntity;
 import static org.bhavani.constructions.utils.PassBookHelper.createPassBookEntities;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -34,12 +35,14 @@ public class DefaultTransactionService implements TransactionService {
     private final DriverEntityDao driverEntityDao;
     private final SupervisorEntityDao supervisorEntityDao;
     private final VendorEntityDao vendorEntityDao;
+    private final PendingBalanceEntityDao pendingBalanceEntityDao;
 
     @Override
     public TransactionEntity createTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) {
         try{
             TransactionEntity transactionEntity = EntityBuilder.createTransactionEntity(createTransactionRequestDTO, bill, userId);
             transactionEntityDao.saveTransaction(transactionEntity);
+            checkAndUpdatePendingBalances(transactionEntity, userId);
             return transactionEntity;
         }catch (IOException exception){
             log.error("Error while parsing receipt");
@@ -61,9 +64,7 @@ public class DefaultTransactionService implements TransactionService {
     public List<CreateTransactionRequestDTO> getAllTransactions() {
         List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactions();
         List<CreateTransactionRequestDTO> transactionRequestDTOS = new ArrayList<>();
-        transactionEntities.forEach(transactionEntity -> {
-            transactionRequestDTOS.add(getTransactionRequestDTO(transactionEntity));
-        });
+        transactionEntities.forEach(transactionEntity -> transactionRequestDTOS.add(getTransactionRequestDTO(transactionEntity)));
         return transactionRequestDTOS;
     }
 
@@ -153,9 +154,68 @@ public class DefaultTransactionService implements TransactionService {
         transactionEntity.setStatus(transactionStatusChangeDTO.getDesiredStatus());
         if((transactionEntity.getStatus().equals(TransactionStatus.SUBMITTED) || transactionEntity.getStatus().equals(TransactionStatus.ON_HOLD)) &&
           transactionStatusChangeDTO.getDesiredStatus().equals(TransactionStatus.CHECKED)){
-            if(transactionEntity.getPurpose().equals(TransactionPurpose.BETA)){
-                savePassBookEntries(transactionEntity);
-            }
+            savePassBookEntries(transactionEntity);
+            checkAndUpdatePendingBalances(transactionEntity, userId);
+        }
+    }
+
+    @Override
+    public void settlePendingBalance(String accountName, String userId) {
+        PendingBalanceEntity latestPendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(accountName).orElseThrow(() -> {
+            log.error("No pending balance for user: {}", accountName);
+            return new IllegalArgumentException(NO_PENDING_BALANCE);
+        });
+        if(latestPendingBalanceEntity.getPendingBalance() == 0L){
+            List<PendingBalanceEntity> pendingBalanceEntities = pendingBalanceEntityDao.getAllPendingBalancesForAccount(accountName);
+            pendingBalanceEntityDao.deleteEntities(pendingBalanceEntities);
+            log.info("Settled and deleted pending balances entities for user: {}", accountName);
+        }
+    }
+
+    @Override
+    public List<PendingBalanceResponseDTO> getAllPendingBalancesForAllAccounts() {
+        List<PendingBalanceEntity> pendingBalanceEntities = pendingBalanceEntityDao.getAllPendingBalancesForAllAccounts();
+        List<PendingBalanceResponseDTO> pendingBalanceResponseDTOS = new ArrayList<>();
+        pendingBalanceEntities.forEach(pendingBalanceEntity -> pendingBalanceResponseDTOS.add(
+                PendingBalanceResponseDTO.builder()
+                        .accountName(pendingBalanceEntity.getAccountName())
+                        .transactionDetails(getTransactionRequestDTO(pendingBalanceEntity.getTransactionEntity()))
+                        .pendingBalance(pendingBalanceEntity.getPendingBalance())
+                        .build()
+        ));
+        return pendingBalanceResponseDTOS;
+    }
+
+    @Override
+    public List<PendingBalanceResponseDTO> getPendingBalancesForAccount(String accountName) {
+        List<PendingBalanceEntity> pendingBalanceEntities = pendingBalanceEntityDao.getAllPendingBalancesForAccount(accountName);
+        List<PendingBalanceResponseDTO> pendingBalanceResponseDTOS = new ArrayList<>();
+        pendingBalanceEntities.forEach(pendingBalanceEntity -> pendingBalanceResponseDTOS.add(
+                PendingBalanceResponseDTO.builder()
+                        .accountName(pendingBalanceEntity.getAccountName())
+                        .transactionDetails(getTransactionRequestDTO(pendingBalanceEntity.getTransactionEntity()))
+                        .pendingBalance(pendingBalanceEntity.getPendingBalance())
+                        .build()
+        ));
+        return pendingBalanceResponseDTOS;
+    }
+
+    private void checkAndUpdatePendingBalances(TransactionEntity transactionEntity, String userId) {
+        Optional<PendingBalanceEntity> sourcePendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(transactionEntity.getSource());
+        Optional<PendingBalanceEntity> destinationPendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(transactionEntity.getDestination());
+        long pendingAmount;
+        Set<String> employeesList = getAllEmployeeNames();
+        if(employeesList.contains(transactionEntity.getSource())){
+            log.info("Fetching previous pending balance for user: {}", transactionEntity.getSource());
+            pendingAmount = sourcePendingBalanceEntity.isPresent() ? sourcePendingBalanceEntity.get().getPendingBalance() : 0;
+            PendingBalanceEntity latestPendingBalanceEntityForSource = createPendingBalanceEntity(transactionEntity.getSource(), transactionEntity, pendingAmount - transactionEntity.getAmount(), userId);
+            pendingBalanceEntityDao.savePendingBalanceEntity(latestPendingBalanceEntityForSource);
+        }
+        if(employeesList.contains(transactionEntity.getDestination())){
+            log.info("Fetching previous pending balance for user: {}", transactionEntity.getDestination());
+            pendingAmount = destinationPendingBalanceEntity.isPresent() ? destinationPendingBalanceEntity.get().getPendingBalance() : 0;
+            PendingBalanceEntity latestPendingBalanceEntityForDestination = createPendingBalanceEntity(transactionEntity.getDestination(), transactionEntity, pendingAmount + transactionEntity.getAmount(), userId);
+            pendingBalanceEntityDao.savePendingBalanceEntity(latestPendingBalanceEntityForDestination);
         }
     }
 

@@ -76,4 +76,8 @@ public class TransactionEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "transactionEntity", cascade = CascadeType.ALL)
     private List<PassBookEntity> passBookEntities;
+
+    @OneToMany(mappedBy = "transactionEntity", cascade = CascadeType.ALL)
+    private List<PendingBalanceEntity> pendingBalanceEntities;
+
 }

@@ -43,8 +43,8 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
                     return new RuntimeException(TRANSACTION_ERROR);
                 });
                 int dailyWage = createEmployeeAttendanceRequestDTO.getAttendanceType() == AttendanceType.DAY ? driverEntity.getOtPayDay() : driverEntity.getOtPayDayNight();
-                TransactionEntity transactionEntity = getTransactionEntityForAttendance(createEmployeeAttendanceRequestDTO.getEnteredBy(), createEmployeeAttendanceRequestDTO.getEmployeeName(),
-                        dailyWage, createEmployeeAttendanceRequestDTO.getAttendanceDate(), createEmployeeAttendanceRequestDTO.getBankAccount(), userId);
+                TransactionEntity transactionEntity = getTransactionEntityForAttendance(createEmployeeAttendanceRequestDTO.getEmployeeName(),
+                        dailyWage, createEmployeeAttendanceRequestDTO.getAttendanceDate(), userId);
                 transactionEntityDao.saveTransaction(transactionEntity);
             }
         }

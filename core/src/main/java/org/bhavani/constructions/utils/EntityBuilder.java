@@ -203,19 +203,15 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static TransactionEntity getTransactionEntityForAttendance(String source, String destination,
-                                                                      long amount, LocalDate attendanceDate, String bankAccount,
-                                                                      String userId) {
+    public static TransactionEntity getTransactionEntityForAttendance(String destination, long amount, LocalDate attendanceDate, String userId) {
         return TransactionEntity.builder()
-                .source(source)
+                .source("Bhavani Constructions")
                 .destination(destination)
                 .amount(amount)
                 .purpose(TransactionPurpose.ATTENDANCE)
                 .remarks("Making automated payment by attendance marking")
                 .transactionDate(attendanceDate)
                 .status(TransactionStatus.SUBMITTED)
-                .mode(TransactionMode.CASH)
-                .bankAccount(bankAccount)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -228,6 +224,16 @@ public class EntityBuilder {
                 .currentOwner(createAssetOwnershipRequestDTO.getCurrentOwner())
                 .startDate(createAssetOwnershipRequestDTO.getStartDate())
                 .endDate(createAssetOwnershipRequestDTO.getEndDate())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static PendingBalanceEntity createPendingBalanceEntity(String accountName, TransactionEntity transactionEntity, Long pendingAmount, String userId){
+        return PendingBalanceEntity.builder()
+                .accountName(accountName)
+                .transactionEntity(transactionEntity)
+                .pendingBalance(pendingAmount)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

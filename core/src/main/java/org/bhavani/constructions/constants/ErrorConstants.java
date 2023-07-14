@@ -18,6 +18,6 @@ public class ErrorConstants {
     public static final String ATTENDANCE_ENTRY_NOT_FOUND = "Attendance entry not found";
     public static final String VEHICLE_NOT_FOUND = "Vehicle not found";
     public static final String VEHICLE_EXISTS = "Vehicle already exists";
-
+    public static final String NO_PENDING_BALANCE = "No pending balance for user";
 
 }
