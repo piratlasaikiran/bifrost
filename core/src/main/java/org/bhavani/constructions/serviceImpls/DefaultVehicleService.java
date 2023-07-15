@@ -27,6 +27,7 @@ public class DefaultVehicleService implements VehicleService {
     private final AssetLocationEntityDao assetLocationEntityDao;
     private final AssetOwnershipEntityDao assetOwnershipEntityDao;
     private final SiteEntityDao siteEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
 
     public EnumSet<VehicleTaxEnum> getVehicleTaxTypes(){
         return EnumSet.allOf(VehicleTaxEnum.class);
@@ -75,6 +76,9 @@ public class DefaultVehicleService implements VehicleService {
             vehicles.replaceAll(s -> s.equals(oldVehicleNumber) ? newVehicleNumber : s);
             siteEntity.setVehicles(convertListToCommaSeparatedString(vehicles));
         });
+
+        List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactionsByVehicleNumber(oldVehicleNumber);
+        transactionEntities.forEach(transactionEntity -> transactionEntity.setVehicleNumber(newVehicleNumber));
     }
 
     @Override

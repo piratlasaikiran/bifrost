@@ -24,9 +24,13 @@ import java.util.List;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetAllTransactions",
-                query = "select T from TransactionEntity T"),
+                query = "select T from TransactionEntity T ORDER BY T.updatedAt DESC"),
         @NamedQuery(name = "GetTransactionsBySource",
                 query = "select T from TransactionEntity T where T.source = :source"),
+        @NamedQuery(name = "GetTransactionsBySite",
+                query = "select T from TransactionEntity T where T.site = :site_name"),
+        @NamedQuery(name = "GetTransactionsByVehicleNumber",
+                query = "select T from TransactionEntity T where T.vehicleNumber = :vehicle_num"),
         @NamedQuery(name = "GetTransactionsByDestination",
                 query = "select T from TransactionEntity T where T.destination = :destination")
 })
@@ -66,6 +70,12 @@ public class TransactionEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TransactionStatus status;
+
+    @Column(name = "site")
+    private String site;
+
+    @Column(name = "vehicle_num")
+    private String vehicleNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mode")

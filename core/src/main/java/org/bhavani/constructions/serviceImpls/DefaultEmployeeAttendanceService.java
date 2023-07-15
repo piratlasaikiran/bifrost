@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.api.*;
 import org.bhavani.constructions.dao.entities.DriverEntity;
 import org.bhavani.constructions.dao.entities.EmployeeAttendanceEntity;
+import org.bhavani.constructions.dao.entities.PendingBalanceEntity;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.AttendanceType;
 import org.bhavani.constructions.dao.entities.models.EmployeeType;
@@ -12,16 +13,12 @@ import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.bhavani.constructions.constants.ErrorConstants.ATTENDANCE_ENTRY_NOT_FOUND;
 import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_ERROR;
 import static org.bhavani.constructions.dao.entities.models.EmployeeType.DRIVER;
-import static org.bhavani.constructions.utils.EntityBuilder.createEmployeeAttendanceEntity;
-import static org.bhavani.constructions.utils.EntityBuilder.getTransactionEntityForAttendance;
+import static org.bhavani.constructions.utils.EntityBuilder.*;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
@@ -30,6 +27,7 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
     private final EmployeeAttendanceDao employeeAttendanceDao;
     private final DriverEntityDao driverEntityDao;
     private final TransactionEntityDao transactionEntityDao;
+    private final PendingBalanceEntityDao pendingBalanceEntityDao;
 
     @Override
     public EmployeeAttendanceEntity enterAttendance(CreateEmployeeAttendanceRequestDTO createEmployeeAttendanceRequestDTO, String userId) {
@@ -42,9 +40,10 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
                     log.error("Error while making transaction based on attendance");
                     return new RuntimeException(TRANSACTION_ERROR);
                 });
-                int dailyWage = createEmployeeAttendanceRequestDTO.getAttendanceType() == AttendanceType.DAY ? driverEntity.getOtPayDay() : driverEntity.getOtPayDayNight();
+                long dailyWage = createEmployeeAttendanceRequestDTO.getAttendanceType() == AttendanceType.DAY ? driverEntity.getOtPayDay() : driverEntity.getOtPayDayNight();
                 TransactionEntity transactionEntity = getTransactionEntityForAttendance(createEmployeeAttendanceRequestDTO.getEmployeeName(),
                         dailyWage, createEmployeeAttendanceRequestDTO.getAttendanceDate(), userId);
+                checkAndUpdatePendingBalanceEntity(transactionEntity, userId, dailyWage);
                 transactionEntityDao.saveTransaction(transactionEntity);
             }
         }
@@ -100,5 +99,17 @@ public class DefaultEmployeeAttendanceService implements EmployeeAttendanceServi
         //ToDo: make changes in transaction entity and respective balances
 
         return employeeAttendanceEntity;
+    }
+
+    private void checkAndUpdatePendingBalanceEntity(TransactionEntity transactionEntity, String userId, long wage) {
+        Optional<PendingBalanceEntity> pendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(transactionEntity.getDestination());
+        Long pendingAmount = wage;
+        if(pendingBalanceEntity.isPresent()){
+            log.info("Fetching previous pending balance for user: {}", transactionEntity.getDestination());
+            pendingAmount += pendingBalanceEntity.get().getPendingBalance();
+
+        }
+        PendingBalanceEntity latestPendingBalanceEntity = createPendingBalanceEntity(transactionEntity.getDestination(), transactionEntity, pendingAmount, userId);
+        pendingBalanceEntityDao.savePendingBalanceEntity(latestPendingBalanceEntity);
     }
 }

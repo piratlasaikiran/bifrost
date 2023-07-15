@@ -45,6 +45,8 @@ create table transactions(
     mode varchar(255) default 'CASH',
     bank_ac varchar(255) default null,
     transaction_date timestamp not null,
+    site varchar(255) default null,
+    vehicle_num varchar(255) default null,
 	created_by varchar(255) default null,
 	updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,

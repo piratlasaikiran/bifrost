@@ -15,4 +15,8 @@ public interface TransactionEntityDao {
     List<TransactionEntity> getTransactionsBySourceName(String sourceName);
 
     List<TransactionEntity> getTransactionsByDestinationName(String destinationName);
+
+    List<TransactionEntity> getTransactionsBySiteName(String site);
+
+    List<TransactionEntity> getTransactionsByVehicleNumber(String site);
 }

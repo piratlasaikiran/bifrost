@@ -27,6 +27,7 @@ public class DefaultSiteService implements SiteService {
     private final AssetLocationEntityDao assetLocationEntityDao;
     private final VendorAttendanceEntityDao vendorAttendanceEntityDao;
     private final VendorEntityDao vendorEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
 
     @Override
     public SiteEntity createSite(CreateSiteRequestDTO createSiteRequestDTO) {
@@ -83,6 +84,9 @@ public class DefaultSiteService implements SiteService {
 
         List<VendorEntity> vendorEntities = vendorEntityDao.getVendorsInSite(oldSiteName);
         vendorEntities.forEach(vendorEntity -> vendorEntity.setLocation(newSiteName));
+
+        List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactionsBySiteName(oldSiteName);
+        transactionEntities.forEach(transactionEntity -> transactionEntity.setSite(newSiteName));
     }
 
     @Override

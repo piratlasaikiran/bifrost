@@ -54,15 +54,15 @@ public class DefaultVendorAttendanceService implements VendorAttendanceService {
             TransactionEntity transactionEntity = getTransactionEntityForAttendance(
                     createVendorAttendanceRequestDTO.getVendorId(), vendorPaymentAmount.get(),
                     createVendorAttendanceRequestDTO.getAttendanceDate(), userId);
-            checkAndUpdatePendingBalanceEntity(transactionEntity, userId);
+            checkAndUpdatePendingBalanceEntity(transactionEntity, userId, vendorPaymentAmount.get());
             transactionEntityDao.saveTransaction(transactionEntity);
         }
         return vendorAttendanceEntity;
     }
 
-    private void checkAndUpdatePendingBalanceEntity(TransactionEntity transactionEntity, String userId) {
+    private void checkAndUpdatePendingBalanceEntity(TransactionEntity transactionEntity, String userId, long dayAmount) {
         Optional<PendingBalanceEntity> pendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(transactionEntity.getDestination());
-        Long pendingAmount = 0L;
+        Long pendingAmount = dayAmount;
         if(pendingBalanceEntity.isPresent()){
             log.info("Fetching previous pending balance for user: {}", transactionEntity.getDestination());
             pendingAmount += pendingBalanceEntity.get().getPendingBalance();

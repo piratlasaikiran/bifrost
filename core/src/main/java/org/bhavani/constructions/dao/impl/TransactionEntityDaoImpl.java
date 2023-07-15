@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.bhavani.constructions.constants.Constants.DESTINATION;
-import static org.bhavani.constructions.constants.Constants.SOURCE;
+import static org.bhavani.constructions.constants.Constants.*;
 
 public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> implements TransactionEntityDao {
 
@@ -53,6 +52,22 @@ public class TransactionEntityDaoImpl extends AbstractDAO<TransactionEntity> imp
         Map<String, Object> params = new HashMap<>();
         params.put(DESTINATION, destinationName);
         return findAllByNamedQuery("GetTransactionsByDestination",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<TransactionEntity> getTransactionsBySiteName(String site) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SITE_NAME, site);
+        return findAllByNamedQuery("GetTransactionsBySite",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<TransactionEntity> getTransactionsByVehicleNumber(String site) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(VEHICLE_NUMBER, site);
+        return findAllByNamedQuery("GetTransactionsByVehicleNumber",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

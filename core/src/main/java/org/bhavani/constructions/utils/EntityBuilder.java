@@ -159,6 +159,8 @@ public class EntityBuilder {
                 .amount(createTransactionRequestDTO.getAmount())
                 .transactionDate(createTransactionRequestDTO.getTransactionDate())
                 .purpose(createTransactionRequestDTO.getPurpose())
+                .site(createTransactionRequestDTO.getSite())
+                .vehicleNumber(createTransactionRequestDTO.getVehicleNumber())
                 .status(createTransactionRequestDTO.getStatus())
                 .mode(createTransactionRequestDTO.getMode())
                 .status(TransactionStatus.SUBMITTED)

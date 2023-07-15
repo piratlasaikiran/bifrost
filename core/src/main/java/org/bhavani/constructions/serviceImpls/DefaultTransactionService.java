@@ -118,6 +118,8 @@ public class DefaultTransactionService implements TransactionService {
         transactionEntity.setAmount(createTransactionRequestDTO.getAmount());
         transactionEntity.setTransactionDate(createTransactionRequestDTO.getTransactionDate());
         transactionEntity.setPurpose(createTransactionRequestDTO.getPurpose());
+        transactionEntity.setSite(createTransactionRequestDTO.getSite());
+        transactionEntity.setVehicleNumber(createTransactionRequestDTO.getVehicleNumber());
         transactionEntity.setMode(createTransactionRequestDTO.getMode());
         transactionEntity.setBankAccount(createTransactionRequestDTO.getBankAccount());
         transactionEntity.setStatus(createTransactionRequestDTO.getStatus());
@@ -227,6 +229,8 @@ public class DefaultTransactionService implements TransactionService {
                 .amount(transactionEntity.getAmount())
                 .mode(transactionEntity.getMode())
                 .purpose(transactionEntity.getPurpose())
+                .site(transactionEntity.getSite())
+                .vehicleNumber(transactionEntity.getVehicleNumber())
                 .status(transactionEntity.getStatus())
                 .transactionDate(transactionEntity.getTransactionDate())
                 .bankAccount(transactionEntity.getBankAccount())
