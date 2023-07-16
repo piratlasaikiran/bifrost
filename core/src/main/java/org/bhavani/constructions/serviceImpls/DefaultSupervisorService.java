@@ -132,7 +132,6 @@ public class DefaultSupervisorService implements SupervisorService {
                 .personalMobileNumber(supervisor.getPersonalMobileNumber())
                 .bankAccountNumber(supervisor.getBankAccountNumber())
                 .salary(supervisor.getSalary())
-                .admin(supervisor.isAdmin())
                 .companyMobileNumber(supervisor.getCompanyMobileNumber())
                 .atmCardNumber(supervisor.getAtmCardNumber())
                 .build();
@@ -148,7 +147,6 @@ public class DefaultSupervisorService implements SupervisorService {
                             .personalMobileNumber(supervisor.getPersonalMobileNumber())
                             .bankAccountNumber(supervisor.getBankAccountNumber())
                             .salary(supervisor.getSalary())
-                            .admin(supervisor.isAdmin())
                             .companyMobileNumber(supervisor.getCompanyMobileNumber())
                             .atmCardNumber(supervisor.getAtmCardNumber())
                             .otPay(supervisor.getOtPay())
@@ -163,7 +161,6 @@ public class DefaultSupervisorService implements SupervisorService {
             supervisorEntity.setPersonalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber());
             supervisorEntity.setBankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber());
             supervisorEntity.setSalary(createSupervisorRequestDTO.getSalary());
-            supervisorEntity.setAdmin(createSupervisorRequestDTO.isAdmin());
             supervisorEntity.setAadhar(IOUtils.toByteArray(aadhar));
             supervisorEntity.setCompanyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber());
             supervisorEntity.setAtmCardNumber(createSupervisorRequestDTO.getAtmCardNumber());

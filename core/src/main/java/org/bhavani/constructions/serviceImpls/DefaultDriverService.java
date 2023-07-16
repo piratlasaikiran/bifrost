@@ -71,7 +71,6 @@ public class DefaultDriverService implements DriverService {
                 .personalMobileNumber(driverEntity.getPersonalMobileNumber())
                 .bankAccountNumber(driverEntity.getBankAccountNumber())
                 .salary(driverEntity.getSalary())
-                .admin(driverEntity.isAdmin())
                 .otPayDay(driverEntity.getOtPayDay())
                 .otPayDayNight(driverEntity.getOtPayDayNight())
                 .build();
@@ -124,7 +123,6 @@ public class DefaultDriverService implements DriverService {
                             .personalMobileNumber(driverEntity.getPersonalMobileNumber())
                             .bankAccountNumber(driverEntity.getBankAccountNumber())
                             .salary(driverEntity.getSalary())
-                            .admin(driverEntity.isAdmin())
                             .otPayDay(driverEntity.getOtPayDay())
                             .otPayDayNight(driverEntity.getOtPayDayNight())
                             .build());
@@ -150,7 +148,6 @@ public class DefaultDriverService implements DriverService {
             driverEntity.setPersonalMobileNumber(createDriverRequestDTO.getPersonalMobileNumber());
             driverEntity.setBankAccountNumber(createDriverRequestDTO.getBankAccountNumber());
             driverEntity.setSalary(createDriverRequestDTO.getSalary());
-            driverEntity.setAdmin(createDriverRequestDTO.isAdmin());
             driverEntity.setLicense(IOUtils.toByteArray(license));
             driverEntity.setAadhar(IOUtils.toByteArray(aadhar));
             driverEntity.setOtPayDay(createDriverRequestDTO.getOtPayDay());

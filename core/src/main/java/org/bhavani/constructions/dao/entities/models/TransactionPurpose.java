@@ -7,5 +7,6 @@ public enum TransactionPurpose {
     SITE_EXPENSE,
     OTHERS,
     ATTENDANCE,
-    ADVANCE
+    ADVANCE,
+    SETTLEMENT
 }

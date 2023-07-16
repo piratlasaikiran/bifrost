@@ -9,10 +9,7 @@ import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
-import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
-import org.bhavani.constructions.dto.PassBookResponseDTO;
-import org.bhavani.constructions.dto.PendingBalanceResponseDTO;
-import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
+import org.bhavani.constructions.dto.*;
 import org.bhavani.constructions.services.TransactionService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -155,9 +152,10 @@ public class TransactionResource {
     @Path("/account-name/{accountName}/settle-pending-balance")
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public Response settlePendingBalance(@NotNull @PathParam("accountName") String accountName,
+    public Response settlePendingBalance(@FormDataParam("settleBalancePayload") SettlePendingBalanceRequestDTO settlePendingBalanceRequestDTO,
+                                         @NotNull @PathParam("accountName") String accountName,
                                            @NotNull @HeaderParam(X_USER_ID) String userId){
-        transactionService.settlePendingBalance(accountName, userId);
+        transactionService.settlePendingBalance(accountName, settlePendingBalanceRequestDTO, userId);
         return Response.ok().build();
     }
 

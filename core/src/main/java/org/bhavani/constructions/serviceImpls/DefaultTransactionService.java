@@ -8,21 +8,20 @@ import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
-import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
-import org.bhavani.constructions.dto.PassBookResponseDTO;
-import org.bhavani.constructions.dto.PendingBalanceResponseDTO;
-import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
+import org.bhavani.constructions.dto.*;
 import org.bhavani.constructions.services.TransactionService;
 import org.bhavani.constructions.utils.EntityBuilder;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.TRANSACTION_STATE_CHANGE_ALLOWANCE;
 import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.dao.entities.models.TransactionPurpose.SETTLEMENT;
 import static org.bhavani.constructions.utils.EntityBuilder.createPendingBalanceEntity;
 import static org.bhavani.constructions.utils.PassBookHelper.createPassBookEntities;
 
@@ -162,16 +161,29 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     @Override
-    public void settlePendingBalance(String accountName, String userId) {
+    public void settlePendingBalance(String accountName, SettlePendingBalanceRequestDTO settlePendingBalanceRequestDTO, String userId) {
         PendingBalanceEntity latestPendingBalanceEntity = pendingBalanceEntityDao.getLatestPendingBalanceEntity(accountName).orElseThrow(() -> {
             log.error("No pending balance for user: {}", accountName);
             return new IllegalArgumentException(NO_PENDING_BALANCE);
         });
-        if(latestPendingBalanceEntity.getPendingBalance() == 0L){
-            List<PendingBalanceEntity> pendingBalanceEntities = pendingBalanceEntityDao.getAllPendingBalancesForAccount(accountName);
-            pendingBalanceEntityDao.deleteEntities(pendingBalanceEntities);
-            log.info("Settled and deleted pending balances entities for user: {}", accountName);
+        if(latestPendingBalanceEntity.getPendingBalance() != 0){
+            TransactionEntity transactionEntity = TransactionEntity.builder()
+                    .source(settlePendingBalanceRequestDTO.getPayer())
+                    .destination(settlePendingBalanceRequestDTO.getPayee())
+                    .amount(latestPendingBalanceEntity.getPendingBalance())
+                    .purpose(SETTLEMENT)
+                    .remarks(settlePendingBalanceRequestDTO.getRemarks())
+                    .transactionDate(LocalDate.now())
+                    .status(TransactionStatus.CHECKED)
+                    .mode(settlePendingBalanceRequestDTO.getMode())
+                    .bankAccount(settlePendingBalanceRequestDTO.getBankAccount())
+                    .build();
+            transactionEntityDao.saveTransaction(transactionEntity);
+            savePassBookEntries(transactionEntity);
         }
+        List<PendingBalanceEntity> pendingBalanceEntities = pendingBalanceEntityDao.getAllPendingBalancesForAccount(accountName);
+        pendingBalanceEntityDao.deleteEntities(pendingBalanceEntities);
+        log.info("Settled and deleted pending balances entities for user: {}", accountName);
     }
 
     @Override

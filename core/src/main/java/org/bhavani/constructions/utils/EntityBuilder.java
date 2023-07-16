@@ -26,7 +26,6 @@ public class EntityBuilder {
                 .personalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber())
                 .bankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber())
                 .salary(createSupervisorRequestDTO.getSalary())
-                .admin(createSupervisorRequestDTO.isAdmin())
                 .aadhar(IOUtils.toByteArray(aadhar))
                 .companyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber())
                 .atmCardNumber(createSupervisorRequestDTO.getAtmCardNumber())
@@ -45,7 +44,6 @@ public class EntityBuilder {
                 .personalMobileNumber(createDriverRequestDTO.getPersonalMobileNumber())
                 .bankAccountNumber(createDriverRequestDTO.getBankAccountNumber())
                 .salary(createDriverRequestDTO.getSalary())
-                .admin(createDriverRequestDTO.isAdmin())
                 .otPayDay(createDriverRequestDTO.getOtPayDay())
                 .otPayDayNight(createDriverRequestDTO.getOtPayDayNight())
                 .license(IOUtils.toByteArray(license))
@@ -214,6 +212,7 @@ public class EntityBuilder {
                 .remarks("Making automated payment by attendance marking")
                 .transactionDate(attendanceDate)
                 .status(TransactionStatus.SUBMITTED)
+                .mode(TransactionMode.CASH)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

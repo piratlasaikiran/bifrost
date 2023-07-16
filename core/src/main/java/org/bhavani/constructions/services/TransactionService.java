@@ -5,10 +5,7 @@ import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
-import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
-import org.bhavani.constructions.dto.PassBookResponseDTO;
-import org.bhavani.constructions.dto.PendingBalanceResponseDTO;
-import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
+import org.bhavani.constructions.dto.*;
 
 import java.io.InputStream;
 import java.util.EnumSet;
@@ -38,7 +35,7 @@ public interface TransactionService {
 
     void changeTransactionStatus(TransactionStatusChangeDTO transactionStatusChangeDTO, String userId);
 
-    void settlePendingBalance(String accountName, String userId);
+    void settlePendingBalance(String accountName, SettlePendingBalanceRequestDTO settlePendingBalanceRequestDTO, String userId);
 
     List<PendingBalanceResponseDTO> getAllPendingBalancesForAllAccounts();
 

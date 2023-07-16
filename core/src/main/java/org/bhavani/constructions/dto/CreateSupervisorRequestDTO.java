@@ -29,10 +29,6 @@ public class CreateSupervisorRequestDTO {
     @JsonProperty("salary")
     private int salary;
 
-    @NotNull
-    @JsonProperty("admin")
-    private boolean admin;
-
     @JsonProperty("company_mob_num")
     private Long companyMobileNumber;
 
