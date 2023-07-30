@@ -71,6 +71,7 @@ create table vendor_attendance(
     primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
+--changeset saikiran.pv:5
 create table employee_attendance(
     id bigint(20) unsigned not null AUTO_INCREMENT,
     name varchar(256) not null,
