@@ -69,6 +69,7 @@ public class DefaultSiteService implements SiteService {
         updatedSiteEntity.setCurrentStatus(createSiteRequestDTO.getSiteStatus());
         updatedSiteEntity.setWorkStartDate(createSiteRequestDTO.getWorkStartDate());
         updatedSiteEntity.setWorkEndDate(createSiteRequestDTO.getWorkEndDate());
+        updatedSiteEntity.setUpdatedBy(userId);
         return updatedSiteEntity;
     }
 

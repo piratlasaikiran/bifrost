@@ -116,10 +116,12 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static UserEntity createUserEntity(String userName, String hashedPassword){
+    public static UserEntity createUserEntity(String userName, String hashedPassword, String userId){
         return UserEntity.builder()
                 .userName(userName)
                 .password(hashedPassword)
+                .createdBy(userId)
+                .updatedBy(userId)
                 .build();
     }
 

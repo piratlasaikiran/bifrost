@@ -4,5 +4,5 @@ public interface UserService {
 
     String getHashedPassword(String userName);
 
-    void createNewUser(String userName, String password);
+    void createNewUser(String userName, String password, String userId);
 }

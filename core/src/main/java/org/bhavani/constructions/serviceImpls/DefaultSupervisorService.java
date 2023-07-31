@@ -85,7 +85,7 @@ public class DefaultSupervisorService implements SupervisorService {
             });
             updateDependentEntities(supervisorName, createSupervisorRequestDTO.getName());
         }
-        updateSupervisorData(createSupervisorRequestDTO, aadhar, supervisorEntity);
+        updateSupervisorData(createSupervisorRequestDTO, aadhar, userId, supervisorEntity);
         supervisorEntityDao.updateSupervisor(supervisorEntity);
         return supervisorEntity;
     }
@@ -155,7 +155,8 @@ public class DefaultSupervisorService implements SupervisorService {
         return supervisorDTOs;
     }
 
-    private static void updateSupervisorData(CreateSupervisorRequestDTO createSupervisorRequestDTO, InputStream aadhar, SupervisorEntity supervisorEntity) {
+    private static void updateSupervisorData(CreateSupervisorRequestDTO createSupervisorRequestDTO, InputStream aadhar,
+                                             String userId, SupervisorEntity supervisorEntity) {
         try {
             supervisorEntity.setName(createSupervisorRequestDTO.getName());
             supervisorEntity.setPersonalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber());
@@ -165,6 +166,7 @@ public class DefaultSupervisorService implements SupervisorService {
             supervisorEntity.setCompanyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber());
             supervisorEntity.setAtmCardNumber(createSupervisorRequestDTO.getAtmCardNumber());
             supervisorEntity.setOtPay(createSupervisorRequestDTO.getOtPay());
+            supervisorEntity.setUpdatedBy(userId);
         }catch(IOException ioException){
             log.error("Error while updating driver data");
             throw new RuntimeException(CORRUPTED_DATA);

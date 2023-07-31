@@ -90,7 +90,7 @@ public class DefaultDriverService implements DriverService {
             });
 //            updateDependentEntities(driverName, createDriverRequestDTO.getName());
         }
-        updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity);
+        updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity, userId);
         return driverEntity;
     }
 
@@ -141,7 +141,7 @@ public class DefaultDriverService implements DriverService {
     }
 
     private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
-                                  InputStream aadhar, DriverEntity driverEntity) {
+                                  InputStream aadhar, DriverEntity driverEntity, String userId) {
         try {
 
             driverEntity.setName(createDriverRequestDTO.getName());
@@ -152,6 +152,7 @@ public class DefaultDriverService implements DriverService {
             driverEntity.setAadhar(IOUtils.toByteArray(aadhar));
             driverEntity.setOtPayDay(createDriverRequestDTO.getOtPayDay());
             driverEntity.setOtPayDayNight(createDriverRequestDTO.getOtPayDayNight());
+            driverEntity.setUpdatedBy(userId);
         }catch (IOException ioException){
             log.error("Error while updating driver data");
             throw new RuntimeException(CORRUPTED_DATA);

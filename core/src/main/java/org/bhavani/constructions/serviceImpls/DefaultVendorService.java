@@ -96,11 +96,11 @@ public class DefaultVendorService implements VendorService {
                 throw new IllegalArgumentException(USER_EXISTS);
             });
         }
-        updateVendorDate(vendorEntity, createVendorRequestDTO, contractDocument, userId);
+        updateVendorData(vendorEntity, createVendorRequestDTO, contractDocument, userId);
         return vendorEntity;
     }
 
-    private void updateVendorDate(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
+    private void updateVendorData(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
         try{
             vendorEntity.setName(createVendorRequestDTO.getName());
             vendorEntity.setVendorId(createVendorRequestDTO.getVendorId());
