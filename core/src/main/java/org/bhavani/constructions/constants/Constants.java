@@ -73,4 +73,15 @@ public class Constants {
         put(TransactionStatus.CHECKED, new ArrayList<>());
         put(TransactionStatus.REJECTED, new ArrayList<>());
     }};
+
+    //AWS S3 Locations
+    public static String AWS_BUCKET_NAME = "bifrost-s3";
+    public static String SUPERVISOR_AADHAR_FOLDER = "employees/supervisors/aadhar/";
+    public static String DRIVER_AADHAR_FOLDER = "employees/drivers/aadhar/";
+    public static String DRIVER_LICENSE_FOLDER = "employees/drivers/license/";
+    public static String VENDOR_CONTRACT_FOLDER = "vendors/contract-agreement/";
+    public static String TRANSACTION_RECEIPT_FOLDER = "transactions/receipts/";
+
+    public static String ACCESS_KEY = "AKIA5K3KWNXFZ7653Q7W";
+    public static String SECRET_KEY = "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";
 }

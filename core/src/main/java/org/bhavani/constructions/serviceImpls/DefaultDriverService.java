@@ -2,21 +2,23 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.*;
 import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dto.CreateDriverRequestDTO;
 import org.bhavani.constructions.services.DriverService;
+import org.bhavani.constructions.utils.AWSS3Util;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.bhavani.constructions.constants.ErrorConstants.*;
-import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
+import static org.bhavani.constructions.constants.Constants.DRIVER_AADHAR_FOLDER;
+import static org.bhavani.constructions.constants.Constants.DRIVER_LICENSE_FOLDER;
+import static org.bhavani.constructions.constants.ErrorConstants.USER_EXISTS;
+import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
 import static org.bhavani.constructions.utils.EntityBuilder.createDriverEntity;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -39,20 +41,19 @@ public class DefaultDriverService implements DriverService {
 
     @Override
     public DriverEntity createDriver(CreateDriverRequestDTO createDriverRequestDTO,
-                                     InputStream license, InputStream aadhar,
+                                     InputStream license, FormDataContentDisposition licenseContent,
+                                     InputStream aadhar, FormDataContentDisposition aadharContent,
                                      String userId) {
-        try{
-            DriverEntity driverEntity = createDriverEntity(createDriverRequestDTO, license, aadhar, userId);
-            driverEntityDao.getDriver(createDriverRequestDTO.getName()).ifPresent(existingDriver -> {
-                log.error("{} already present. User different name.", existingDriver.getName());
-                throw new IllegalArgumentException(USER_EXISTS);
-            });
-            driverEntityDao.saveDriver(driverEntity);
-            return driverEntity;
-        }catch (IOException ioException){
-            log.error("Error while parsing license/aadhar");
-            throw new RuntimeException(DOC_PARSING_ERROR);
-        }
+        String aadharLocationS3 = AWSS3Util.uploadToAWSS3(aadhar, aadharContent.getFileName(), DRIVER_AADHAR_FOLDER);
+        String licenseLocationS3 = AWSS3Util.uploadToAWSS3(license, licenseContent.getFileName(), DRIVER_LICENSE_FOLDER);
+
+        DriverEntity driverEntity = createDriverEntity(createDriverRequestDTO, licenseLocationS3, aadharLocationS3, userId);
+        driverEntityDao.getDriver(createDriverRequestDTO.getName()).ifPresent(existingDriver -> {
+            log.error("{} already present. User different name.", existingDriver.getName());
+            throw new IllegalArgumentException(USER_EXISTS);
+        });
+        driverEntityDao.saveDriver(driverEntity);
+        return driverEntity;
     }
 
     @Override
@@ -77,7 +78,8 @@ public class DefaultDriverService implements DriverService {
     }
 
     @Override
-    public DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, InputStream aadhar,
+    public DriverEntity updateDriver(CreateDriverRequestDTO createDriverRequestDTO, InputStream license, FormDataContentDisposition licenseContent,
+                                     InputStream aadhar, FormDataContentDisposition aadharContent,
                                      String userId, String driverName) {
         DriverEntity driverEntity = driverEntityDao.getDriver(driverName).orElseThrow(() -> {
             log.error("{} doesn't exist. Create user first", createDriverRequestDTO.getName());
@@ -88,9 +90,12 @@ public class DefaultDriverService implements DriverService {
                 log.error("User: {} already exists", createDriverRequestDTO.getName());
                 throw new IllegalArgumentException(USER_EXISTS);
             });
-//            updateDependentEntities(driverName, createDriverRequestDTO.getName());
+            updateDependentEntities(driverName, createDriverRequestDTO.getName());
         }
-        updateDriverData(createDriverRequestDTO, license, aadhar, driverEntity, userId);
+        String aadharLocationS3 = AWSS3Util.uploadToAWSS3(aadhar, aadharContent.getFileName(), DRIVER_AADHAR_FOLDER);
+        String licenseLocationS3 = AWSS3Util.uploadToAWSS3(license, licenseContent.getFileName(), DRIVER_LICENSE_FOLDER);
+
+        updateDriverData(createDriverRequestDTO, licenseLocationS3, aadharLocationS3, driverEntity, userId);
         return driverEntity;
     }
 
@@ -140,22 +145,17 @@ public class DefaultDriverService implements DriverService {
         return driverEntityDao.getDrivers();
     }
 
-    private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
-                                  InputStream aadhar, DriverEntity driverEntity, String userId) {
-        try {
+    private void updateDriverData(CreateDriverRequestDTO createDriverRequestDTO, String licenseLocationS3,
+                                  String aadharLocationS3, DriverEntity driverEntity, String userId) {
 
-            driverEntity.setName(createDriverRequestDTO.getName());
-            driverEntity.setPersonalMobileNumber(createDriverRequestDTO.getPersonalMobileNumber());
-            driverEntity.setBankAccountNumber(createDriverRequestDTO.getBankAccountNumber());
-            driverEntity.setSalary(createDriverRequestDTO.getSalary());
-            driverEntity.setLicense(IOUtils.toByteArray(license));
-            driverEntity.setAadhar(IOUtils.toByteArray(aadhar));
-            driverEntity.setOtPayDay(createDriverRequestDTO.getOtPayDay());
-            driverEntity.setOtPayDayNight(createDriverRequestDTO.getOtPayDayNight());
-            driverEntity.setUpdatedBy(userId);
-        }catch (IOException ioException){
-            log.error("Error while updating driver data");
-            throw new RuntimeException(CORRUPTED_DATA);
-        }
+        driverEntity.setName(createDriverRequestDTO.getName());
+        driverEntity.setPersonalMobileNumber(createDriverRequestDTO.getPersonalMobileNumber());
+        driverEntity.setBankAccountNumber(createDriverRequestDTO.getBankAccountNumber());
+        driverEntity.setSalary(createDriverRequestDTO.getSalary());
+        driverEntity.setLicense(licenseLocationS3);
+        driverEntity.setAadhar(aadharLocationS3);
+        driverEntity.setOtPayDay(createDriverRequestDTO.getOtPayDay());
+        driverEntity.setOtPayDayNight(createDriverRequestDTO.getOtPayDayNight());
+        driverEntity.setUpdatedBy(userId);
     }
 }

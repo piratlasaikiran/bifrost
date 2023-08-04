@@ -2,21 +2,22 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.*;
 import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
-import org.bhavani.constructions.utils.EntityBuilder;
 import org.bhavani.constructions.services.SupervisorService;
+import org.bhavani.constructions.utils.AWSS3Util;
+import org.bhavani.constructions.utils.EntityBuilder;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.Constants.SUPERVISOR_AADHAR_FOLDER;
 import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 
@@ -45,29 +46,27 @@ public class DefaultSupervisorService implements SupervisorService {
 
     @Override
     public SupervisorEntity createSupervisor(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                             InputStream aadhar, String userId) {
-        try {
-            supervisorEntityDao.getSupervisorByATMCard(createSupervisorRequestDTO.getAtmCardNumber())
-                    .ifPresent(supervisorHoldingATMCard -> {
-                    log.error("{} already in use. Use different card.", supervisorHoldingATMCard.getAtmCardNumber());
-                    throw new IllegalArgumentException(ATM_CARD_IN_USE);
-            });
-            SupervisorEntity supervisorEntity = EntityBuilder.createSupervisorEntity(createSupervisorRequestDTO, aadhar, userId);
-            supervisorEntityDao.getSupervisor(createSupervisorRequestDTO.getName()).ifPresent(existingSupervisor -> {
-                log.error("{} already present. Use different name.", existingSupervisor.getName());
-                throw new IllegalArgumentException(USER_EXISTS);
-            });
-            supervisorEntityDao.saveSupervisor(supervisorEntity);
-            return supervisorEntity;
-        }catch (IOException ioException){
-            log.error("Error while parsing license/aadhar");
-            throw new RuntimeException(DOC_PARSING_ERROR);
-        }
+                                             InputStream aadhar, FormDataContentDisposition aadharContent,
+                                             String userId) {
+        supervisorEntityDao.getSupervisorByATMCard(createSupervisorRequestDTO.getAtmCardNumber())
+                .ifPresent(supervisorHoldingATMCard -> {
+                log.error("{} already in use. Use different card.", supervisorHoldingATMCard.getAtmCardNumber());
+                throw new IllegalArgumentException(ATM_CARD_IN_USE);
+        });
+        String aadharLocationS3 = AWSS3Util.uploadToAWSS3(aadhar, aadharContent.getFileName(), SUPERVISOR_AADHAR_FOLDER);
+        SupervisorEntity supervisorEntity = EntityBuilder.createSupervisorEntity(createSupervisorRequestDTO, aadharLocationS3, userId);
+        supervisorEntityDao.getSupervisor(createSupervisorRequestDTO.getName()).ifPresent(existingSupervisor -> {
+            log.error("{} already present. Use different name.", existingSupervisor.getName());
+            throw new IllegalArgumentException(USER_EXISTS);
+        });
+        supervisorEntityDao.saveSupervisor(supervisorEntity);
+        return supervisorEntity;
     }
 
     @Override
     public SupervisorEntity updateSupervisor(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                             InputStream aadhar, String userId, String supervisorName) {
+                                             InputStream aadhar, FormDataContentDisposition aadharContent,
+                                             String userId, String supervisorName) {
 
         Optional<SupervisorEntity> supervisorHoldingATMCard = supervisorEntityDao.getSupervisorByATMCard(createSupervisorRequestDTO.getAtmCardNumber());
         if(supervisorHoldingATMCard.isPresent() && !Objects.equals(supervisorHoldingATMCard.get().getName(), supervisorName)){
@@ -85,7 +84,8 @@ public class DefaultSupervisorService implements SupervisorService {
             });
             updateDependentEntities(supervisorName, createSupervisorRequestDTO.getName());
         }
-        updateSupervisorData(createSupervisorRequestDTO, aadhar, userId, supervisorEntity);
+        String updatedAadharS3Location = AWSS3Util.updateDocInAWS(supervisorEntity.getAadhar(), aadhar, aadharContent.getFileName(), SUPERVISOR_AADHAR_FOLDER);
+        updateSupervisorData(createSupervisorRequestDTO, updatedAadharS3Location, userId, supervisorEntity);
         supervisorEntityDao.updateSupervisor(supervisorEntity);
         return supervisorEntity;
     }
@@ -155,21 +155,16 @@ public class DefaultSupervisorService implements SupervisorService {
         return supervisorDTOs;
     }
 
-    private static void updateSupervisorData(CreateSupervisorRequestDTO createSupervisorRequestDTO, InputStream aadhar,
+    private static void updateSupervisorData(CreateSupervisorRequestDTO createSupervisorRequestDTO, String aadharLocationS3,
                                              String userId, SupervisorEntity supervisorEntity) {
-        try {
-            supervisorEntity.setName(createSupervisorRequestDTO.getName());
-            supervisorEntity.setPersonalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber());
-            supervisorEntity.setBankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber());
-            supervisorEntity.setSalary(createSupervisorRequestDTO.getSalary());
-            supervisorEntity.setAadhar(IOUtils.toByteArray(aadhar));
-            supervisorEntity.setCompanyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber());
-            supervisorEntity.setAtmCardNumber(createSupervisorRequestDTO.getAtmCardNumber());
-            supervisorEntity.setOtPay(createSupervisorRequestDTO.getOtPay());
-            supervisorEntity.setUpdatedBy(userId);
-        }catch(IOException ioException){
-            log.error("Error while updating driver data");
-            throw new RuntimeException(CORRUPTED_DATA);
-        }
+        supervisorEntity.setName(createSupervisorRequestDTO.getName());
+        supervisorEntity.setPersonalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber());
+        supervisorEntity.setBankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber());
+        supervisorEntity.setSalary(createSupervisorRequestDTO.getSalary());
+        supervisorEntity.setAadhar(aadharLocationS3);
+        supervisorEntity.setCompanyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber());
+        supervisorEntity.setAtmCardNumber(createSupervisorRequestDTO.getAtmCardNumber());
+        supervisorEntity.setOtPay(createSupervisorRequestDTO.getOtPay());
+        supervisorEntity.setUpdatedBy(userId);
     }
 }

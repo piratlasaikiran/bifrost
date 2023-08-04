@@ -2,21 +2,22 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.VendorEntityDao;
 import org.bhavani.constructions.dao.entities.VendorEntity;
 import org.bhavani.constructions.dao.entities.models.CommodityType;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
 import org.bhavani.constructions.services.VendorService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.bhavani.constructions.utils.EntityBuilder;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bhavani.constructions.constants.Constants.COMMODITY_ATTENDANCE_UNITS;
+import static org.bhavani.constructions.constants.Constants.VENDOR_CONTRACT_FOLDER;
 import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.convertListToCommaSeparatedString;
 
@@ -27,19 +28,17 @@ public class DefaultVendorService implements VendorService {
     private final VendorEntityDao vendorEntityDao;
 
     @Override
-    public VendorEntity createVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) {
-        try{
-            VendorEntity vendorEntity = EntityBuilder.createVendorEntity(createVendorRequestDTO, contractDoc, userId);
-            vendorEntityDao.getVendorById(createVendorRequestDTO.getVendorId()).ifPresent(existingVendor -> {
-                log.error("{} already present. Use different ID.", existingVendor.getVendorId());
-                throw new IllegalArgumentException(USER_EXISTS);
-            });
-            vendorEntityDao.saveSupervisor(vendorEntity);
-            return vendorEntity;
-        }catch (IOException ioException){
-            log.error("Error while parsing contract document");
-            throw new RuntimeException(DOC_PARSING_ERROR);
-        }
+    public VendorEntity createVendor(CreateVendorRequestDTO createVendorRequestDTO,
+                                     InputStream contractDoc, FormDataContentDisposition contractDocumentContent,
+                                     String userId) {
+        String contractDocLocationS3 = AWSS3Util.uploadToAWSS3(contractDoc, contractDocumentContent.getFileName(), VENDOR_CONTRACT_FOLDER);
+        VendorEntity vendorEntity = EntityBuilder.createVendorEntity(createVendorRequestDTO, contractDocLocationS3, userId);
+        vendorEntityDao.getVendorById(createVendorRequestDTO.getVendorId()).ifPresent(existingVendor -> {
+            log.error("{} already present. Use different ID.", existingVendor.getVendorId());
+            throw new IllegalArgumentException(USER_EXISTS);
+        });
+        vendorEntityDao.saveSupervisor(vendorEntity);
+        return vendorEntity;
     }
 
     @Override
@@ -88,7 +87,7 @@ public class DefaultVendorService implements VendorService {
 
     @Override
     public VendorEntity updateVendor(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument,
-                                     String userId, String vendorId) {
+                                     FormDataContentDisposition contractDocumentContent, String userId, String vendorId) {
         VendorEntity vendorEntity = getVendor(vendorId);
         if(!vendorId.equals(createVendorRequestDTO.getVendorId())) {
             vendorEntityDao.getVendorById(createVendorRequestDTO.getVendorId()).ifPresent(newVendorEntity -> {
@@ -96,24 +95,20 @@ public class DefaultVendorService implements VendorService {
                 throw new IllegalArgumentException(USER_EXISTS);
             });
         }
-        updateVendorData(vendorEntity, createVendorRequestDTO, contractDocument, userId);
+        String updatedContractDocS3Location = AWSS3Util.updateDocInAWS(vendorEntity.getContractDocument(), contractDocument, contractDocumentContent.getFileName(), VENDOR_CONTRACT_FOLDER);
+        updateVendorData(vendorEntity, createVendorRequestDTO, updatedContractDocS3Location, userId);
         return vendorEntity;
     }
 
-    private void updateVendorData(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDocument, String userId) {
-        try{
-            vendorEntity.setName(createVendorRequestDTO.getName());
-            vendorEntity.setVendorId(createVendorRequestDTO.getVendorId());
-            vendorEntity.setLocation(createVendorRequestDTO.getLocation());
-            vendorEntity.setPurposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())));
-            vendorEntity.setCommodityCosts(createVendorRequestDTO.getCommodityCosts());
-            vendorEntity.setContractDocument(IOUtils.toByteArray(contractDocument));
-            vendorEntity.setMobileNumber(createVendorRequestDTO.getMobileNumber());
-            vendorEntity.setUpdatedBy(userId);
-        }catch(IOException ioException){
-            log.error("Error while updating vendor data");
-            throw new RuntimeException(CORRUPTED_DATA);
-        }
+    private void updateVendorData(VendorEntity vendorEntity, CreateVendorRequestDTO createVendorRequestDTO, String updatedContractDocS3Location, String userId) {
+        vendorEntity.setName(createVendorRequestDTO.getName());
+        vendorEntity.setVendorId(createVendorRequestDTO.getVendorId());
+        vendorEntity.setLocation(createVendorRequestDTO.getLocation());
+        vendorEntity.setPurposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())));
+        vendorEntity.setCommodityCosts(createVendorRequestDTO.getCommodityCosts());
+        vendorEntity.setContractDocument(updatedContractDocS3Location);
+        vendorEntity.setMobileNumber(createVendorRequestDTO.getMobileNumber());
+        vendorEntity.setUpdatedBy(userId);
     }
 
     private List<VendorEntity> getVendorEntities() {

@@ -59,9 +59,8 @@ public class TransactionEntity extends BaseEntity {
     @Column(name = "remarks")
     private String remarks;
 
-    @Lob
     @Column(name = "bill")
-    private byte[] bill;
+    private String bill;
 
     @Column(name = "transaction_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

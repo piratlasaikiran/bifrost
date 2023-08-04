@@ -2,7 +2,6 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bhavani.constructions.dao.api.*;
 import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
@@ -10,17 +9,20 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.*;
 import org.bhavani.constructions.services.TransactionService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.bhavani.constructions.utils.EntityBuilder;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.bhavani.constructions.constants.Constants.TRANSACTION_RECEIPT_FOLDER;
 import static org.bhavani.constructions.constants.Constants.TRANSACTION_STATE_CHANGE_ALLOWANCE;
-import static org.bhavani.constructions.constants.ErrorConstants.*;
+import static org.bhavani.constructions.constants.ErrorConstants.NO_PENDING_BALANCE;
+import static org.bhavani.constructions.constants.ErrorConstants.TRANSACTION_NOT_FOUND;
 import static org.bhavani.constructions.dao.entities.models.TransactionPurpose.SETTLEMENT;
 import static org.bhavani.constructions.utils.EntityBuilder.createPendingBalanceEntity;
 import static org.bhavani.constructions.utils.PassBookHelper.createPassBookEntities;
@@ -37,16 +39,17 @@ public class DefaultTransactionService implements TransactionService {
     private final PendingBalanceEntityDao pendingBalanceEntityDao;
 
     @Override
-    public TransactionEntity createTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) {
-        try{
-            TransactionEntity transactionEntity = EntityBuilder.createTransactionEntity(createTransactionRequestDTO, bill, userId);
-            transactionEntityDao.saveTransaction(transactionEntity);
-            checkAndUpdatePendingBalances(transactionEntity, userId);
-            return transactionEntity;
-        }catch (IOException exception){
-            log.error("Error while parsing receipt");
-            throw new RuntimeException(DOC_PARSING_ERROR);
+    public TransactionEntity createTransaction(CreateTransactionRequestDTO createTransactionRequestDTO,
+                                               InputStream bill, FormDataContentDisposition billContent,
+                                               String userId) {
+        String billLocationS3 = null;
+        if(Objects.nonNull(bill)) {
+            billLocationS3 = AWSS3Util.uploadToAWSS3(bill, billContent.getFileName(), TRANSACTION_RECEIPT_FOLDER);
         }
+        TransactionEntity transactionEntity = EntityBuilder.createTransactionEntity(createTransactionRequestDTO, billLocationS3, userId);
+        transactionEntityDao.saveTransaction(transactionEntity);
+        checkAndUpdatePendingBalances(transactionEntity, userId);
+        return transactionEntity;
     }
 
     @Override
@@ -107,7 +110,9 @@ public class DefaultTransactionService implements TransactionService {
     }
 
     @Override
-    public TransactionEntity updateTransaction(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId, Long transactionId) {
+    public TransactionEntity updateTransaction(CreateTransactionRequestDTO createTransactionRequestDTO,
+                                               InputStream bill, FormDataContentDisposition billContent,
+                                               String userId, Long transactionId) {
         TransactionEntity transactionEntity = transactionEntityDao.getTransaction(transactionId).orElseThrow(() -> {
             log.error("Transaction not found");
              return new RuntimeException(TRANSACTION_NOT_FOUND);
@@ -123,12 +128,15 @@ public class DefaultTransactionService implements TransactionService {
         transactionEntity.setBankAccount(createTransactionRequestDTO.getBankAccount());
         transactionEntity.setStatus(createTransactionRequestDTO.getStatus());
         transactionEntity.setRemarks(createTransactionRequestDTO.getRemarks());
-        try{
-            if(Objects.nonNull(bill))
-                transactionEntity.setBill(IOUtils.toByteArray(bill));
-        }catch (IOException exception){
-            log.error("Error while updating transaction document");
-            throw new RuntimeException(DOC_PARSING_ERROR);
+        if(Objects.nonNull(bill)) {
+            String billLocationS3;
+            if(Objects.nonNull(transactionEntity.getBill())) {
+                billLocationS3 = AWSS3Util.updateDocInAWS(transactionEntity.getBill(), bill, billContent.getFileName(), TRANSACTION_RECEIPT_FOLDER);
+            }
+            else{
+                billLocationS3 = AWSS3Util.uploadToAWSS3(bill, billContent.getFileName(), TRANSACTION_RECEIPT_FOLDER);
+            }
+            transactionEntity.setBill(billLocationS3);
         }
         return transactionEntity;
     }

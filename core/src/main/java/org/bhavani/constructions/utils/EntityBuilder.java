@@ -19,25 +19,24 @@ import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITE
 
 public class EntityBuilder {
     public static SupervisorEntity createSupervisorEntity(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                                          InputStream aadhar, String userId) throws IOException {
+                                                          String aadharLocationS3, String userId) {
 
         return SupervisorEntity.builder()
                 .name(createSupervisorRequestDTO.getName())
                 .personalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber())
                 .bankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber())
                 .salary(createSupervisorRequestDTO.getSalary())
-                .aadhar(IOUtils.toByteArray(aadhar))
+                .aadhar(aadharLocationS3)
                 .companyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber())
                 .atmCardNumber(createSupervisorRequestDTO.getAtmCardNumber())
                 .otPay(createSupervisorRequestDTO.getOtPay())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
-
     }
 
-    public static DriverEntity createDriverEntity(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
-                                                  InputStream aadhar, String userId) throws IOException {
+    public static DriverEntity createDriverEntity(CreateDriverRequestDTO createDriverRequestDTO, String licenseLocationS3,
+                                                  String aadharLocationS3, String userId) {
 
         return DriverEntity.builder()
                 .name(createDriverRequestDTO.getName())
@@ -46,8 +45,8 @@ public class EntityBuilder {
                 .salary(createDriverRequestDTO.getSalary())
                 .otPayDay(createDriverRequestDTO.getOtPayDay())
                 .otPayDayNight(createDriverRequestDTO.getOtPayDayNight())
-                .license(IOUtils.toByteArray(license))
-                .aadhar(IOUtils.toByteArray(aadhar))
+                .license(licenseLocationS3)
+                .aadhar(aadharLocationS3)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -125,7 +124,7 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) throws IOException {
+    public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, String contractDocLocationS3, String userId){
         return VendorEntity.builder()
                 .vendorId(createVendorRequestDTO.getVendorId())
                 .name(createVendorRequestDTO.getName())
@@ -133,7 +132,7 @@ public class EntityBuilder {
                 .mobileNumber(createVendorRequestDTO.getMobileNumber())
                 .purposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())))
                 .commodityCosts(createVendorRequestDTO.getCommodityCosts())
-                .contractDocument(IOUtils.toByteArray(contractDoc))
+                .contractDocument(contractDocLocationS3)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -152,7 +151,7 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) throws IOException {
+    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, String billLocationS3, String userId) {
         TransactionEntity transactionEntity = TransactionEntity.builder()
                 .source(createTransactionRequestDTO.getSource())
                 .destination(createTransactionRequestDTO.getDestination())
@@ -169,8 +168,8 @@ public class EntityBuilder {
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
-        if(Objects.nonNull(bill))
-            transactionEntity.setBill(IOUtils.toByteArray(bill));
+        if(Objects.nonNull(billLocationS3))
+            transactionEntity.setBill(billLocationS3);
 
         return transactionEntity;
     }

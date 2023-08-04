@@ -11,6 +11,7 @@ import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
 import org.bhavani.constructions.dto.*;
 import org.bhavani.constructions.services.TransactionService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -46,7 +47,7 @@ public class TransactionResource {
                                     @FormDataParam("bill") InputStream bill,
                                     @FormDataParam("bill") FormDataContentDisposition billContent,
                                     @NotNull @HeaderParam(X_USER_ID) String userId){
-        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, userId);
+        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, billContent, userId);
         return Response.ok(transaction).build();
     }
 
@@ -95,7 +96,7 @@ public class TransactionResource {
                                       @FormDataParam("bill") InputStream bill,
                                       @FormDataParam("bill") FormDataContentDisposition billContent,
                                       @NotNull @HeaderParam(X_USER_ID) String userId){
-        TransactionEntity transaction = transactionService.updateTransaction(createTransactionRequestDTO, bill, userId, transactionId);
+        TransactionEntity transaction = transactionService.updateTransaction(createTransactionRequestDTO, bill, billContent, userId, transactionId);
         return Response.ok(transaction).build();
     }
 
@@ -105,7 +106,7 @@ public class TransactionResource {
     @UnitOfWork
     public Response getTransactionBill(@NotNull @PathParam("transactionId") Long transactionId,
                                             @NotNull @HeaderParam(X_USER_ID) String userId){
-        InputStream aadhar = new ByteArrayInputStream(transactionService.getTransaction(transactionId).getBill());
+        InputStream aadhar = AWSS3Util.getFile(transactionService.getTransaction(transactionId).getBill());
         return Response.ok(aadhar).build();
     }
 

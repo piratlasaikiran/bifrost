@@ -58,9 +58,8 @@ public class VendorEntity extends BaseEntity {
     @Column(name = "mobile_number")
     private Long mobileNumber;
 
-    @Lob
     @Column(name = "contract_doc")
-    private byte[] contractDocument;
+    private String contractDocument;
 
     @Column(name = "location")
     private String location;

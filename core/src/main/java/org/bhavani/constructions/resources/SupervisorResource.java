@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bhavani.constructions.dao.entities.SupervisorEntity;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.services.SupervisorService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -68,7 +69,7 @@ public class SupervisorResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getAadhar(@Nonnull @PathParam("supervisorName") String supervisorName){
-        InputStream aadhar = new ByteArrayInputStream(supervisorService.getSupervisor(supervisorName).getAadhar());
+        InputStream aadhar = AWSS3Util.getFile(supervisorService.getSupervisor(supervisorName).getAadhar());
         return Response.ok(aadhar).build();
     }
 
@@ -80,7 +81,7 @@ public class SupervisorResource {
                                    @FormDataParam("aadhar") InputStream aadhar,
                                    @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                    @NotNull @HeaderParam(X_USER_ID) String userId){
-        SupervisorEntity supervisor = supervisorService.createSupervisor(createSupervisorRequestDTO, aadhar, userId);
+        SupervisorEntity supervisor = supervisorService.createSupervisor(createSupervisorRequestDTO, aadhar, aadharContent, userId);
         return Response.ok(supervisorService.createSupervisorResponse(supervisor)).build();
     }
 
@@ -93,7 +94,7 @@ public class SupervisorResource {
                                      @FormDataParam("aadhar") InputStream aadhar,
                                      @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                      @NotNull @HeaderParam(X_USER_ID) String userId){
-        SupervisorEntity supervisor = supervisorService.updateSupervisor(createSupervisorRequestDTO, aadhar, userId, supervisorName);
+        SupervisorEntity supervisor = supervisorService.updateSupervisor(createSupervisorRequestDTO, aadhar, aadharContent, userId, supervisorName);
         return Response.ok(supervisorService.createSupervisorResponse(supervisor)).build();
     }
 

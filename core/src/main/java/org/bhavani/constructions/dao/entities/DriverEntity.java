@@ -37,7 +37,6 @@ public class DriverEntity extends Employee {
     @Column(name = "ot_pay_day_night")
     private int otPayDayNight;
 
-    @Lob
     @Column(name = "license")
-    private byte[] license;
+    private String license;
 }
