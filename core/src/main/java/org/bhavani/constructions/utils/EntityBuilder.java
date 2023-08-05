@@ -19,37 +19,34 @@ import static org.bhavani.constructions.constants.Constants.STRING_JOIN_DELIMITE
 
 public class EntityBuilder {
     public static SupervisorEntity createSupervisorEntity(CreateSupervisorRequestDTO createSupervisorRequestDTO,
-                                                          InputStream aadhar, String userId) throws IOException {
+                                                          String aadharLocationS3, String userId) {
 
         return SupervisorEntity.builder()
                 .name(createSupervisorRequestDTO.getName())
                 .personalMobileNumber(createSupervisorRequestDTO.getPersonalMobileNumber())
                 .bankAccountNumber(createSupervisorRequestDTO.getBankAccountNumber())
                 .salary(createSupervisorRequestDTO.getSalary())
-                .admin(createSupervisorRequestDTO.isAdmin())
-                .aadhar(IOUtils.toByteArray(aadhar))
+                .aadhar(aadharLocationS3)
                 .companyMobileNumber(createSupervisorRequestDTO.getCompanyMobileNumber())
                 .atmCardNumber(createSupervisorRequestDTO.getAtmCardNumber())
                 .otPay(createSupervisorRequestDTO.getOtPay())
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
-
     }
 
-    public static DriverEntity createDriverEntity(CreateDriverRequestDTO createDriverRequestDTO, InputStream license,
-                                                  InputStream aadhar, String userId) throws IOException {
+    public static DriverEntity createDriverEntity(CreateDriverRequestDTO createDriverRequestDTO, String licenseLocationS3,
+                                                  String aadharLocationS3, String userId) {
 
         return DriverEntity.builder()
                 .name(createDriverRequestDTO.getName())
                 .personalMobileNumber(createDriverRequestDTO.getPersonalMobileNumber())
                 .bankAccountNumber(createDriverRequestDTO.getBankAccountNumber())
                 .salary(createDriverRequestDTO.getSalary())
-                .admin(createDriverRequestDTO.isAdmin())
                 .otPayDay(createDriverRequestDTO.getOtPayDay())
                 .otPayDayNight(createDriverRequestDTO.getOtPayDayNight())
-                .license(IOUtils.toByteArray(license))
-                .aadhar(IOUtils.toByteArray(aadhar))
+                .license(licenseLocationS3)
+                .aadhar(aadharLocationS3)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -118,21 +115,24 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static UserEntity createUserEntity(String userName, String hashedPassword){
+    public static UserEntity createUserEntity(String userName, String hashedPassword, String userId){
         return UserEntity.builder()
                 .userName(userName)
                 .password(hashedPassword)
+                .createdBy(userId)
+                .updatedBy(userId)
                 .build();
     }
 
-    public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, InputStream contractDoc, String userId) throws IOException {
+    public static VendorEntity createVendorEntity(CreateVendorRequestDTO createVendorRequestDTO, String contractDocLocationS3, String userId){
         return VendorEntity.builder()
                 .vendorId(createVendorRequestDTO.getVendorId())
+                .name(createVendorRequestDTO.getName())
                 .location(createVendorRequestDTO.getLocation())
                 .mobileNumber(createVendorRequestDTO.getMobileNumber())
                 .purposes(convertListToCommaSeparatedString(createVendorRequestDTO.getPurposes().stream().map(Enum::toString).collect(Collectors.toList())))
                 .commodityCosts(createVendorRequestDTO.getCommodityCosts())
-                .contractDocument(IOUtils.toByteArray(contractDoc))
+                .contractDocument(contractDocLocationS3)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -151,13 +151,15 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, InputStream bill, String userId) throws IOException {
+    public static TransactionEntity createTransactionEntity(CreateTransactionRequestDTO createTransactionRequestDTO, String billLocationS3, String userId) {
         TransactionEntity transactionEntity = TransactionEntity.builder()
                 .source(createTransactionRequestDTO.getSource())
                 .destination(createTransactionRequestDTO.getDestination())
                 .amount(createTransactionRequestDTO.getAmount())
                 .transactionDate(createTransactionRequestDTO.getTransactionDate())
                 .purpose(createTransactionRequestDTO.getPurpose())
+                .site(createTransactionRequestDTO.getSite())
+                .vehicleNumber(createTransactionRequestDTO.getVehicleNumber())
                 .status(createTransactionRequestDTO.getStatus())
                 .mode(createTransactionRequestDTO.getMode())
                 .status(TransactionStatus.SUBMITTED)
@@ -166,8 +168,8 @@ public class EntityBuilder {
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
-        if(Objects.nonNull(bill))
-            transactionEntity.setBill(IOUtils.toByteArray(bill));
+        if(Objects.nonNull(billLocationS3))
+            transactionEntity.setBill(billLocationS3);
 
         return transactionEntity;
     }
@@ -202,11 +204,9 @@ public class EntityBuilder {
                 .build();
     }
 
-    public static TransactionEntity getTransactionEntityForAttendance(String source, String destination,
-                                                                      long amount, LocalDate attendanceDate, String bankAccount,
-                                                                      String userId) {
+    public static TransactionEntity getTransactionEntityForAttendance(String destination, long amount, LocalDate attendanceDate, String userId) {
         return TransactionEntity.builder()
-                .source(source)
+                .source("Bhavani Constructions")
                 .destination(destination)
                 .amount(amount)
                 .purpose(TransactionPurpose.ATTENDANCE)
@@ -214,7 +214,6 @@ public class EntityBuilder {
                 .transactionDate(attendanceDate)
                 .status(TransactionStatus.SUBMITTED)
                 .mode(TransactionMode.CASH)
-                .bankAccount(bankAccount)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();
@@ -227,6 +226,16 @@ public class EntityBuilder {
                 .currentOwner(createAssetOwnershipRequestDTO.getCurrentOwner())
                 .startDate(createAssetOwnershipRequestDTO.getStartDate())
                 .endDate(createAssetOwnershipRequestDTO.getEndDate())
+                .createdBy(userId)
+                .updatedBy(userId)
+                .build();
+    }
+
+    public static PendingBalanceEntity createPendingBalanceEntity(String accountName, TransactionEntity transactionEntity, Long pendingAmount, String userId){
+        return PendingBalanceEntity.builder()
+                .accountName(accountName)
+                .transactionEntity(transactionEntity)
+                .pendingBalance(pendingAmount)
                 .createdBy(userId)
                 .updatedBy(userId)
                 .build();

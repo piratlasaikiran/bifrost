@@ -25,7 +25,9 @@ import java.util.Map;
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @NamedQueries(value = {
         @NamedQuery(name = "GetAllVendorAttendances",
-                query = "select V from VendorAttendanceEntity V")
+                query = "select V from VendorAttendanceEntity V"),
+        @NamedQuery(name = "GetVendorAttendanceInSite",
+                query = "select V from VendorAttendanceEntity V where V.site = :site_name")
 })
 @Table(name = "vendor_attendance")
 public class VendorAttendanceEntity extends BaseEntity {

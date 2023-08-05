@@ -11,12 +11,12 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import static org.bhavani.constructions.constants.Constants.X_USER_ID;
 
 @Path("/users")
 @Singleton
@@ -49,10 +49,11 @@ public class UserResource {
     @Path("/create-new-user")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @UnitOfWork
-    public Response createNewUser(@FormDataParam("userLoginPayload") LoginRequestDTO request) {
+    public Response createNewUser(@FormDataParam("userLoginPayload") LoginRequestDTO request,
+                                  @NotNull @HeaderParam(X_USER_ID) String userId) {
         String username = request.getUsername();
         String password = request.getPassword();
-        userService.createNewUser(username, password);
+        userService.createNewUser(username, password, userId);
         return Response.ok(Response.Status.CREATED).build();
     }
 

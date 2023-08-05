@@ -11,13 +11,12 @@ create table supervisors(
 	company_mob_num bigint(10) default null,
 	atm_card bigint(30) default null,
 	ot_pay integer not null default 0,
-	aadhar longblob DEFAULT NULL,
+	aadhar varchar(1024) DEFAULT NULL,
 	created_by varchar(255) DEFAULT NULL,
 	updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (id),
-    constraint supervisors_atm_card_fk FOREIGN KEY(atm_card) REFERENCES bank_accounts (atm_card)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:2
@@ -30,8 +29,8 @@ create table drivers(
 	admin tinyint(1) not null default 0,
 	ot_pay_day integer not null default 0,
 	ot_pay_day_night integer not null default 0,
-	license longblob DEFAULT NULL,
-	aadhar longblob DEFAULT NULL,
+	license varchar(1024) DEFAULT NULL,
+	aadhar varchar(1024) DEFAULT NULL,
 	created_by varchar(255) DEFAULT NULL,
 	updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -41,6 +40,7 @@ create table drivers(
 
 --changeset saikiran.pv:3
 create table vehicles(
+    id bigint(20) unsigned not null AUTO_INCREMENT,
     vehicle_num varchar(25) not null,
     owner varchar(150) not null,
     chassis_num varchar(100) not null,
@@ -52,7 +52,7 @@ create table vehicles(
     updated_by varchar(255) DEFAULT NULL,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key (vehicle_num)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:4
@@ -68,8 +68,7 @@ create table vehicle_taxes(
     updated_by varchar(255) default null,
     created_at timestamp not null default CURRENT_TIMESTAMP,
     updated_at timestamp not null default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    primary key(id),
-    constraint vehicle_taxes_vehicle_num_fk FOREIGN KEY(vehicle_num) REFERENCES vehicles (vehicle_num)
+    primary key(id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:5

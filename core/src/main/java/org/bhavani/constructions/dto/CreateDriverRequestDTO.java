@@ -30,10 +30,6 @@ public class CreateDriverRequestDTO {
     private int salary;
 
     @NotNull
-    @JsonProperty("admin")
-    private boolean admin;
-
-    @NotNull
     @JsonProperty("ot_pay_day")
     private int otPayDay;
 

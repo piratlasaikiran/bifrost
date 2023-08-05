@@ -4,14 +4,14 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bhavani.constructions.dao.entities.PendingBalanceEntity;
 import org.bhavani.constructions.dao.entities.TransactionEntity;
 import org.bhavani.constructions.dao.entities.models.TransactionMode;
 import org.bhavani.constructions.dao.entities.models.TransactionPurpose;
 import org.bhavani.constructions.dao.entities.models.TransactionStatus;
-import org.bhavani.constructions.dto.CreateTransactionRequestDTO;
-import org.bhavani.constructions.dto.PassBookResponseDTO;
-import org.bhavani.constructions.dto.TransactionStatusChangeDTO;
+import org.bhavani.constructions.dto.*;
 import org.bhavani.constructions.services.TransactionService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -47,7 +47,7 @@ public class TransactionResource {
                                     @FormDataParam("bill") InputStream bill,
                                     @FormDataParam("bill") FormDataContentDisposition billContent,
                                     @NotNull @HeaderParam(X_USER_ID) String userId){
-        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, userId);
+        TransactionEntity transaction = transactionService.createTransaction(createTransactionRequestDTO, bill, billContent, userId);
         return Response.ok(transaction).build();
     }
 
@@ -87,25 +87,6 @@ public class TransactionResource {
         return Response.ok(transactionStatuses).build();
     }
 
-    @GET
-    @Path("/passbook-main-pages")
-    @Produces(MediaType.APPLICATION_JSON)
-    @UnitOfWork
-    public Response getAllPassBookMainPages(@NotNull @HeaderParam(X_USER_ID) String userId){
-        List<PassBookResponseDTO> passBooks = transactionService.getAllPassBookMainPages();
-        return Response.ok(passBooks).build();
-    }
-
-    @GET
-    @Path("/passbooks/{accountName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @UnitOfWork
-    public Response getAllPassBookMainPages(@NotNull @PathParam("accountName") String accountName,
-                                            @NotNull @HeaderParam(X_USER_ID) String userId){
-        List<PassBookResponseDTO> passBooks = transactionService.getAccountPassBook(accountName);
-        return Response.ok(passBooks).build();
-    }
-
     @PUT
     @Path("/{transactionId}/update-transaction")
     @Produces(MediaType.APPLICATION_JSON)
@@ -115,7 +96,7 @@ public class TransactionResource {
                                       @FormDataParam("bill") InputStream bill,
                                       @FormDataParam("bill") FormDataContentDisposition billContent,
                                       @NotNull @HeaderParam(X_USER_ID) String userId){
-        TransactionEntity transaction = transactionService.updateTransaction(createTransactionRequestDTO, bill, userId, transactionId);
+        TransactionEntity transaction = transactionService.updateTransaction(createTransactionRequestDTO, bill, billContent, userId, transactionId);
         return Response.ok(transaction).build();
     }
 
@@ -125,7 +106,7 @@ public class TransactionResource {
     @UnitOfWork
     public Response getTransactionBill(@NotNull @PathParam("transactionId") Long transactionId,
                                             @NotNull @HeaderParam(X_USER_ID) String userId){
-        InputStream aadhar = new ByteArrayInputStream(transactionService.getTransaction(transactionId).getBill());
+        InputStream aadhar = AWSS3Util.getFile(transactionService.getTransaction(transactionId).getBill());
         return Response.ok(aadhar).build();
     }
 
@@ -147,5 +128,54 @@ public class TransactionResource {
                                            @NotNull @HeaderParam(X_USER_ID) String userId){
         transactionService.changeTransactionStatus(transactionStatusChangeDTO, userId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/passbook-main-pages")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllPassBookMainPages(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PassBookResponseDTO> passBooks = transactionService.getAllPassBookMainPages();
+        return Response.ok(passBooks).build();
+    }
+
+    @GET
+    @Path("/passbooks/{accountName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllPassBookMainPages(@NotNull @PathParam("accountName") String accountName,
+                                            @NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PassBookResponseDTO> passBooks = transactionService.getAccountPassBook(accountName);
+        return Response.ok(passBooks).build();
+    }
+
+    @POST
+    @Path("/account-name/{accountName}/settle-pending-balance")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response settlePendingBalance(@FormDataParam("settleBalancePayload") SettlePendingBalanceRequestDTO settlePendingBalanceRequestDTO,
+                                         @NotNull @PathParam("accountName") String accountName,
+                                           @NotNull @HeaderParam(X_USER_ID) String userId){
+        transactionService.settlePendingBalance(accountName, settlePendingBalanceRequestDTO, userId);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/pending-balances")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getAllPendingBalances(@NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PendingBalanceResponseDTO> pendingBalanceEntities = transactionService.getAllPendingBalancesForAllAccounts();
+        return Response.ok(pendingBalanceEntities).build();
+    }
+
+    @GET
+    @Path("/account-name/{accountName}/account-pending-balances")
+    @Produces(MediaType.APPLICATION_JSON)
+    @UnitOfWork
+    public Response getPendingBalancesForAccount(@NotNull @PathParam("accountName") String accountName,
+                                                 @NotNull @HeaderParam(X_USER_ID) String userId){
+        List<PendingBalanceResponseDTO> pendingBalanceEntities = transactionService.getPendingBalancesForAccount(accountName);
+        return Response.ok(pendingBalanceEntities).build();
     }
 }

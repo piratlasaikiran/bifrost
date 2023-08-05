@@ -27,11 +27,7 @@ public class Employee extends BaseEntity{
     @Column(name = "salary")
     private int salary;
 
-    @Column(name = "admin")
-    private boolean admin;
-
-    @Lob
     @Column(name = "aadhar")
-    private byte[] aadhar;
+    private String aadhar;
 
 }

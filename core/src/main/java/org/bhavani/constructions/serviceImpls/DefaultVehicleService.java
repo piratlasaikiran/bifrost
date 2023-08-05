@@ -3,10 +3,8 @@ package org.bhavani.constructions.serviceImpls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.bhavani.constructions.dao.api.VehicleEntityDao;
-import org.bhavani.constructions.dao.api.VehicleTaxEntityDao;
-import org.bhavani.constructions.dao.entities.VehicleEntity;
-import org.bhavani.constructions.dao.entities.VehicleTaxEntity;
+import org.bhavani.constructions.dao.api.*;
+import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dao.entities.models.VehicleTaxEnum;
 import org.bhavani.constructions.dto.CreateVehicleRequestDTO;
 import org.bhavani.constructions.dto.UploadVehicleTaxRequestDTO;
@@ -17,7 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
-import static org.bhavani.constructions.constants.ErrorConstants.USER_NOT_FOUND;
+import static org.bhavani.constructions.constants.ErrorConstants.*;
 import static org.bhavani.constructions.utils.EntityBuilder.*;
 
 @RequiredArgsConstructor(onConstructor = @__({@Inject}))
@@ -26,6 +24,10 @@ public class DefaultVehicleService implements VehicleService {
 
     private final VehicleEntityDao vehicleEntityDao;
     private final VehicleTaxEntityDao vehicleTaxEntityDao;
+    private final AssetLocationEntityDao assetLocationEntityDao;
+    private final AssetOwnershipEntityDao assetOwnershipEntityDao;
+    private final SiteEntityDao siteEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
 
     public EnumSet<VehicleTaxEnum> getVehicleTaxTypes(){
         return EnumSet.allOf(VehicleTaxEnum.class);
@@ -43,11 +45,40 @@ public class DefaultVehicleService implements VehicleService {
     public VehicleEntity updateVehicle(CreateVehicleRequestDTO updateVehicleRequestDTO, String vehicleNumber) {
         VehicleEntity vehicle = vehicleEntityDao.getVehicle(vehicleNumber)
                 .orElseThrow(() -> {
-                    log.error("{} doesn't exist. Create vehicle first", updateVehicleRequestDTO.getVehicleNumber());
-                    return new IllegalArgumentException(USER_NOT_FOUND);
+                    log.error("{} doesn't exist. Create vehicle first", vehicleNumber);
+                    return new IllegalArgumentException(VEHICLE_NOT_FOUND);
                 });
+        if(!vehicleNumber.equals(updateVehicleRequestDTO.getVehicleNumber())){
+            vehicleEntityDao.getVehicle(updateVehicleRequestDTO.getVehicleNumber())
+                    .ifPresent(existingVehicle -> {
+                        log.error("{} already exists", updateVehicleRequestDTO.getVehicleNumber());
+                        throw  new IllegalArgumentException(VEHICLE_EXISTS);
+                    });
+            updateDependingEntities(vehicleNumber, updateVehicleRequestDTO.getVehicleNumber());
+        }
         updateVehicleData(vehicle, updateVehicleRequestDTO);
         return vehicle;
+    }
+
+    private void updateDependingEntities(String oldVehicleNumber, String newVehicleNumber) {
+        List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao.getAssetLocationEntities(oldVehicleNumber);
+        assetLocationEntities.forEach(assetLocationEntity -> assetLocationEntity.setAssetName(newVehicleNumber));
+
+        List<AssetOwnershipEntity> assetOwnershipEntities = assetOwnershipEntityDao.getAssetOwnershipEntities(oldVehicleNumber);
+        assetOwnershipEntities.forEach(assetOwnershipEntity -> assetOwnershipEntity.setAssetName(newVehicleNumber));
+
+        List<VehicleTaxEntity> vehicleTaxEntities = vehicleTaxEntityDao.getTaxesForVehicle(oldVehicleNumber);
+        vehicleTaxEntities.forEach(vehicleTaxEntity -> vehicleTaxEntity.setVehicleNumber(newVehicleNumber));
+
+        List<SiteEntity> siteEntities = siteEntityDao.getSitesWithVehicle(oldVehicleNumber);
+        siteEntities.forEach(siteEntity -> {
+            List<String> vehicles = siteEntity.getVehicles();
+            vehicles.replaceAll(s -> s.equals(oldVehicleNumber) ? newVehicleNumber : s);
+            siteEntity.setVehicles(convertListToCommaSeparatedString(vehicles));
+        });
+
+        List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactionsByVehicleNumber(oldVehicleNumber);
+        transactionEntities.forEach(transactionEntity -> transactionEntity.setVehicleNumber(newVehicleNumber));
     }
 
     @Override

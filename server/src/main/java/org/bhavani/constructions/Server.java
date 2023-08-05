@@ -6,6 +6,9 @@ import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.hibernate.ScanningHibernateBundle;
 import io.dropwizard.hibernate.SessionFactoryFactory;
+import io.dropwizard.jetty.HttpConnectorFactory;
+import io.dropwizard.logging.ConsoleAppenderFactory;
+import io.dropwizard.logging.FileAppenderFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
@@ -76,5 +79,9 @@ public class Server extends Application<ServerConfiguration> {
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(swaggerBundle);
         bootstrap.addBundle(new MultiPartBundle());
+        bootstrap.getObjectMapper().registerSubtypes(HttpConnectorFactory.class);
+        bootstrap.getObjectMapper().registerSubtypes(FileAppenderFactory.class);
+        bootstrap.getObjectMapper().registerSubtypes(ConsoleAppenderFactory.class);
+
     }
 }

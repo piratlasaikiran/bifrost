@@ -15,7 +15,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_ERROR = "Error while making transaction";
     public static final String TRANSACTION_NOT_FOUND = "Transaction not found";
     public static final String ERROR_WHILE_FETCHING_TAX_DOC = " Error while fetching vehicle tax document";
-    public static final String INVALID_MOBILE_NUMBER = "Invalid mobile number, check again";
     public static final String ATTENDANCE_ENTRY_NOT_FOUND = "Attendance entry not found";
+    public static final String VEHICLE_NOT_FOUND = "Vehicle not found";
+    public static final String VEHICLE_EXISTS = "Vehicle already exists";
+    public static final String NO_PENDING_BALANCE = "No pending balance for user";
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.bhavani.constructions.constants.Constants.SITE_NAME;
+import static org.bhavani.constructions.constants.Constants.*;
 
 @Slf4j
 public class SiteEntityDaoImpl extends AbstractDAO<SiteEntity> implements SiteEntityDao {
@@ -51,6 +51,22 @@ public class SiteEntityDaoImpl extends AbstractDAO<SiteEntity> implements SiteEn
     public List<SiteEntity> getSites() {
         Map<String, Object> params = new HashMap<>();
         return findAllByNamedQuery("GetAllSites",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<SiteEntity> getSitesUnderSupervisor(String supervisorName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(EMPLOYEE_NAME, supervisorName);
+        return findAllByNamedQuery("GetSitesUnderSupervisor",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<SiteEntity> getSitesWithVehicle(String vehicleNumber) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(VEHICLE_NUMBER, vehicleNumber);
+        return findAllByNamedQuery("GetSitesWithVehicle",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

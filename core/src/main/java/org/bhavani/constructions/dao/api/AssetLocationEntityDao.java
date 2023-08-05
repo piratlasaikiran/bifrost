@@ -19,4 +19,6 @@ public interface AssetLocationEntityDao {
     List<AssetLocationEntity> getAssetsLocation();
 
     List<AssetLocationEntity> getAssetLocationEntities(String assetName);
+
+    List<AssetLocationEntity> getAssetsInSite(String siteName);
 }

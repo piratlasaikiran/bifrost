@@ -11,4 +11,8 @@ public interface EmployeeAttendanceDao {
     List<EmployeeAttendanceEntity> getAllEmployeeAttendance();
 
     Optional<EmployeeAttendanceEntity> getEmployeeAttendance(Long existingEmployeeAttendanceId);
+
+    List<EmployeeAttendanceEntity> getEmployeeAttendancesForEmployee(String employeeName);
+
+    List<EmployeeAttendanceEntity> getAttendancesInSite(String siteName);
 }

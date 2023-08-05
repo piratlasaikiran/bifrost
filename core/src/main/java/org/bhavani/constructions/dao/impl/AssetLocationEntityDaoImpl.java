@@ -64,4 +64,12 @@ public class AssetLocationEntityDaoImpl extends AbstractDAO<AssetLocationEntity>
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 
+    @Override
+    public List<AssetLocationEntity> getAssetsInSite(String siteName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SITE_NAME, siteName);
+        return findAllByNamedQuery("GetAssetsInLocation",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
 }

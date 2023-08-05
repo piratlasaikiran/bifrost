@@ -15,6 +15,7 @@ import org.bhavani.constructions.dto.CreateEmployeeAttendanceRequestDTO;
 import org.bhavani.constructions.dto.CreateVendorAttendanceRequestDTO;
 import org.bhavani.constructions.services.DriverService;
 import org.bhavani.constructions.services.EmployeeAttendanceService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -69,7 +70,7 @@ public class DriverResource {
                                    @FormDataParam("aadhar") InputStream aadhar,
                                    @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                    @NotNull @HeaderParam(X_USER_ID) String userId){
-        DriverEntity driver = driverService.createDriver(createDriverRequestDTO, license, aadhar, userId);
+        DriverEntity driver = driverService.createDriver(createDriverRequestDTO, license, licenseContent, aadhar, aadharContent, userId);
         return Response.ok(driverService.createDriverResponse(driver)).build();
     }
 
@@ -84,7 +85,7 @@ public class DriverResource {
                                  @FormDataParam("aadhar") InputStream aadhar,
                                  @FormDataParam("aadhar") FormDataContentDisposition aadharContent,
                                  @NotNull @HeaderParam(X_USER_ID) String userId){
-        DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, aadhar, userId, driverName);
+        DriverEntity driver = driverService.updateDriver(createDriverRequestDTO, license, licenseContent, aadhar, aadharContent, userId, driverName);
         return Response.ok(driverService.createDriverResponse(driver)).build();
     }
 
@@ -102,7 +103,7 @@ public class DriverResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getAadhar(@Nonnull @PathParam("driverName") String driverName){
-        InputStream aadhar = new ByteArrayInputStream(driverService.getDriver(driverName).getAadhar());
+        InputStream aadhar = AWSS3Util.getFile(driverService.getDriver(driverName).getAadhar());
         return Response.ok(aadhar).build();
     }
 
@@ -111,7 +112,7 @@ public class DriverResource {
     @Produces(MediaType.APPLICATION_JSON)
     @UnitOfWork
     public Response getLicense(@Nonnull @PathParam("driverName") String driverName){
-        InputStream license = new ByteArrayInputStream(driverService.getDriver(driverName).getLicense());
+        InputStream license = AWSS3Util.getFile(driverService.getDriver(driverName).getLicense());
         return Response.ok(license).build();
     }
 

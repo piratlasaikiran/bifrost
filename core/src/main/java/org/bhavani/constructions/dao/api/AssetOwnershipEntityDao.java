@@ -17,4 +17,6 @@ public interface AssetOwnershipEntityDao {
     void deleteAssetOwnershipEntity(AssetOwnershipEntity assetOwnershipEntity);
 
     List<AssetOwnershipEntity> getAssetOwnershipEntities(String assetName);
+
+    List<AssetOwnershipEntity> getAssetOwnershipEntitiesByOwnerName(String ownerName);
 }

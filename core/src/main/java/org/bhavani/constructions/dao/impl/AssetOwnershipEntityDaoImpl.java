@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.bhavani.constructions.constants.Constants.ASSET_NAME;
+import static org.bhavani.constructions.constants.Constants.EMPLOYEE_NAME;
 
 @Slf4j
 public class AssetOwnershipEntityDaoImpl extends AbstractDAO<AssetOwnershipEntity> implements AssetOwnershipEntityDao {
@@ -52,6 +53,15 @@ public class AssetOwnershipEntityDaoImpl extends AbstractDAO<AssetOwnershipEntit
         params.put(ASSET_NAME, assetName);
         log.info("Fetching asset: {}", assetName);
         return findAllByNamedQuery("GetAssetOwnershipsByName",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
+    }
+
+    @Override
+    public List<AssetOwnershipEntity> getAssetOwnershipEntitiesByOwnerName(String ownerName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(EMPLOYEE_NAME, ownerName);
+        log.info("Fetching asset with owner: {}", ownerName);
+        return findAllByNamedQuery("GetAssetOwnershipsByOwner",
                 params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

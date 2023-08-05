@@ -3,8 +3,9 @@
 --changeset saikiran.pv:1
 create table vendors(
     id bigint(20) unsigned not null AUTO_INCREMENT,
+    name varchar(150) not null,
     vendor_id varchar(256) default null,
-    contract_doc longblob default null,
+    contract_doc varchar(1024) default null,
     location varchar(150) not null,
     mobile_number bigint(10) not null,
     purposes varchar(2048) default null,
@@ -13,8 +14,7 @@ create table vendors(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    constraint vendors_location_fk foreign key (location) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
 --changeset saikiran.pv:2
@@ -39,12 +39,14 @@ create table transactions(
 	destination varchar(256) not null,
     amount bigint(30) default null,
     purpose varchar(255) default null,
-    bill longblob default null,
+    bill varchar(1024) default null,
     remarks varchar(1024) default null,
     status varchar(255) default 'SUBMITTED',
     mode varchar(255) default 'CASH',
     bank_ac varchar(255) default null,
     transaction_date timestamp not null,
+    site varchar(255) default null,
+    vehicle_num varchar(255) default null,
 	created_by varchar(255) default null,
 	updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
@@ -66,10 +68,10 @@ create table vendor_attendance(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    constraint vendor_attendance_site_fk foreign key (site) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;
 
+--changeset saikiran.pv:5
 create table employee_attendance(
     id bigint(20) unsigned not null AUTO_INCREMENT,
     name varchar(256) not null,
@@ -82,6 +84,5 @@ create table employee_attendance(
     updated_by varchar(255) default null,
     created_at timestamp not null default current_timestamp,
     updated_at timestamp not null default current_timestamp on update current_timestamp,
-    primary key (id),
-    foreign key (site) references sites (site_name)
+    primary key (id)
 )ENGINE=InnoDB default CHARSET=utf8;

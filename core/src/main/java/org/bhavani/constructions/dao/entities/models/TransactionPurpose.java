@@ -6,5 +6,7 @@ public enum TransactionPurpose {
     VEHICLE_MAINTENANCE,
     SITE_EXPENSE,
     OTHERS,
-    ATTENDANCE
+    ATTENDANCE,
+    ADVANCE,
+    SETTLEMENT
 }

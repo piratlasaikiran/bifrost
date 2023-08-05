@@ -24,7 +24,15 @@ import java.util.List;
 @Entity
 @NamedQueries(value = {
         @NamedQuery(name = "GetAllTransactions",
-                query = "select T from TransactionEntity T")
+                query = "select T from TransactionEntity T ORDER BY T.updatedAt DESC"),
+        @NamedQuery(name = "GetTransactionsBySource",
+                query = "select T from TransactionEntity T where T.source = :source"),
+        @NamedQuery(name = "GetTransactionsBySite",
+                query = "select T from TransactionEntity T where T.site = :site_name"),
+        @NamedQuery(name = "GetTransactionsByVehicleNumber",
+                query = "select T from TransactionEntity T where T.vehicleNumber = :vehicle_num"),
+        @NamedQuery(name = "GetTransactionsByDestination",
+                query = "select T from TransactionEntity T where T.destination = :destination")
 })
 @Table(name = "transactions")
 public class TransactionEntity extends BaseEntity {
@@ -51,9 +59,8 @@ public class TransactionEntity extends BaseEntity {
     @Column(name = "remarks")
     private String remarks;
 
-    @Lob
     @Column(name = "bill")
-    private byte[] bill;
+    private String bill;
 
     @Column(name = "transaction_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -62,6 +69,12 @@ public class TransactionEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private TransactionStatus status;
+
+    @Column(name = "site")
+    private String site;
+
+    @Column(name = "vehicle_num")
+    private String vehicleNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mode")
@@ -72,4 +85,8 @@ public class TransactionEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "transactionEntity", cascade = CascadeType.ALL)
     private List<PassBookEntity> passBookEntities;
+
+    @OneToMany(mappedBy = "transactionEntity", cascade = CascadeType.ALL)
+    private List<PendingBalanceEntity> pendingBalanceEntities;
+
 }

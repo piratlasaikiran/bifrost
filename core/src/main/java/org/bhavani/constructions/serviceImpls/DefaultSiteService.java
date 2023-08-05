@@ -2,8 +2,8 @@ package org.bhavani.constructions.serviceImpls;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bhavani.constructions.dao.api.SiteEntityDao;
-import org.bhavani.constructions.dao.entities.SiteEntity;
+import org.bhavani.constructions.dao.api.*;
+import org.bhavani.constructions.dao.entities.*;
 import org.bhavani.constructions.dto.CreateSiteRequestDTO;
 import org.bhavani.constructions.services.SiteService;
 
@@ -23,6 +23,11 @@ import static org.bhavani.constructions.utils.EntityBuilder.createSiteEntity;
 public class DefaultSiteService implements SiteService {
 
     private final SiteEntityDao siteEntityDao;
+    private final EmployeeAttendanceDao employeeAttendanceDao;
+    private final AssetLocationEntityDao assetLocationEntityDao;
+    private final VendorAttendanceEntityDao vendorAttendanceEntityDao;
+    private final VendorEntityDao vendorEntityDao;
+    private final TransactionEntityDao transactionEntityDao;
 
     @Override
     public SiteEntity createSite(CreateSiteRequestDTO createSiteRequestDTO) {
@@ -54,15 +59,35 @@ public class DefaultSiteService implements SiteService {
                 log.error("Site: {} already exists. Choose another name.", createSiteRequestDTO.getSiteName());
                 throw new IllegalArgumentException(SITE_EXISTS);
             });
+            updateDependentEntities(siteName, createSiteRequestDTO.getSiteName());
         }
         SiteEntity updatedSiteEntity = siteEntity.get();
+        updatedSiteEntity.setSiteName(createSiteRequestDTO.getSiteName());
         updatedSiteEntity.setAddress(createSiteRequestDTO.getAddress());
         updatedSiteEntity.setSupervisors(convertListToCommaSeparatedString(createSiteRequestDTO.getSupervisors()));
         updatedSiteEntity.setVehicles(convertListToCommaSeparatedString(createSiteRequestDTO.getVehicles()));
         updatedSiteEntity.setCurrentStatus(createSiteRequestDTO.getSiteStatus());
         updatedSiteEntity.setWorkStartDate(createSiteRequestDTO.getWorkStartDate());
         updatedSiteEntity.setWorkEndDate(createSiteRequestDTO.getWorkEndDate());
+        updatedSiteEntity.setUpdatedBy(userId);
         return updatedSiteEntity;
+    }
+
+    private void updateDependentEntities(String oldSiteName, String newSiteName) {
+        List<EmployeeAttendanceEntity> employeeAttendanceEntities = employeeAttendanceDao.getAttendancesInSite(oldSiteName);
+        employeeAttendanceEntities.forEach(employeeAttendanceEntity -> employeeAttendanceEntity.setSite(newSiteName));
+
+        List<AssetLocationEntity> assetLocationEntities = assetLocationEntityDao.getAssetsInSite(oldSiteName);
+        assetLocationEntities.forEach(assetLocationEntity -> assetLocationEntity.setLocation(newSiteName));
+
+        List<VendorAttendanceEntity> vendorAttendanceEntities = vendorAttendanceEntityDao.getVendorAttendanceInSite(oldSiteName);
+        vendorAttendanceEntities.forEach(vendorAttendanceEntity -> vendorAttendanceEntity.setSite(newSiteName));
+
+        List<VendorEntity> vendorEntities = vendorEntityDao.getVendorsInSite(oldSiteName);
+        vendorEntities.forEach(vendorEntity -> vendorEntity.setLocation(newSiteName));
+
+        List<TransactionEntity> transactionEntities = transactionEntityDao.getTransactionsBySiteName(oldSiteName);
+        transactionEntities.forEach(transactionEntity -> transactionEntity.setSite(newSiteName));
     }
 
     @Override

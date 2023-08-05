@@ -10,6 +10,7 @@ import org.bhavani.constructions.dao.entities.models.VendorPurpose;
 import org.bhavani.constructions.dto.CreateSupervisorRequestDTO;
 import org.bhavani.constructions.dto.CreateVendorRequestDTO;
 import org.bhavani.constructions.services.VendorService;
+import org.bhavani.constructions.utils.AWSS3Util;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -61,7 +62,7 @@ public class VendorResource {
     @UnitOfWork
     public Response getContractDocument(@NotNull @PathParam("vendorId") String vendorId,
                                                 @NotNull @HeaderParam(X_USER_ID) String userId){
-        InputStream contractDoc = new ByteArrayInputStream(vendorService.getVendor(vendorId).getContractDocument());
+        InputStream contractDoc = AWSS3Util.getFile(vendorService.getVendor(vendorId).getContractDocument());
         return Response.ok(contractDoc).build();
     }
 
@@ -81,7 +82,7 @@ public class VendorResource {
                                    @FormDataParam("contractDocument") InputStream contractDocument,
                                    @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
                                    @NotNull @HeaderParam(X_USER_ID) String userId){
-        VendorEntity vendorEntity = vendorService.createVendor(createVendorRequestDTO, contractDocument, userId);
+        VendorEntity vendorEntity = vendorService.createVendor(createVendorRequestDTO, contractDocument, contractDocumentContent, userId);
         return Response.ok(vendorEntity).build();
     }
 
@@ -94,7 +95,7 @@ public class VendorResource {
                                  @FormDataParam("contractDocument") FormDataContentDisposition contractDocumentContent,
                                  @NotNull @HeaderParam(X_USER_ID) String userId,
                                  @Nonnull @PathParam("vendorId") String vendorId){
-        VendorEntity vendorEntity = vendorService.updateVendor(createVendorRequestDTO, contractDocument, userId, vendorId);
+        VendorEntity vendorEntity = vendorService.updateVendor(createVendorRequestDTO, contractDocument, contractDocumentContent, userId, vendorId);
         return Response.ok(vendorEntity).build();
     }
 

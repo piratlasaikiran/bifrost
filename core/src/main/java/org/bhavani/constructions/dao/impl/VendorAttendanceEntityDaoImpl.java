@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.bhavani.constructions.constants.Constants.ASSET_NAME;
+import static org.bhavani.constructions.constants.Constants.SITE_NAME;
+
 public class VendorAttendanceEntityDaoImpl extends AbstractDAO<VendorAttendanceEntity> implements VendorAttendanceEntityDao {
 
     @Inject
@@ -34,5 +37,13 @@ public class VendorAttendanceEntityDaoImpl extends AbstractDAO<VendorAttendanceE
     @Override
     public Optional<VendorAttendanceEntity> getVendorAttendance(Long existingVendorAttendanceId) {
         return this.get(existingVendorAttendanceId);
+    }
+
+    @Override
+    public List<VendorAttendanceEntity> getVendorAttendanceInSite(String siteName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(SITE_NAME, siteName);
+        return findAllByNamedQuery("GetVendorAttendanceInSite",
+                params, PageRequestUtil.getDefaultPageRequest()).getContent();
     }
 }

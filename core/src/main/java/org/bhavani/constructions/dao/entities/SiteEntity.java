@@ -30,7 +30,11 @@ import static org.jadira.usertype.spi.utils.lang.StringUtils.isEmpty;
         @NamedQuery(name = "GetSiteByName",
                 query = "select S from SiteEntity S where S.siteName = :site_name"),
         @NamedQuery(name = "GetAllSites",
-                query = "select S from SiteEntity S")
+                query = "select S from SiteEntity S"),
+        @NamedQuery(name = "GetSitesUnderSupervisor",
+                query = "SELECT S FROM SiteEntity S WHERE S.supervisors LIKE CONCAT('%', :employee_name, '%')"),
+        @NamedQuery(name = "GetSitesWithVehicle",
+                query = "SELECT S FROM SiteEntity S WHERE S.vehicles LIKE CONCAT('%', :vehicle_num, '%')")
 })
 @Table(name = "sites")
 public class SiteEntity extends BaseEntity {

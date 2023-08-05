@@ -35,6 +35,12 @@ public class CreateTransactionRequestDTO {
     @JsonProperty("purpose")
     private TransactionPurpose purpose;
 
+    @JsonProperty("site")
+    private String site;
+
+    @JsonProperty("vehicle_number")
+    private String vehicleNumber;
+
     @JsonProperty("remarks")
     private String remarks;
 

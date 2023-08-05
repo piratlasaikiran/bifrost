@@ -24,7 +24,11 @@ import java.time.LocalDate;
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @NamedQueries(value = {
         @NamedQuery(name = "GetAllEmployeeAttendances",
-                query = "select E from EmployeeAttendanceEntity E")
+                query = "select E from EmployeeAttendanceEntity E"),
+        @NamedQuery(name = "GetEmployeeAttendancesForEmployee",
+                query = "select E from EmployeeAttendanceEntity E where E.employeeName = :employee_name"),
+        @NamedQuery(name = "GetEmployeeAttendancesInSite",
+                query = "select E from EmployeeAttendanceEntity E where E.site = :site_name")
 })
 @Table(name = "employee_attendance")
 public class EmployeeAttendanceEntity extends BaseEntity {

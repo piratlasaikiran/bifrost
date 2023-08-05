@@ -28,8 +28,8 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createNewUser(String userName, String password) {
-        UserEntity userEntity = createUserEntity(userName, hashPassword(password));
+    public void createNewUser(String userName, String password, String userId) {
+        UserEntity userEntity = createUserEntity(userName, hashPassword(password), userId);
         userEntityDao.createNewUser(userEntity);
     }
 }
